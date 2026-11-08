@@ -5,6 +5,7 @@
 //! "gold units" × 10_000, so 12_500 means 1.25 gold.
 
 use crate::resources::ResourceStock;
+use crate::units::UnitKind;
 
 /// Basis points in 100%.
 pub const BPS_PER_WHOLE: u32 = 10_000;
@@ -58,6 +59,77 @@ pub const CLAIM_TILE_COST: ResourceStock = ResourceStock {
     ore: 0,
     gold: 10,
 };
+
+// ----- Units -----
+
+/// One unit kind's numbers (docs/decisions/0006, section 4).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct UnitStats {
+    /// Strength when attacking.
+    pub attack: u32,
+    /// Strength when defending.
+    pub defence: u32,
+    /// What building one costs.
+    pub cost: ResourceStock,
+    /// Food it eats every turn.
+    pub upkeep_food: u32,
+}
+
+/// The stats of each unit kind. A `match` with one arm per kind, so adding a kind to `UnitKind`
+/// fails to compile until it has stats here.
+pub fn unit_stats(kind: UnitKind) -> UnitStats {
+    match kind {
+        UnitKind::Infantry => UnitStats {
+            attack: 3,
+            defence: 2,
+            cost: resources(10, 0, 0),
+            upkeep_food: 1,
+        },
+        UnitKind::Guard => UnitStats {
+            attack: 2,
+            defence: 5,
+            cost: resources(0, 15, 0),
+            upkeep_food: 1,
+        },
+        UnitKind::Siege => UnitStats {
+            attack: 6,
+            defence: 1,
+            cost: resources(0, 10, 10),
+            upkeep_food: 1,
+        },
+        UnitKind::Elite => UnitStats {
+            attack: 8,
+            defence: 8,
+            cost: resources(0, 0, 40),
+            upkeep_food: 2,
+        },
+        UnitKind::Settler => UnitStats {
+            attack: 0,
+            defence: 1,
+            cost: resources(30, 10, 0),
+            upkeep_food: 1,
+        },
+    }
+}
+
+/// A civ may field one Elite per city size it owns in total.
+pub const ELITES_PER_CITY_SIZE: u32 = 1;
+
+/// When a civ can't feed its army, units are disbanded in this order: most valuable first, judged
+/// by cost at base market prices (Elite 60, Settler 42.5, Siege 27.5, Guard 18.75, Infantry 10
+/// gold units).
+pub const DISBAND_ORDER: [UnitKind; 5] = [
+    UnitKind::Elite,
+    UnitKind::Settler,
+    UnitKind::Siege,
+    UnitKind::Guard,
+    UnitKind::Infantry,
+];
+
+/// Shorthand for a stock of food, ore and gold, to keep the unit table short.
+const fn resources(food: u32, ore: u32, gold: u32) -> ResourceStock {
+    ResourceStock { food, ore, gold }
+}
 
 // ----- Market -----
 
@@ -117,6 +189,24 @@ mod tests {
         let thresholds: Vec<u32> = (1..MAX_CITY_SIZE).map(growth_threshold).collect();
 
         assert_eq!(thresholds, vec![20, 80, 180, 320]);
+    }
+
+    #[test]
+    fn settlers_cannot_attack_and_elites_eat_double() {
+        assert_eq!(unit_stats(UnitKind::Settler).attack, 0);
+        assert_eq!(unit_stats(UnitKind::Elite).upkeep_food, 2);
+    }
+
+    #[test]
+    fn the_disband_order_lists_every_unit_kind_once() {
+        for kind in UnitKind::ALL {
+            let times_listed = DISBAND_ORDER
+                .iter()
+                .filter(|listed| **listed == kind)
+                .count();
+
+            assert_eq!(times_listed, 1, "{kind:?}");
+        }
     }
 
     #[test]

@@ -36,9 +36,9 @@ impl CivId {
 
 /// One civ's state, as 88 plain bytes.
 ///
-/// Field order matters for `#[repr(C)]`: the single bytes come first (padded to 4 with an explicit
-/// `reserved` field), then the 4-byte-aligned resource stock, then the 2-byte-aligned unit counts
-/// and cities. `Pod` forbids hidden padding, so every byte is a named field.
+/// Field order matters for `#[repr(C)]`: 2 single bytes + 10 bytes of unit counts end exactly at
+/// byte 12, where the 4-byte-aligned resource stock can start, followed by the cities. `Pod`
+/// forbids hidden padding, and this order needs none.
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Pod, Zeroable)]
 pub struct Civ {
@@ -46,12 +46,10 @@ pub struct Civ {
     id: u8,
     /// Bit flags; bit 0 = alive. Other bits are reserved.
     flags: u8,
-    /// Unused; always zero. Keeps `resources` 4-byte aligned without hidden padding.
-    reserved: [u8; 2],
-    /// Food, ore and gold on hand.
-    pub resources: ResourceStock,
     /// Units of each kind.
     pub units: UnitCounts,
+    /// Food, ore and gold on hand.
+    pub resources: ResourceStock,
     /// Up to MAX_CITIES_PER_CIV cities. Slots not in use are `City::EMPTY`. The capital is
     /// whichever city has the capital flag, not always slot 0 (it moves when the capital falls).
     cities: [City; MAX_CITIES_PER_CIV],
@@ -65,9 +63,8 @@ impl Civ {
         Civ {
             id: id.0,
             flags: ALIVE_FLAG,
-            reserved: [0; 2],
-            resources: ResourceStock::EMPTY,
             units: UnitCounts::NONE,
+            resources: ResourceStock::EMPTY,
             cities,
         }
     }
@@ -197,7 +194,7 @@ mod tests {
     #[test]
     fn a_civ_is_88_plain_bytes() {
         // The on-chain Civ account's size depends on this; rethink the layout before changing it.
-        // 4 (id, flags, reserved) + 12 (resources) + 8 (units) + 8 cities x 8 bytes.
+        // 2 (id, flags) + 10 (units) + 12 (resources) + 8 cities x 8 bytes.
         assert_eq!(std::mem::size_of::<Civ>(), 88);
     }
 }

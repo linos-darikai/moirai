@@ -1,30 +1,34 @@
-//! Units: the four unit kinds and how many of each a civ has. Costs, strengths and the
-//! rock-paper-scissors battle rules come in the battle step. See PLAN.md section 2, "Units".
+//! Units: the five unit kinds and how many of each a civ has. In v1 units are counts per civ, not
+//! pieces on the map (docs/decisions/0006, section 4). Each kind's attack, defence, cost and
+//! upkeep live in rules.rs (`unit_stats`).
 
-/// The four kinds of unit.
+/// The five kinds of unit.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum UnitKind {
-    /// Triangle. Cheap (Food). Strong against Siege, weak against Guard.
+    /// Triangle. Cheap (Food). Strong against Siege.
     Infantry,
-    /// Square. Ore. Strong against Infantry, weak against Siege.
+    /// Square. Ore. Strong against Infantry.
     Guard,
-    /// Tall rectangle. Ore + Gold. Strong against Guard, weak against Infantry.
+    /// Tall rectangle. Ore + Gold. Strong against Guard and city walls.
     Siege,
-    /// Star. Gold, expensive. Beats any one unit 1v1; at most one per city.
+    /// Star. Gold, expensive. A bonus against everything; at most one per city size.
     Elite,
+    /// Doesn't fight (defence only). Used up by `found_city` to build a new city on a city site.
+    Settler,
 }
 
 impl UnitKind {
     /// Every unit kind, in a fixed order.
-    pub const ALL: [UnitKind; 4] = [
+    pub const ALL: [UnitKind; 5] = [
         UnitKind::Infantry,
         UnitKind::Guard,
         UnitKind::Siege,
         UnitKind::Elite,
+        UnitKind::Settler,
     ];
 }
 
-/// How many units of each kind a civ has. Plain bytes, like `ResourceStock`.
+/// How many units of each kind a civ has. 10 plain bytes, like `ResourceStock`.
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct UnitCounts {
@@ -32,6 +36,7 @@ pub struct UnitCounts {
     pub guard: u16,
     pub siege: u16,
     pub elite: u16,
+    pub settler: u16,
 }
 
 impl UnitCounts {
@@ -41,6 +46,7 @@ impl UnitCounts {
         guard: 0,
         siege: 0,
         elite: 0,
+        settler: 0,
     };
 
     /// How many units of `kind` there are.
@@ -50,17 +56,36 @@ impl UnitCounts {
             UnitKind::Guard => self.guard,
             UnitKind::Siege => self.siege,
             UnitKind::Elite => self.elite,
+            UnitKind::Settler => self.settler,
+        }
+    }
+
+    /// The count of `kind`, borrowed so `add` and `remove` can change it. Private: outside code
+    /// goes through `add` and `remove`, which can't overflow.
+    fn count_mut(&mut self, kind: UnitKind) -> &mut u16 {
+        match kind {
+            UnitKind::Infantry => &mut self.infantry,
+            UnitKind::Guard => &mut self.guard,
+            UnitKind::Siege => &mut self.siege,
+            UnitKind::Elite => &mut self.elite,
+            UnitKind::Settler => &mut self.settler,
         }
     }
 
     /// Adds `amount` units of `kind`, stopping at the maximum instead of overflowing.
     pub fn add(&mut self, kind: UnitKind, amount: u16) {
-        match kind {
-            UnitKind::Infantry => self.infantry = self.infantry.saturating_add(amount),
-            UnitKind::Guard => self.guard = self.guard.saturating_add(amount),
-            UnitKind::Siege => self.siege = self.siege.saturating_add(amount),
-            UnitKind::Elite => self.elite = self.elite.saturating_add(amount),
-        }
+        let count = self.count_mut(kind);
+        *count = count.saturating_add(amount);
+    }
+
+    /// Removes up to `amount` units of `kind` (never below zero). Returns how many were removed.
+    pub fn remove(&mut self, kind: UnitKind, amount: u16) -> u16 {
+        let count = self.count_mut(kind);
+        let removed = amount.min(*count);
+        // `*count` means "the number `count` points at". removed <= count, so this never stops
+        // at zero early; saturating_sub just keeps the no-overflow rule visible.
+        *count = count.saturating_sub(removed);
+        removed
     }
 
     /// Total number of units of all kinds.
@@ -88,16 +113,30 @@ mod tests {
     }
 
     #[test]
+    fn removing_more_units_than_there_are_stops_at_zero() {
+        let mut units = UnitCounts {
+            settler: 2,
+            ..UnitCounts::NONE
+        };
+
+        let removed = units.remove(UnitKind::Settler, 5);
+
+        assert_eq!(removed, 2);
+        assert_eq!(units.count(UnitKind::Settler), 0);
+    }
+
+    #[test]
     fn total_counts_every_kind() {
         let units = UnitCounts {
             infantry: 3,
             guard: 2,
             siege: 1,
             elite: 1,
+            settler: 1,
         };
 
         let total = units.total();
 
-        assert_eq!(total, 7);
+        assert_eq!(total, 8);
     }
 }
