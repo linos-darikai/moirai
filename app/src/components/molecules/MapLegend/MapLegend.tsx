@@ -3,7 +3,7 @@
 
 import type { ReactElement } from "react";
 import { Swatch } from "../../atoms";
-import { CityMark, ContestedMark, Item, List } from "./MapLegend.styles";
+import { CityMark, CitySiteMark, ContestedMark, Item, List } from "./MapLegend.styles";
 
 type MapLegendProps = {
   /** Accessible name of the list, e.g. "Map legend". */
@@ -12,11 +12,20 @@ type MapLegendProps = {
   oreLabel: string;
   goldLabel: string;
   cityLabel: string;
+  citySiteLabel: string;
   contestedLabel: string;
 };
 
 /** What each mark on the map means. */
-export function MapLegend({ label, foodLabel, oreLabel, goldLabel, cityLabel, contestedLabel }: MapLegendProps): ReactElement {
+export function MapLegend({
+  label,
+  foodLabel,
+  oreLabel,
+  goldLabel,
+  cityLabel,
+  citySiteLabel,
+  contestedLabel,
+}: MapLegendProps): ReactElement {
   return (
     <List aria-label={label}>
       <Item>
@@ -34,6 +43,10 @@ export function MapLegend({ label, foodLabel, oreLabel, goldLabel, cityLabel, co
       <Item>
         <CityMark aria-hidden="true" />
         {cityLabel}
+      </Item>
+      <Item>
+        <CitySiteMark aria-hidden="true" />
+        {citySiteLabel}
       </Item>
       <Item>
         <ContestedMark aria-hidden="true" />

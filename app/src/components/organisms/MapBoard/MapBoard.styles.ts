@@ -44,6 +44,14 @@ export const CityMark = styled.span<{ $civ: CivIndex }>`
   background: ${({ theme }) => theme.colors.bg};
 `;
 
+/** An empty dashed square: a city could be built here. */
+export const CitySiteMark = styled.span`
+  width: 56%;
+  height: 56%;
+  border-radius: ${({ theme }) => theme.radii.sm};
+  border: 2px dashed ${({ theme }) => theme.colors.textMuted};
+`;
+
 export const UnitMark = styled.span<{ $civ: CivIndex; $kind: UnitKind }>`
   width: 46%;
   height: 46%;

@@ -12,10 +12,11 @@ describe("MapLegend", () => {
         oreLabel="Ore deposit"
         goldLabel="Gold deposit"
         cityLabel="City"
+        citySiteLabel="City site"
         contestedLabel="Contested tile"
       />,
     );
 
-    expect(screen.getByRole("list", { name: "Map legend" }).children).toHaveLength(5);
+    expect(screen.getByRole("list", { name: "Map legend" }).children).toHaveLength(6);
   });
 });

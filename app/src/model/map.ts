@@ -1,6 +1,6 @@
 // Map logic: turns civ-core's raw map bytes into tiles, and typed seed text into seed bytes.
 // The byte meanings must match `Tile` in crates/civ-core/src/map.rs exactly (3 bytes per tile:
-// owner, deposit, flags).
+// owner, deposit, flags: bit 0 city, bit 1 city site).
 
 import type { CivIndex, ResourceKind } from "../types/game";
 import type { MapTile } from "../types/map";
@@ -10,6 +10,7 @@ export const MAP_SIZE = 16;
 export const TILE_COUNT = MAP_SIZE * MAP_SIZE;
 const BYTES_PER_TILE = 3;
 const CITY_FLAG = 0b0000_0001;
+const CITY_SITE_FLAG = 0b0000_0010;
 const SEED_LENGTH_BYTES = 32;
 
 /** Turns a deposit byte into a resource (0 = none; matches `Resource::to_byte` in civ-core). */
@@ -42,6 +43,7 @@ export function decodeMapBytes(bytes: Uint8Array): MapTile[] {
       owner: ownerFromByte(bytes[offset] ?? 0),
       deposit: depositFromByte(bytes[offset + 1] ?? 0),
       isCity: ((bytes[offset + 2] ?? 0) & CITY_FLAG) !== 0,
+      isCitySite: ((bytes[offset + 2] ?? 0) & CITY_SITE_FLAG) !== 0,
     });
   }
   return tiles;

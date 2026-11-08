@@ -14,7 +14,7 @@ function startingMap(): MapTile[] {
     const x = index % 16;
     const y = Math.floor(index / 16);
     const owner = cities[`${x},${y}`] ?? null;
-    return { x, y, owner, deposit: null, isCity: owner !== null };
+    return { x, y, owner, deposit: null, isCity: owner !== null, isCitySite: owner !== null };
   });
 }
 

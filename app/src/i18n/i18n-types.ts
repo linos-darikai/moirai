@@ -337,6 +337,10 @@ type RootTranslation = {
 		 */
 		legendCity: string
 		/**
+		 * C​i​t​y​ ​s​i​t​e
+		 */
+		legendCitySite: string
+		/**
 		 * C​o​n​t​e​s​t​e​d​ ​t​i​l​e
 		 */
 		legendContested: string
@@ -2669,6 +2673,10 @@ export type TranslationFunctions = {
 		 * City
 		 */
 		legendCity: () => LocalizedString
+		/**
+		 * City site
+		 */
+		legendCitySite: () => LocalizedString
 		/**
 		 * Contested tile
 		 */

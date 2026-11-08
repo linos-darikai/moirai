@@ -4,13 +4,13 @@ import { decodeMapBytes, seedBytesFromHex, TILE_COUNT } from "./map";
 describe("decodeMapBytes", () => {
   it("reads owner, deposit and city exactly like civ-core stores them", () => {
     const bytes = new Uint8Array(TILE_COUNT * 3);
-    bytes.set([2, 3, 1], 0); // tile (0,0): civ 1, gold, city
+    bytes.set([2, 3, 3], 0); // tile (0,0): civ 1, gold, city on a city site
     bytes.set([0, 1, 0], 3 * 17); // tile (1,1): nobody, food
 
     const tiles = decodeMapBytes(bytes);
 
-    expect(tiles[0]).toEqual({ x: 0, y: 0, owner: 1, deposit: "gold", isCity: true });
-    expect(tiles[17]).toEqual({ x: 1, y: 1, owner: null, deposit: "food", isCity: false });
+    expect(tiles[0]).toEqual({ x: 0, y: 0, owner: 1, deposit: "gold", isCity: true, isCitySite: true });
+    expect(tiles[17]).toEqual({ x: 1, y: 1, owner: null, deposit: "food", isCity: false, isCitySite: false });
   });
 
   it("rejects the wrong number of bytes", () => {

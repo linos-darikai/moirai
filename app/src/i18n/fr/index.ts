@@ -103,6 +103,7 @@ const fr = {
     legendOre: "Gisement de minerai",
     legendGold: "Gisement d'or",
     legendCity: "Ville",
+    legendCitySite: "Emplacement de ville",
     legendContested: "Case disputée",
     previewNote:
       "Les gisements et les villes viennent de civ-core. L'expansion du territoire est un aperçu en attendant le moteur de tours.",

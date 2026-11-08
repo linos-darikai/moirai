@@ -107,6 +107,7 @@ const en = {
     legendOre: "Ore deposit",
     legendGold: "Gold deposit",
     legendCity: "City",
+    legendCitySite: "City site",
     legendContested: "Contested tile",
     previewNote:
       "Deposits and cities come from civ-core. Territory growth is a preview until the turn engine ships.",

@@ -103,6 +103,7 @@ const es = {
     legendOre: "Depósito de mineral",
     legendGold: "Depósito de oro",
     legendCity: "Ciudad",
+    legendCitySite: "Emplazamiento de ciudad",
     legendContested: "Casilla en disputa",
     previewNote:
       "Los depósitos y ciudades vienen de civ-core. El crecimiento del territorio es una vista previa hasta que llegue el motor de turnos.",

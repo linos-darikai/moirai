@@ -24,6 +24,13 @@ export const CityMark = styled.span`
   border: 2px solid ${({ theme }) => theme.colors.text};
 `;
 
+export const CitySiteMark = styled.span`
+  width: 12px;
+  height: 12px;
+  border-radius: ${({ theme }) => theme.radii.xs};
+  border: 2px dashed ${({ theme }) => theme.colors.textMuted};
+`;
+
 export const ContestedMark = styled.span`
   width: 12px;
   height: 12px;

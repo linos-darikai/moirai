@@ -96,6 +96,7 @@ export function MatchPage(): ReactElement {
               oreLabel={LL.map.legendOre()}
               goldLabel={LL.map.legendGold()}
               cityLabel={LL.map.legendCity()}
+              citySiteLabel={LL.map.legendCitySite()}
               contestedLabel={LL.map.legendContested()}
             />
             <MobileOnly>

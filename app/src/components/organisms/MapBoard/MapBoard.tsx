@@ -7,7 +7,7 @@ import { useI18nContext } from "../../../i18n";
 import type { CivIndex } from "../../../types/game";
 import type { BoardState } from "../../../types/map";
 import { QueryStatus } from "../../molecules";
-import { CityMark, DepositDot, Grid, TileCell, UnitMark } from "./MapBoard.styles";
+import { CityMark, CitySiteMark, DepositDot, Grid, TileCell, UnitMark } from "./MapBoard.styles";
 
 type MapBoardProps = {
   board: BoardState | null;
@@ -38,6 +38,7 @@ export function MapBoard({ board, isPending, error, turn, civNames }: MapBoardPr
       {board.tiles.map((tile) => (
         <TileCell key={`${tile.x}-${tile.y}`} $owner={tile.owner} $isContested={tile.isContested}>
           {tile.deposit !== null && !tile.isCity && <DepositDot $resource={tile.deposit} />}
+          {tile.isCitySite && !tile.isCity && <CitySiteMark />}
           {tile.isCity && tile.owner !== null && <CityMark $civ={tile.owner} />}
           {tile.unit !== null && tile.owner !== null && <UnitMark $civ={tile.owner} $kind={tile.unit} />}
         </TileCell>

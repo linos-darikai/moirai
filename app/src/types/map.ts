@@ -9,6 +9,8 @@ export type MapTile = {
   owner: CivIndex | null;
   deposit: ResourceKind | null;
   isCity: boolean;
+  /** A city may be built here (capitals start on one). */
+  isCitySite: boolean;
 };
 
 /** A tile as the map board draws it at some turn. */
