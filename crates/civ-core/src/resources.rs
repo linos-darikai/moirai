@@ -56,7 +56,11 @@ impl Resource {
 }
 
 /// How much of each resource a civ holds.
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+///
+/// Plain bytes (`#[repr(C)]`, `Pod`) so it can sit inside an on-chain Civ account as-is
+/// (docs/decisions/0004).
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct ResourceStock {
     pub food: u32,
     pub ore: u32,

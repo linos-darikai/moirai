@@ -24,8 +24,9 @@ impl UnitKind {
     ];
 }
 
-/// How many units of each kind a civ has.
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+/// How many units of each kind a civ has. Plain bytes, like `ResourceStock`.
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct UnitCounts {
     pub infantry: u16,
     pub guard: u16,
