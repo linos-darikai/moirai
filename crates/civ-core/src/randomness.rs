@@ -25,6 +25,10 @@ pub enum RandomPurpose {
     DepositResource = 2,
     /// Where the city sites in a map quarter go.
     CitySite = 3,
+    /// The attacker's ±10% swing in a battle.
+    BattleAttackRoll = 4,
+    /// The defender's ±10% swing in a battle.
+    BattleDefenceRoll = 5,
 }
 
 /// Source of random numbers for one match. Create it once from the seed and reuse it: the 32-byte
