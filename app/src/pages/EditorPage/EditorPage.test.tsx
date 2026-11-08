@@ -1,12 +1,41 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { CompiledPolicy } from "../../types/policy";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { EditorPage } from "./EditorPage";
+
+// The page asks civ-core's compiler (WASM) for problems. The engine doesn't load in jsdom, so the
+// page falls back to the quick TypeScript reader unless a test gives it a compiler answer here.
+const compilerAnswer = vi.hoisted(() => ({ current: null as CompiledPolicy | null }));
+vi.mock("../../lib/engine", () => ({
+  compilePolicyDraft: () =>
+    compilerAnswer.current === null ? Promise.reject(new Error("no engine in jsdom")) : Promise.resolve(compilerAnswer.current),
+}));
 
 describe("EditorPage", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    compilerAnswer.current = null;
+  });
+
+  it("shows the compiler's problems once it has checked the draft", async () => {
+    compilerAnswer.current = {
+      isValid: false,
+      problems: [{ line: 4, code: "badArguments", detail: "sell" }],
+    };
+
+    renderWithProviders(<EditorPage />);
+
+    expect(await screen.findByText("Line 4: Wrong arguments for sell(…). See the reference for what it takes.")).toBeInTheDocument();
+  });
+
+  it("shows the compiled size once the draft compiles", async () => {
+    compilerAnswer.current = { isValid: true, bytes: new Uint8Array(65) };
+
+    renderWithProviders(<EditorPage />);
+
+    expect(await screen.findByText("65 bytes")).toBeInTheDocument();
   });
 
   it("shows the draft and warns about the shadowed rule", () => {

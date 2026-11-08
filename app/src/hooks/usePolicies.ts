@@ -4,8 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { SAMPLE_DRAFTS, TEMPLATE_YAML } from "../data/policies";
-import { checkPolicy, hashPolicyText } from "../model/policyCheck";
-import type { PolicyCheck, PolicyDraft, PolicyTemplate } from "../types/policy";
+import { compilePolicyDraft } from "../lib/engine";
+import { checkPolicy, hashBytes } from "../model/policyCheck";
+import type { CompiledPolicy, PolicyCheck, PolicyDraft, PolicyTemplate } from "../types/policy";
 
 const DRAFTS_STORAGE_KEY = "moirai.policyDrafts";
 
@@ -79,21 +80,47 @@ export function usePolicyDrafts(): PolicyDrafts {
   };
 }
 
-/** Live checks of a draft (rules, errors, warnings) plus its hash. */
+/** Live checks of a draft (rules, errors, warnings) plus its compiled size and hash. */
 export type PolicyDraftReport = {
   check: PolicyCheck;
+  /** True once civ-core's compiler (WASM) has checked this exact text. */
+  isCompilerChecked: boolean;
+  /** sha256 of the compiled bytes; only while the draft compiles. */
   hash: UseQueryResult<string>;
-  sizeBytes: number;
+  /** Size of the compiled policy in bytes, or null while it doesn't compile (or is loading). */
+  sizeBytes: number | null;
 };
 
-/** Checks the YAML on every edit and hashes it. */
+/** The compiler's problems as editor errors. */
+function compilerErrors(compiled: CompiledPolicy): PolicyCheck["errors"] {
+  if (compiled.isValid) return [];
+  return compiled.problems.map((problem) => ({ kind: "compiler", problem }));
+}
+
+/**
+ * Checks the YAML on every edit with civ-core's compiler (in WASM) and hashes the compiled bytes.
+ * Until the engine has loaded, or if it can't load, the quick TypeScript reader's errors stand in.
+ */
 export function usePolicyCheck(yaml: string): PolicyDraftReport {
-  const check = useMemo(() => checkPolicy(yaml), [yaml]);
-  const sizeBytes = useMemo(() => new TextEncoder().encode(yaml).length, [yaml]);
+  const quickCheck = useMemo(() => checkPolicy(yaml), [yaml]);
+  const compiled = useQuery({
+    queryKey: ["policyCompile", yaml],
+    queryFn: () => compilePolicyDraft(yaml),
+    staleTime: Infinity,
+    retry: false,
+  });
+  const bytes = compiled.data?.isValid === true ? compiled.data.bytes : null;
   const hash = useQuery({
     queryKey: ["policyHash", yaml],
-    queryFn: () => hashPolicyText(yaml),
+    queryFn: () => hashBytes(bytes ?? new Uint8Array()),
+    enabled: bytes !== null,
     staleTime: Infinity,
   });
-  return { check, hash, sizeBytes };
+
+  const check = useMemo<PolicyCheck>(() => {
+    if (compiled.data === undefined) return quickCheck;
+    return { ...quickCheck, errors: compilerErrors(compiled.data) };
+  }, [compiled.data, quickCheck]);
+
+  return { check, isCompilerChecked: compiled.data !== undefined, hash, sizeBytes: bytes?.length ?? null };
 }

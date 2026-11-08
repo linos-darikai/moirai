@@ -1,6 +1,7 @@
-// Policy draft checks for the editor's live validation (PLAN.md section 3). A lightweight reader
-// of the YAML rules until civ-core's policy compiler (Rust, Phase 1) is wired in through WASM;
-// the compiler stays the source of truth and the program re-validates at reveal.
+// Policy draft checks for the editor (docs/decisions/0008). civ-core's compiler, run in WASM, is
+// the source of truth for errors (hooks/usePolicies.ts). This lightweight reader lists the rules
+// for the rules view, finds the "rarely runs" warning the compiler doesn't give, and stands in for
+// the compiler until the WASM engine has loaded. The program re-validates at reveal.
 
 import type { PolicyCheck, PolicyProblem, PolicyRule } from "../types/policy";
 
@@ -8,6 +9,10 @@ import type { PolicyCheck, PolicyProblem, PolicyRule } from "../types/policy";
 export const MAX_RULES_PER_POLICY = 16;
 /** Only this many matching rules act each turn. */
 export const MAX_ACTIVE_RULES_PER_TURN = 3;
+/** A rule joins at most this many conditions with `and` (civ-core MAX_CONDITIONS_PER_RULE). */
+export const MAX_CONDITIONS_PER_RULE = 3;
+/** The longest policy name (civ-core MAX_POLICY_NAME_LENGTH). */
+export const MAX_POLICY_NAME_LENGTH = 32;
 
 /** Values a condition may read (docs/decisions/0008, "Conditions"; civ-core `policy::Value`). */
 export const KNOWN_CONDITIONS: readonly string[] = [
@@ -116,11 +121,10 @@ export function checkPolicy(yaml: string): PolicyCheck {
   return { rules, errors, warnings, warningLines };
 }
 
-/**
- * SHA-256 of the draft text, as hex. Until the compiler exists this hashes the YAML; the real
- * commitment is sha256(compiled_policy_bytes || salt) (PLAN.md section 3).
- */
-export async function hashPolicyText(yaml: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(yaml));
+/** SHA-256 of some bytes, as hex: the editor shows it for the compiled policy. (The commitment
+ * sent on chain is sha256(compiled_policy_bytes || salt), PLAN.md section 3.) */
+export async function hashBytes(bytes: Uint8Array): Promise<string> {
+  // Copy into a fresh ArrayBuffer-backed array: Web Crypto only accepts those.
+  const digest = await crypto.subtle.digest("SHA-256", new Uint8Array(bytes));
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }

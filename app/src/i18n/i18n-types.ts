@@ -1798,20 +1798,24 @@ export type NamespacePoliciesTranslation = {
 		 */
 		rulesValue: RequiredParams<'count' | 'max'>
 		/**
-		 * Y​A​M​L​ ​s​i​z​e
+		 * C​o​m​p​i​l​e​d​ ​s​i​z​e
 		 */
 		size: string
+		/**
+		 * —
+		 */
+		sizeUnknown: string
 		/**
 		 * {​c​o​u​n​t​|​i​n​t​e​g​e​r​}​ ​b​y​t​e​s
 		 * @param {number} count
 		 */
 		sizeValue: RequiredParams<'count|integer'>
 		/**
-		 * H​a​s​h​ ​(​c​h​a​n​g​e​s​ ​w​i​t​h​ ​e​v​e​r​y​ ​e​d​i​t​)
+		 * P​o​l​i​c​y​ ​h​a​s​h​ ​(​c​h​a​n​g​e​s​ ​w​i​t​h​ ​e​v​e​r​y​ ​e​d​i​t​)
 		 */
 		hash: string
 		/**
-		 * H​a​s​h​ ​o​f​ ​t​h​e​ ​Y​A​M​L​ ​t​e​x​t​ ​u​n​t​i​l​ ​t​h​e​ ​c​i​v​-​c​o​r​e​ ​c​o​m​p​i​l​e​r​ ​i​s​ ​w​i​r​e​d​ ​i​n​.
+		 * s​h​a​2​5​6​ ​o​f​ ​t​h​e​ ​c​o​m​p​i​l​e​d​ ​p​o​l​i​c​y​.​ ​W​h​e​n​ ​y​o​u​ ​c​o​m​m​i​t​,​ ​a​ ​s​e​c​r​e​t​ ​s​a​l​t​ ​i​s​ ​a​d​d​e​d​ ​s​o​ ​n​o​b​o​d​y​ ​c​a​n​ ​g​u​e​s​s​ ​y​o​u​r​ ​r​u​l​e​s​.
 		 */
 		hashNote: string
 		checks: {
@@ -1839,6 +1843,74 @@ export type NamespacePoliciesTranslation = {
 			noWarnings: string
 		}
 		problems: {
+			/**
+			 * L​i​n​e​ ​{​l​i​n​e​}​:​ ​{​m​e​s​s​a​g​e​}
+			 * @param {number} line
+			 * @param {string} message
+			 */
+			onLine: RequiredParams<'line' | 'message'>
+			compiler: {
+				/**
+				 * A​d​d​ ​a​ ​n​a​m​e​:​ ​l​i​n​e​ ​a​t​ ​t​h​e​ ​t​o​p​.
+				 */
+				missingName: string
+				/**
+				 * T​h​e​ ​n​a​m​e​ ​i​s​ ​l​o​n​g​e​r​ ​t​h​a​n​ ​{​m​a​x​}​ ​c​h​a​r​a​c​t​e​r​s​.
+				 * @param {number} max
+				 */
+				nameTooLong: RequiredParams<'max'>
+				/**
+				 * “​{​k​e​y​}​”​ ​i​s​n​'​t​ ​a​ ​k​n​o​w​n​ ​s​e​t​t​i​n​g​.​ ​U​s​e​ ​n​a​m​e​:​,​ ​v​e​r​s​i​o​n​:​ ​o​r​ ​r​u​l​e​s​:​.
+				 * @param {string} key
+				 */
+				unknownKey: RequiredParams<'key'>
+				/**
+				 * T​h​i​s​ ​i​n​d​e​n​t​e​d​ ​l​i​n​e​ ​i​s​n​'​t​ ​u​n​d​e​r​ ​r​u​l​e​s​:​.
+				 */
+				lineOutsideRules: string
+				/**
+				 * E​x​p​e​c​t​e​d​ ​“​-​ ​i​f​:​”​ ​o​r​ ​“​d​o​:​”​ ​h​e​r​e​.
+				 */
+				unknownRuleLine: string
+				/**
+				 * T​h​i​s​ ​d​o​:​ ​h​a​s​ ​n​o​ ​“​-​ ​i​f​:​”​ ​b​e​f​o​r​e​ ​i​t​.
+				 */
+				doWithoutIf: string
+				/**
+				 * T​h​i​s​ ​r​u​l​e​ ​h​a​s​ ​a​n​ ​i​f​:​ ​b​u​t​ ​n​o​ ​d​o​:​.
+				 */
+				missingDo: string
+				/**
+				 * A​ ​r​u​l​e​ ​c​a​n​ ​j​o​i​n​ ​a​t​ ​m​o​s​t​ ​{​m​a​x​}​ ​c​o​n​d​i​t​i​o​n​s​ ​w​i​t​h​ ​a​n​d​.
+				 * @param {number} max
+				 */
+				tooManyConditions: RequiredParams<'max'>
+				/**
+				 * “​{​t​e​x​t​}​”​ ​n​e​e​d​s​ ​a​ ​c​o​m​p​a​r​i​s​o​n​ ​s​u​c​h​ ​a​s​ ​<​ ​o​r​ ​>​=​.
+				 * @param {string} text
+				 */
+				missingComparison: RequiredParams<'text'>
+				/**
+				 * “​{​w​o​r​d​}​”​ ​i​s​n​'​t​ ​a​ ​k​n​o​w​n​ ​c​o​n​d​i​t​i​o​n​.
+				 * @param {string} word
+				 */
+				unknownValue: RequiredParams<'word'>
+				/**
+				 * “​{​t​e​x​t​}​”​ ​i​s​n​'​t​ ​a​ ​w​h​o​l​e​ ​n​u​m​b​e​r​.
+				 * @param {string} text
+				 */
+				badNumber: RequiredParams<'text'>
+				/**
+				 * “​{​w​o​r​d​}​”​ ​i​s​n​'​t​ ​a​ ​k​n​o​w​n​ ​a​c​t​i​o​n​.
+				 * @param {string} word
+				 */
+				unknownAction: RequiredParams<'word'>
+				/**
+				 * W​r​o​n​g​ ​a​r​g​u​m​e​n​t​s​ ​f​o​r​ ​{​a​c​t​i​o​n​}​(​…​)​.​ ​S​e​e​ ​t​h​e​ ​r​e​f​e​r​e​n​c​e​ ​f​o​r​ ​w​h​a​t​ ​i​t​ ​t​a​k​e​s​.
+				 * @param {string} action
+				 */
+				badArguments: RequiredParams<'action'>
+			}
 			/**
 			 * A​d​d​ ​a​t​ ​l​e​a​s​t​ ​o​n​e​ ​r​u​l​e​ ​u​n​d​e​r​ ​r​u​l​e​s​:​.
 			 */
@@ -4048,19 +4120,23 @@ export type TranslationFunctions = {
 			 */
 			rulesValue: (arg: { count: number, max: number }) => LocalizedString
 			/**
-			 * YAML size
+			 * Compiled size
 			 */
 			size: () => LocalizedString
+			/**
+			 * —
+			 */
+			sizeUnknown: () => LocalizedString
 			/**
 			 * {count|integer} bytes
 			 */
 			sizeValue: (arg: { count: number }) => LocalizedString
 			/**
-			 * Hash (changes with every edit)
+			 * Policy hash (changes with every edit)
 			 */
 			hash: () => LocalizedString
 			/**
-			 * Hash of the YAML text until the civ-core compiler is wired in.
+			 * sha256 of the compiled policy. When you commit, a secret salt is added so nobody can guess your rules.
 			 */
 			hashNote: () => LocalizedString
 			checks: {
@@ -4086,6 +4162,64 @@ export type TranslationFunctions = {
 				noWarnings: () => LocalizedString
 			}
 			problems: {
+				/**
+				 * Line {line}: {message}
+				 */
+				onLine: (arg: { line: number, message: string }) => LocalizedString
+				compiler: {
+					/**
+					 * Add a name: line at the top.
+					 */
+					missingName: () => LocalizedString
+					/**
+					 * The name is longer than {max} characters.
+					 */
+					nameTooLong: (arg: { max: number }) => LocalizedString
+					/**
+					 * “{key}” isn't a known setting. Use name:, version: or rules:.
+					 */
+					unknownKey: (arg: { key: string }) => LocalizedString
+					/**
+					 * This indented line isn't under rules:.
+					 */
+					lineOutsideRules: () => LocalizedString
+					/**
+					 * Expected “- if:” or “do:” here.
+					 */
+					unknownRuleLine: () => LocalizedString
+					/**
+					 * This do: has no “- if:” before it.
+					 */
+					doWithoutIf: () => LocalizedString
+					/**
+					 * This rule has an if: but no do:.
+					 */
+					missingDo: () => LocalizedString
+					/**
+					 * A rule can join at most {max} conditions with and.
+					 */
+					tooManyConditions: (arg: { max: number }) => LocalizedString
+					/**
+					 * “{text}” needs a comparison such as < or >=.
+					 */
+					missingComparison: (arg: { text: string }) => LocalizedString
+					/**
+					 * “{word}” isn't a known condition.
+					 */
+					unknownValue: (arg: { word: string }) => LocalizedString
+					/**
+					 * “{text}” isn't a whole number.
+					 */
+					badNumber: (arg: { text: string }) => LocalizedString
+					/**
+					 * “{word}” isn't a known action.
+					 */
+					unknownAction: (arg: { word: string }) => LocalizedString
+					/**
+					 * Wrong arguments for {action}(…). See the reference for what it takes.
+					 */
+					badArguments: (arg: { action: string }) => LocalizedString
+				}
 				/**
 				 * Add at least one rule under rules:.
 				 */

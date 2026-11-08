@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { TEMPLATE_YAML } from "../data/policies";
 import { SAMPLE_DRAFTS } from "../data/policies";
-import { checkPolicy, hashPolicyText } from "./policyCheck";
+import { checkPolicy, hashBytes } from "./policyCheck";
 
 describe("checkPolicy", () => {
   it("reads every rule and its action from a template", () => {
@@ -41,10 +41,10 @@ describe("checkPolicy", () => {
   });
 });
 
-describe("hashPolicyText", () => {
-  it("gives a 64-character hex hash that changes with the text", async () => {
-    const first = await hashPolicyText("a");
-    const second = await hashPolicyText("b");
+describe("hashBytes", () => {
+  it("gives a 64-character hex hash that changes with the bytes", async () => {
+    const first = await hashBytes(new Uint8Array([1]));
+    const second = await hashBytes(new Uint8Array([2]));
 
     expect(first).toMatch(/^[0-9a-f]{64}$/);
     expect(first).not.toBe(second);

@@ -24,6 +24,32 @@ export type PolicyRule = {
   action: string | null;
 };
 
+/** The problems civ-core's compiler can report (civ-core `CompileProblem::code`). */
+export const COMPILER_PROBLEM_CODES = [
+  "missingName",
+  "nameTooLong",
+  "noRules",
+  "tooManyRules",
+  "unknownKey",
+  "lineOutsideRules",
+  "unknownRuleLine",
+  "doWithoutIf",
+  "missingDo",
+  "tooManyConditions",
+  "missingComparison",
+  "unknownValue",
+  "badNumber",
+  "unknownAction",
+  "badArguments",
+] as const;
+export type CompilerProblemCode = (typeof COMPILER_PROBLEM_CODES)[number];
+
+/** One problem from the compiler: its line (0 = the whole policy), code, and the word involved. */
+export type CompilerProblem = { line: number; code: CompilerProblemCode; detail: string };
+
+/** What compiling a draft gives: the bytes a player commits to, or every problem. */
+export type CompiledPolicy = { isValid: true; bytes: Uint8Array } | { isValid: false; problems: CompilerProblem[] };
+
 /** A problem found in a draft. `kind` picks the `policies.editor.problems.<kind>` text. */
 export type PolicyProblem =
   | { kind: "noRules" }
@@ -31,7 +57,9 @@ export type PolicyProblem =
   | { kind: "unknownCondition"; line: number; word: string }
   | { kind: "unknownAction"; line: number; word: string }
   | { kind: "tooManyRules"; count: number; max: number }
-  | { kind: "shadowed"; rule: number; line: number; alwaysRule: number };
+  | { kind: "shadowed"; rule: number; line: number; alwaysRule: number }
+  /** From civ-core's compiler (the source of truth once the WASM engine has loaded). */
+  | { kind: "compiler"; problem: CompilerProblem };
 
 /** Everything the editor shows about a draft. */
 export type PolicyCheck = {

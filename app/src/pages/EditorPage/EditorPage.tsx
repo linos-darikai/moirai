@@ -9,33 +9,13 @@ import { PolicyCodeEditor } from "../../components/organisms";
 import { Columns, PageContainer } from "../../components/templates";
 import { usePolicyCheck, usePolicyDrafts } from "../../hooks";
 import { useI18nContext } from "../../i18n";
-import type { TranslationFunctions } from "../../i18n";
 import { KNOWN_ACTIONS, KNOWN_CONDITIONS, MAX_RULES_PER_POLICY } from "../../model/policyCheck";
 import { groupHash } from "../../model/format";
 import { lobbyPath, paths } from "../../routes/paths";
 import { SAMPLE_LOBBIES } from "../../data/lobbies";
-import type { PolicyProblem } from "../../types/policy";
 import { POLICY_TEMPLATES } from "../../types/policy";
+import { isUnknownWord, problemText } from "./problemText";
 import { Check, CheckList, Chip, ChipRow, Notice, PolicyList, RuleItem, RuleList, StatGrid, TemplateRow } from "./EditorPage.styles";
-
-/** A problem as a sentence. */
-function problemText(problem: PolicyProblem, LL: TranslationFunctions): string {
-  const text = LL.policies.editor.problems;
-  switch (problem.kind) {
-    case "noRules":
-      return text.noRules();
-    case "missingDo":
-      return text.missingDo({ rule: problem.rule, line: problem.line });
-    case "unknownCondition":
-      return text.unknownCondition({ line: problem.line, word: problem.word });
-    case "unknownAction":
-      return text.unknownAction({ line: problem.line, word: problem.word });
-    case "tooManyRules":
-      return text.tooManyRules({ count: problem.count, max: problem.max });
-    case "shadowed":
-      return text.shadowed({ line: problem.line, rule: problem.rule, alwaysRule: problem.alwaysRule });
-  }
-}
 
 /** Route screen for "/editor". */
 export function EditorPage(): ReactElement {
@@ -44,7 +24,7 @@ export function EditorPage(): ReactElement {
   const report = usePolicyCheck(policies.current.yaml);
   const [view, setView] = useState<"yaml" | "rules">("yaml");
   const { check } = report;
-  const hasKnownWords = !check.errors.some((error) => error.kind === "unknownCondition" || error.kind === "unknownAction");
+  const hasKnownWords = !check.errors.some(isUnknownWord);
 
   return (
     <PageContainer width="wide" gap="md">
@@ -153,7 +133,7 @@ export function EditorPage(): ReactElement {
               <Heading level={2} size="card" id="compiled">{LL.policies.editor.compiled()}</Heading>
               <StatGrid>
                 <StatCard tone="raised" label={LL.policies.editor.rules()} value={LL.policies.editor.rulesValue({ count: check.rules.length, max: MAX_RULES_PER_POLICY })} />
-                <StatCard tone="raised" label={LL.policies.editor.size()} value={LL.policies.editor.sizeValue({ count: report.sizeBytes })} />
+                <StatCard tone="raised" label={LL.policies.editor.size()} value={report.sizeBytes === null ? LL.policies.editor.sizeUnknown() : LL.policies.editor.sizeValue({ count: report.sizeBytes })} />
               </StatGrid>
               <div>
                 <Text size="sm" tone="muted">{LL.policies.editor.hash()}</Text>
