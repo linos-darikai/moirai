@@ -8,6 +8,8 @@
 //! - `interpreter`: runs a compiled policy against the match state and returns this turn's orders.
 
 pub mod format;
+pub mod interpreter;
+pub mod targets;
 
 #[cfg(feature = "compiler")]
 pub mod compile_errors;
