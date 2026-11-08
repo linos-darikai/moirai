@@ -19,6 +19,7 @@
 //! - `growth`: turn step 3, cities grow and borders extend (and lock where they meet)
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 //! - `production`: turn step 1, resources from owned deposits and cities
+//! - `upkeep`: turn step 6, units eat food; starving civs disband units
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
 pub mod actions;
@@ -35,6 +36,7 @@ pub mod randomness;
 pub mod resources;
 pub mod rules;
 pub mod units;
+pub mod upkeep;
 
 /// The version of the game rules, taken from this crate's Cargo.toml. Shown in the app and CLI so
 /// you can tell which rules a build is running.
