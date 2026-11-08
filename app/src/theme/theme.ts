@@ -13,6 +13,7 @@ import {
   lineHeights,
   medalColors,
   metricColors,
+  motion,
   radii,
   resourceColors,
   sizes,
@@ -39,6 +40,7 @@ export const theme = {
   sizes,
   breakpoints,
   zIndices,
+  motion,
   /** Media query prefixes, used as `${theme.media.desktop} { ... }`. */
   media: {
     tablet: `@media (min-width: ${breakpoints.tablet})`,

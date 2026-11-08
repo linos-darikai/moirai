@@ -211,4 +211,14 @@ export function withAlpha(hexColor: string, alphaHex: string): string {
 }
 
 /** Alpha used to tint tiles owned by a civ (0x30 is about 19% opacity, light like a pencil wash). */
+/** Animation timing: the board's change from one turn to the next, and the "reduce motion"
+ * preference, which turns animation off for people who ask their system for less motion. */
+export const motion = {
+  /** How long land takes to change colour and an army to slide one step. */
+  turnTransition: "420ms",
+  easing: "ease-in-out",
+  /** Prefix for styles that apply when the viewer prefers less motion. */
+  reduced: "@media (prefers-reduced-motion: reduce)",
+} as const;
+
 export const OWNED_TILE_ALPHA = "30";

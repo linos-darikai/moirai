@@ -25,7 +25,9 @@ describe("MapBoard", () => {
     renderWithProviders(<MapBoard board={board} isPending={false} error={null} turn={10} civNames={civNames} />);
 
     const image = screen.getByRole("img");
-    expect(image.children).toHaveLength(256);
+    // 256 tiles, plus the unit layer (hidden from screen readers) where units slide.
+    const tiles = Array.from(image.children).filter((child) => child.getAttribute("aria-hidden") !== "true");
+    expect(tiles).toHaveLength(256);
     expect(image.getAttribute("aria-label")).toMatch(/^Map at turn 10: iron-turtle \d+ tiles/);
   });
 
