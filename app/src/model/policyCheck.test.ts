@@ -7,7 +7,7 @@ describe("checkPolicy", () => {
   it("reads every rule and its action from a template", () => {
     const check = checkPolicy(TEMPLATE_YAML.raider);
 
-    expect(check.rules).toHaveLength(3);
+    expect(check.rules).toHaveLength(5);
     expect(check.rules[1]?.action).toBe("attack(weakest_neighbor)");
     expect(check.errors).toEqual([]);
   });
@@ -26,6 +26,12 @@ describe("checkPolicy", () => {
 
     expect(check.errors).toContainEqual({ kind: "unknownCondition", line: 2, word: "mana" });
     expect(check.errors).toContainEqual({ kind: "unknownAction", line: 3, word: "cast" });
+  });
+
+  it("accepts every sample bot", () => {
+    for (const yaml of Object.values(TEMPLATE_YAML)) {
+      expect(checkPolicy(yaml).errors).toEqual([]);
+    }
   });
 
   it("asks for at least one rule", () => {

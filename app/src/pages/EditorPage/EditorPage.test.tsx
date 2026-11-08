@@ -31,6 +31,6 @@ describe("EditorPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Rules" }));
 
-    expect(screen.getByText("assign_workers(farm, 3)")).toBeInTheDocument();
+    expect(screen.getByText("assign_workers(food)")).toBeInTheDocument();
   });
 });

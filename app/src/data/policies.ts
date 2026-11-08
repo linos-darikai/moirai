@@ -2,19 +2,24 @@
 // (turtle, raider, trader, expander). Policy YAML keywords stay in English in every language:
 // they are code the program reads, like a programming language.
 
+// `?raw` makes Vite import a file's text as a string, so the templates are the exact bots civ-cli
+// and the determinism tests play (docs/decisions/0008 describes the language).
+import expanderYaml from "../../../policies/expander.yaml?raw";
+import raiderYaml from "../../../policies/raider.yaml?raw";
+import traderYaml from "../../../policies/trader.yaml?raw";
+import turtleYaml from "../../../policies/turtle.yaml?raw";
 import type { PolicyDraft, PolicyTemplate } from "../types/policy";
-
 
 const IRON_TURTLE_V3 = `name: iron-turtle
 version: 3
 rules:
-  - if: food < 40
-    do: assign_workers(farm, 3)
-  - if: turn < 10
-    do: claim_tile(nearest_deposit)
-  - if: ore >= 30 and my.guards < 4
+  - if: food < 25
+    do: assign_workers(food)
+  - if: my.workers < 5
+    do: build(worker)
+  - if: ore >= 15 and my.guards < 6
     do: build(guard)
-  - if: gold_price > 150% avg_gold_price
+  - if: gold_price > 150% base_gold_price
     do: sell(gold, 10)
   - if: my.army > 130% weakest_neighbor.army
     do: attack(weakest_neighbor)
@@ -24,41 +29,12 @@ rules:
     do: build(infantry)
 `;
 
+/** The editor's templates: the four sample bots, read straight from the repo's policies/ folder. */
 export const TEMPLATE_YAML: Record<PolicyTemplate, string> = {
-  turtle: `name: turtle
-rules:
-  - if: food < 50
-    do: assign_workers(farm, 3)
-  - if: ore >= 30
-    do: build(guard)
-  - if: always
-    do: defend
-`,
-  raider: `name: raider
-rules:
-  - if: food < 30
-    do: assign_workers(farm, 2)
-  - if: my.army > 130% weakest_neighbor.army
-    do: attack(weakest_neighbor)
-  - if: always
-    do: build(infantry)
-`,
-  trader: `name: trader
-rules:
-  - if: gold_price > 150% avg_gold_price
-    do: sell(gold, 20)
-  - if: ore_price < 80% avg_ore_price
-    do: buy(ore, 10)
-  - if: always
-    do: claim_tile(nearest_deposit)
-`,
-  expander: `name: expander
-rules:
-  - if: food < 40
-    do: assign_workers(farm, 3)
-  - if: always
-    do: claim_tile(nearest_deposit)
-`,
+  turtle: turtleYaml,
+  raider: raiderYaml,
+  trader: traderYaml,
+  expander: expanderYaml,
 };
 
 export const SAMPLE_DRAFTS: readonly PolicyDraft[] = [

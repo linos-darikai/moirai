@@ -9,19 +9,20 @@ export const MAX_RULES_PER_POLICY = 16;
 /** Only this many matching rules act each turn. */
 export const MAX_ACTIVE_RULES_PER_TURN = 3;
 
-/** Values a condition may read (PLAN.md section 3, "Conditions v1"). */
+/** Values a condition may read (docs/decisions/0008, "Conditions"; civ-core `policy::Value`). */
 export const KNOWN_CONDITIONS: readonly string[] = [
-  "food", "ore", "gold",
+  "food", "ore", "gold", "coins",
   "food_price", "ore_price", "gold_price",
-  "avg_food_price", "avg_ore_price", "avg_gold_price",
-  "my.army", "my.tiles", "my.infantry", "my.guards", "my.siege", "my.elite",
+  "base_food_price", "base_ore_price", "base_gold_price",
+  "my.army", "my.tiles", "my.cities",
+  "my.infantry", "my.guards", "my.siege", "my.elites", "my.settlers", "my.workers",
   "weakest_neighbor.army", "strongest_neighbor.army",
   "turn", "always",
 ];
 
-/** Actions a rule may take (PLAN.md section 3, "Actions v1"). */
+/** Actions a rule may take (docs/decisions/0008, "Actions"; civ-core `policy::PolicyAction`). */
 export const KNOWN_ACTIONS: readonly string[] = [
-  "claim_tile", "build", "attack", "defend", "buy", "sell", "assign_workers",
+  "build", "rush", "found_city", "claim_tile", "assign_workers", "sell", "buy", "attack",
 ];
 
 /** Words that join conditions rather than name a value. */
