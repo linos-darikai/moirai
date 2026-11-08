@@ -29,6 +29,7 @@
 //! - `production`: turn step 1, resources from owned deposits and cities
 //! - `turn`: `run_turn`, the seven steps of one turn
 //! - `upkeep`: turn step 6, units eat food; starving civs disband units
+//! - `scoring`: the four win metrics and the final standings
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
 pub mod actions;
@@ -52,6 +53,7 @@ pub mod production;
 pub mod randomness;
 pub mod resources;
 pub mod rules;
+pub mod scoring;
 pub mod turn;
 pub mod units;
 pub mod upkeep;
