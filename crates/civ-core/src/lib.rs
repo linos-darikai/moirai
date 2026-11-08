@@ -12,7 +12,9 @@
 //! - `civ`: one player's civilisation
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
+//! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 
+pub mod aggregates;
 pub mod civ;
 pub mod map;
 pub mod map_generation;
