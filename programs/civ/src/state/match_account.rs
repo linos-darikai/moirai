@@ -85,7 +85,7 @@ pub fn win_metric_from_byte(byte: u8) -> Option<WinMetric> {
     }
 }
 
-/// One match, as plain bytes (3,608 bytes after the discriminator).
+/// One match, as plain bytes (3,616 bytes after the discriminator).
 ///
 /// `#[account(zero_copy)]`: Anchor never copies this into a Rust value; instructions read and
 /// write the account's bytes in place through `AccountLoader`. Field order keeps every number on
@@ -108,6 +108,9 @@ pub struct Match {
     pub commit_deadline: i64,
     /// Unix time after which nobody can reveal; the match can start then.
     pub reveal_deadline: i64,
+    /// Unix time the map seed was last requested from the VRF oracle (0 = never). Lets
+    /// `retry_match_seed` ask again if the oracle doesn't answer.
+    pub seed_requested_at: i64,
     /// The game, a `civ_core::match_state::MatchState` byte for byte (filled at start_match).
     pub match_state: [u8; MATCH_STATE_BYTES],
     /// Each player's revealed compiled policy, padded with zeros.

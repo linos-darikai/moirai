@@ -8,6 +8,7 @@
 //!
 //! Phase 2 match lobby (docs/decisions/0009): `create_match`, `join_match`, `cancel_match`,
 //! `commit_policy`, `reveal_policy`, `start_match` (asks the VRF oracle for the map seed),
+//! `retry_match_seed` (asks again if the oracle hasn't answered in time),
 //! `fulfill_match_seed` (the oracle's callback; builds turn 0) and `start_match_local_test`
 //! (local validator only).
 //!
@@ -118,6 +119,11 @@ pub mod civ {
     /// Ask the VRF oracle for the map seed of a full, revealed lobby. Send to the base layer.
     pub fn start_match(context: Context<StartMatch>) -> Result<()> {
         handle_start_match(context)
+    }
+
+    /// Ask the VRF oracle for the map seed again if it hasn't answered in time. Base layer.
+    pub fn retry_match_seed(context: Context<StartMatch>) -> Result<()> {
+        handle_retry_match_seed(context)
     }
 
     /// VRF oracle callback: builds turn 0 of the game from the seed. Only the VRF program can call it.

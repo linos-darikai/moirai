@@ -71,4 +71,6 @@ pub enum ErrorCode {
     MisalignedMatchState,
     #[msg("start_match_local_test only works in a build with the local-testing feature")]
     LocalTestingDisabled,
+    #[msg("The oracle may still deliver the seed: retry once the request has timed out")]
+    SeedRequestNotTimedOut,
 }

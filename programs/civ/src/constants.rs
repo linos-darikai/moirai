@@ -40,3 +40,7 @@ pub const POLICY_SLOT_BYTES: usize = 499;
 // Compile-time checks: these literals must match civ-core, or the build fails here.
 const _: () = assert!(MATCH_STATE_BYTES == core::mem::size_of::<MatchState>());
 const _: () = assert!(POLICY_SLOT_BYTES == MAX_POLICY_BYTES);
+
+/// If the VRF oracle hasn't delivered the map seed this many seconds after it was asked (it
+/// normally takes about 1.3 s, docs/decisions/0003), anyone may ask again with `retry_match_seed`.
+pub const SEED_REQUEST_TIMEOUT_SECONDS: i64 = 120;

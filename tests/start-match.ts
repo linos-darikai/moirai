@@ -1,5 +1,7 @@
-// Integration tests for starting a match (Phase 2). On the local validator there is no VRF oracle,
-// so these use `start_match_local_test`, which runs the same checks as `start_match` and the same
+// Integration tests for starting a match (Phase 2). On the local validator there is no VRF oracle
+// (or VRF program), so start_match and retry_match_seed can't run here; their rules are covered by
+// Rust unit tests in programs/civ/src/game_start.rs. Instead
+// these use `start_match_local_test`, which runs the same checks as `start_match` and the same
 // `start_game` as the oracle's callback. Needs the program built with the local-testing feature:
 // `NO_DNA=1 anchor build -- --features local-testing`, then `anchor test --skip-build`.
 
@@ -20,7 +22,7 @@ import {
 
 /** MatchStatus bytes (programs/civ/src/state/match_account.rs). */
 const RUNNING = 1;
-/** Where the game bytes start in the fetched Match (after the fields before `match_state`). */
+/** The map seed the local tests start matches with. */
 const SEED = Array.from({ length: 32 }, () => 42);
 
 const turtle = compiledBot("turtle");
