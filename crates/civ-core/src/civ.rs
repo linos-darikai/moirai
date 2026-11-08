@@ -34,6 +34,23 @@ impl CivId {
     }
 }
 
+/// The order civs act in on `turn`, for anything resolved one civ at a time (growth into the
+/// same tile, actions). It starts at civ `turn % civ_count` and wraps around, so no civ always
+/// goes first. See CLAUDE.md section 6, "rotate tie-break order each turn".
+///
+/// Only the first `civ_count` entries are meaningful; read it with `.iter().take(civ_count)`.
+pub fn rotating_civ_order(turn: u16, civ_count: usize) -> [usize; MAX_CIVS] {
+    let mut order = [0; MAX_CIVS];
+    if civ_count == 0 {
+        return order;
+    }
+    let first = usize::from(turn) % civ_count;
+    for (step, slot) in order.iter_mut().enumerate().take(civ_count) {
+        *slot = (first + step) % civ_count;
+    }
+    order
+}
+
 /// One civ's state, as 112 plain bytes.
 ///
 /// Field order matters for `#[repr(C)]`: 2 single bytes + 12 bytes of unit counts + 2 more single
@@ -217,6 +234,17 @@ mod tests {
         let total = civ.total_city_size();
 
         assert_eq!(total, 2 + 1);
+    }
+
+    #[test]
+    fn the_first_civ_to_act_rotates_every_turn() {
+        let turn_0: Vec<usize> = rotating_civ_order(0, 3).into_iter().take(3).collect();
+        let turn_1: Vec<usize> = rotating_civ_order(1, 3).into_iter().take(3).collect();
+        let turn_5: Vec<usize> = rotating_civ_order(5, 3).into_iter().take(3).collect();
+
+        assert_eq!(turn_0, vec![0, 1, 2]);
+        assert_eq!(turn_1, vec![1, 2, 0]);
+        assert_eq!(turn_5, vec![2, 0, 1]);
     }
 
     #[test]

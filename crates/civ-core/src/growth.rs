@@ -10,24 +10,21 @@ use crate::borders::{
     claim_unowned_tiles_within, count_owned_deposits_within, count_unowned_tiles_within,
 };
 use crate::city::City;
-use crate::civ::{Civ, CivId};
+use crate::civ::{rotating_civ_order, Civ, CivId};
 use crate::map::Map;
 use crate::rules::{border_radius, growth_threshold, BASE_GROWTH_PER_TURN};
 
 /// Grows every city of every living civ by one turn, changing `map` and `civs` in place.
 ///
 /// Fairness: when two civs' growing borders reach the same free tile on the same turn, the civ
-/// that grows first gets it. Who goes first rotates every turn (`turn % civ count`), so no civ
-/// always wins those ties. See CLAUDE.md section 6, "rotate tie-break order each turn".
+/// that grows first gets it. Who goes first rotates every turn (`rotating_civ_order`), so no civ
+/// always wins those ties.
 pub fn grow_cities(map: &mut Map, civs: &mut [Civ], turn: u16) {
     let civ_count = civs.len();
-    if civ_count == 0 {
-        return;
-    }
-    let first_civ = usize::from(turn) % civ_count;
-
-    for step in 0..civ_count {
-        let index = (first_civ + step) % civ_count;
+    for index in rotating_civ_order(turn, civ_count)
+        .into_iter()
+        .take(civ_count)
+    {
         // `get_mut` returns None instead of crashing if the index were out of range.
         let Some(civ) = civs.get_mut(index) else {
             continue;

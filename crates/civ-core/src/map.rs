@@ -249,8 +249,10 @@ impl Map {
     }
 }
 
-const FNV_OFFSET_BASIS: u64 = 0xcbf2_9ce4_8422_2325;
-const FNV_PRIME: u64 = 0x0000_0100_0000_01b3;
+/// FNV-1a starting value. `pub(crate)` so MatchState can hash with the same function.
+pub(crate) const FNV_OFFSET_BASIS: u64 = 0xcbf2_9ce4_8422_2325;
+/// FNV-1a multiplier.
+pub(crate) const FNV_PRIME: u64 = 0x0000_0100_0000_01b3;
 
 /// The three bytes a tile contributes to the fingerprint: owner (255 = none), deposit (0 = none,
 /// 1 = Food, 2 = Ore, 3 = Gold) and marks (bit 0 = city, bit 1 = city site).
