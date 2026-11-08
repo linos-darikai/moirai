@@ -22,11 +22,11 @@ pub mod civ {
 
     /// Create the caller's Counter (hello-world).
     pub fn initialize(context: Context<Initialize>) -> Result<()> {
-        initialize::handler(context)
+        handle_initialize(context)
     }
 
     /// Add one to the caller's Counter (hello-world).
     pub fn increment(context: Context<Increment>) -> Result<()> {
-        increment::handler(context)
+        handle_increment(context)
     }
 }

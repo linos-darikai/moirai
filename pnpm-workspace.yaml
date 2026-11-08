@@ -1,0 +1,20 @@
+# JavaScript packages in this repo. One pnpm-lock.yaml at the root covers them all.
+packages:
+  - app
+  - scripts/*
+  - tests
+
+# Dependency install scripts are blocked unless listed here (pnpm default).
+# bufferutil / utf-8-validate are optional native speed-ups for the `ws` WebSocket library used by
+# @solana/web3.js; it falls back to plain JavaScript, so we don't let them compile native code.
+allowBuilds:
+  bufferutil: false
+  utf-8-validate: false
+
+# ts-mocha 10 bundles ts-node 7, which doesn't declare its `typescript` dependency, so it picked up
+# the app's TypeScript 7 (the native compiler, which has no JS API) and crashed. Declaring the peer
+# makes pnpm give it the tests package's TypeScript 5.
+packageExtensions:
+  ts-node@7:
+    peerDependencies:
+      typescript: "*"

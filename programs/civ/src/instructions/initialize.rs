@@ -35,7 +35,7 @@ pub struct Initialize<'info> {
 ///
 /// Checks: the counter doesn't exist yet (enforced by `init`), authority signed.
 /// Effects: creates the Counter, stores the authority, a count of 0 and the bump.
-pub fn handler(context: Context<Initialize>) -> Result<()> {
+pub fn handle_initialize(context: Context<Initialize>) -> Result<()> {
     // `&mut` borrows the account so we can change it in place instead of copying it.
     let counter: &mut Account<Counter> = &mut context.accounts.counter;
 

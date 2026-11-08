@@ -21,7 +21,9 @@ custom-panic = []
 
 
 [dependencies]
-anchor-lang = "1.0.2"
+# "=" pins exactly 1.0.2. A plain "1.0.2" means "1.0.2 or newer 1.x", which resolved to 1.2.2.
+# Must match the Anchor CLI and @anchor-lang/core. See docs/decisions/0001-toolchain.md.
+anchor-lang = "=1.0.2"
 
 
 [lints.rust]

@@ -26,3 +26,5 @@ id.json
 
 # OS / editor
 .DS_Store
+.claude/*
+

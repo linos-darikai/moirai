@@ -1,0 +1,210 @@
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/civ.json`.
+ */
+export type Civ = {
+  "address": "GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc",
+  "metadata": {
+    "name": "civ",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "docs": [
+    "`#[program]` marks this module as the list of instructions the program accepts."
+  ],
+  "instructions": [
+    {
+      "name": "increment",
+      "docs": [
+        "Add one to the caller's Counter (hello-world)."
+      ],
+      "discriminator": [
+        11,
+        18,
+        104,
+        9,
+        104,
+        174,
+        59,
+        33
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "docs": [
+            "The wallet that owns the counter."
+          ],
+          "signer": true,
+          "relations": [
+            "counter"
+          ]
+        },
+        {
+          "name": "counter",
+          "docs": [
+            "The caller's Counter. `seeds` + `bump = counter.bump` re-derive the PDA with the stored bump,",
+            "and `has_one = authority` checks `counter.authority == authority`, so nobody else's wallet",
+            "can change it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Create the caller's Counter (hello-world)."
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "docs": [
+            "The wallet creating the counter. It signs the transaction and pays the rent."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "counter",
+          "docs": [
+            "The new Counter. Its address is a PDA derived from `[\"counter\", authority]`, so each wallet",
+            "has exactly one and anyone can find it. `init` fails if it already exists."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "docs": [
+            "Needed because creating an account is done by the built-in System Program."
+          ],
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "counter",
+      "discriminator": [
+        255,
+        176,
+        4,
+        245,
+        188,
+        253,
+        124,
+        25
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "counterOverflow",
+      "msg": "The counter cannot go any higher"
+    }
+  ],
+  "types": [
+    {
+      "name": "counter",
+      "docs": [
+        "A tiny account that stores who owns it and a number they can increase.",
+        "",
+        "`#[account]` tells Anchor this struct is stored on chain (it handles saving and loading).",
+        "`#[derive(InitSpace)]` makes Anchor work out how many bytes the struct needs (`Counter::INIT_SPACE`)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "The wallet that created this counter and is allowed to increase it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "count",
+            "docs": [
+              "How many times `increment` has been called. Starts at 0."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "The PDA bump, stored so later instructions reuse it instead of searching again."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "counterSeed",
+      "docs": [
+        "Seed for the Phase 0 hello-world Counter PDA: `[\"counter\", authority]`.",
+        "`#[constant]` also exports the value into the IDL, so the app can read the same seed."
+      ],
+      "type": "bytes",
+      "value": "[99, 111, 117, 110, 116, 101, 114]"
+    }
+  ]
+};

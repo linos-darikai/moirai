@@ -29,7 +29,7 @@ pub struct Increment<'info> {
 ///
 /// Checks: authority signed and owns the counter (account constraints), count doesn't overflow.
 /// Effects: `count` goes up by one.
-pub fn handler(context: Context<Increment>) -> Result<()> {
+pub fn handle_increment(context: Context<Increment>) -> Result<()> {
     let counter: &mut Account<Counter> = &mut context.accounts.counter;
 
     // `checked_add` returns `None` instead of wrapping around if the number would overflow.
