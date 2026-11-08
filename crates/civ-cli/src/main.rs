@@ -6,6 +6,8 @@
 //!   standings under all four win metrics. With no YAML files it plays the four sample bots from
 //!   `policies/`.
 //! - `cargo run -p civ-cli -- map [seed-byte] [civ-count]`: prints the starting map only.
+//! - `cargo run -p civ-cli -- compile bot.yaml`: prints the compiled policy bytes as hex (what a
+//!   player commits to and reveals), or every problem with its line.
 //!
 //! The seed byte fills all 32 seed bytes (default 42); real matches get their seed from the VRF
 //! oracle. The game rules all live in civ-core; this file only reads arguments and prints.
@@ -34,13 +36,13 @@ const SAMPLE_BOTS: [(&str, &str); 4] = [
 
 /// Entry point, like `main()` in a Node script.
 fn main() {
-    println!("{}", civ_core::describe_engine());
     let arguments: Vec<String> = std::env::args().skip(1).collect();
 
     let result = match arguments.first().map(String::as_str) {
         Some("map") => print_starting_map(&arguments[1..]),
         Some("play") => play_match(&arguments[1..]),
-        _ => Err("usage: civ play [seed-byte] [--quiet] [bot.yaml ...] | civ map [seed-byte] [civ-count]".to_string()),
+        Some("compile") => compile_file(&arguments[1..]),
+        _ => Err("usage: civ play [seed-byte] [--quiet] [bot.yaml ...] | civ map [seed-byte] [civ-count] | civ compile bot.yaml".to_string()),
     };
     // `if let Err(message)` runs only when something went wrong.
     if let Err(message) = result {
@@ -49,8 +51,26 @@ fn main() {
     }
 }
 
+/// `compile bot.yaml`: the compiled bytes as one line of hex.
+fn compile_file(arguments: &[String]) -> Result<(), String> {
+    let file = arguments.first().ok_or("usage: civ compile bot.yaml")?;
+    let yaml = std::fs::read_to_string(file).map_err(|error| format!("{file}: {error}"))?;
+    let policy = compile_policy(&yaml).map_err(|errors| {
+        let lines: Vec<String> = errors.iter().map(ToString::to_string).collect();
+        format!("{file} has problems:\n  {}", lines.join("\n  "))
+    })?;
+    let hex: Vec<String> = policy
+        .bytes
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    println!("{}", hex.join(""));
+    Ok(())
+}
+
 /// `map [seed-byte] [civ-count]`: the starting map for a seed.
 fn print_starting_map(arguments: &[String]) -> Result<(), String> {
+    println!("{}", civ_core::describe_engine());
     let seed_byte: u8 = parse_argument(arguments, 0).unwrap_or(42);
     let civ_count: u8 = parse_argument(arguments, 1).unwrap_or(4);
     let map = generate_map(&seed_from(seed_byte), civ_count)
@@ -66,6 +86,7 @@ fn print_starting_map(arguments: &[String]) -> Result<(), String> {
 
 /// `play [seed-byte] [--quiet] [bot.yaml ...]`: a whole match, turn by turn.
 fn play_match(arguments: &[String]) -> Result<(), String> {
+    println!("{}", civ_core::describe_engine());
     // Step 1: read the arguments.
     let seed_byte: u8 = parse_argument(arguments, 0).unwrap_or(42);
     let is_quiet = arguments.iter().any(|argument| argument == "--quiet");
