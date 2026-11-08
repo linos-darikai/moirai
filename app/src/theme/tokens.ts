@@ -55,6 +55,20 @@ export const resourceColors = {
 /** One colour per civ, by join order (civ 0..3). */
 export const civColors = ["#34D1BF", "#FF9F43", "#B794FF", "#FF7EB6"] as const;
 
+/** Player avatar colours on the leaderboard (the 4 civ colours first, then 6 more). */
+export const avatarColors = [
+  "#34D1BF",
+  "#FF9F43",
+  "#B794FF",
+  "#FF7EB6",
+  "#F2C14E",
+  "#5AA9FF",
+  "#7BE3AE",
+  "#FF7A66",
+  "#C7B0FF",
+  "#9BD1FF",
+] as const;
+
 /** Colour of each win metric's badge. */
 export const metricColors = {
   territory: "#34D1BF",

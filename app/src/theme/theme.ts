@@ -2,6 +2,7 @@
 // `props.theme` (typed in styled.d.ts), which is this object.
 
 import {
+  avatarColors,
   breakpoints,
   civColors,
   colors,
@@ -23,6 +24,7 @@ export const theme = {
   colors,
   resourceColors,
   civColors,
+  avatarColors,
   metricColors,
   syntaxColors,
   medalColors,

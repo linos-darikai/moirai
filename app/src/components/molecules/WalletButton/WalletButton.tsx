@@ -1,11 +1,51 @@
-// The connect / disconnect wallet button. Wraps the wallet adapter's ready-made button so the rest
-// of the app imports our component, not the library. It only opens the wallet modal; it makes no
-// RPC calls, so it stays within the "components never talk to Solana" rule.
+// WalletButton molecule: "Connect wallet" when disconnected; when connected, a pill with an
+// avatar, the short address and the SOL balance, linking to the player's profile.
 
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import type { ReactElement } from "react";
+import { Swatch } from "../../atoms";
+import { Address, Balance, ConnectButton, Details, ProfilePill } from "./WalletButton.styles";
 
-/** Shows "Select Wallet" when disconnected, or the connected address with a disconnect menu. */
-export function WalletButton(): ReactElement {
-  return <WalletMultiButton />;
+type WalletButtonProps = {
+  /** Short wallet address, or null when no wallet is connected. */
+  address: string | null;
+  /** Formatted balance ("4.82 SOL"), or a placeholder while it loads. */
+  balanceText: string;
+  /** Two letters for the avatar. */
+  initials: string;
+  /** Where the connected pill links to (the player's profile). */
+  profilePath: string;
+  connectLabel: string;
+  /** Accessible name of the connected pill, e.g. "Your profile, wallet 7xKq…3fPa, 4.82 SOL". */
+  profileLabel: string;
+  onConnect: () => void;
+};
+
+/** Connect button or connected-wallet pill. */
+export function WalletButton({
+  address,
+  balanceText,
+  initials,
+  profilePath,
+  connectLabel,
+  profileLabel,
+  onConnect,
+}: WalletButtonProps): ReactElement {
+  if (address === null) {
+    return (
+      <ConnectButton type="button" onClick={onConnect}>
+        {connectLabel}
+      </ConnectButton>
+    );
+  }
+  return (
+    <ProfilePill to={profilePath} aria-label={profileLabel}>
+      <Swatch color={{ civ: 0 }} size="avatar" shape="round">
+        {initials}
+      </Swatch>
+      <Details>
+        <Address>{address}</Address>
+        <Balance>{balanceText}</Balance>
+      </Details>
+    </ProfilePill>
+  );
 }

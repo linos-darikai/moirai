@@ -1,21 +1,33 @@
-import { WalletProvider } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { renderWithProviders } from "../../../test/renderWithProviders";
 import { WalletButton } from "./WalletButton";
 
+const baseProps = {
+  balanceText: "4.82 SOL",
+  initials: "7X",
+  profilePath: "/profile/abc",
+  connectLabel: "Connect wallet",
+  profileLabel: "Your profile, wallet 7xKq…3fPa, 4.82 SOL",
+};
+
 describe("WalletButton", () => {
-  it("asks the player to select a wallet when none is connected", () => {
-    render(
-      <WalletProvider wallets={[]}>
-        <WalletModalProvider>
-          <WalletButton />
-        </WalletModalProvider>
-      </WalletProvider>,
-    );
+  it("asks to connect when no wallet is connected", async () => {
+    const onConnect = vi.fn();
+    renderWithProviders(<WalletButton {...baseProps} address={null} onConnect={onConnect} />);
 
-    const button = screen.getByRole("button", { name: /select wallet/i });
+    await userEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
 
-    expect(button).toBeInTheDocument();
+    expect(onConnect).toHaveBeenCalledOnce();
+  });
+
+  it("links to the profile with address and balance once connected", () => {
+    renderWithProviders(<WalletButton {...baseProps} address="7xKq…3fPa" onConnect={vi.fn()} />);
+
+    const link = screen.getByRole("link", { name: baseProps.profileLabel });
+
+    expect(link).toHaveAttribute("href", "/profile/abc");
+    expect(link).toHaveTextContent("4.82 SOL");
   });
 });
