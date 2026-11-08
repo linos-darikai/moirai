@@ -20,7 +20,7 @@ export const HeaderCell = styled.th<{ $isEnd: boolean }>`
 `;
 
 export const Row = styled.tr<{ $isHighlighted: boolean }>`
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   background: ${({ theme, $isHighlighted }) => ($isHighlighted ? theme.colors.surfaceRaised : "transparent")};
 `;
 

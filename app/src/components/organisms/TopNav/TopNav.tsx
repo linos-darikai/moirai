@@ -2,35 +2,19 @@
 // Shown on every page (by the app layout route). On phones the links move to MobileNav.
 
 import type { ReactElement } from "react";
-import { useLanguage, useOpenWalletPicker, useWalletBalance, useWalletStatus } from "../../../hooks";
+import { useLanguage, useWalletButton } from "../../../hooks";
 import { LANGUAGE_INFO, SUPPORTED_LANGUAGES, useI18nContext } from "../../../i18n";
 import type { Locales } from "../../../i18n";
-import { initialsFor, shortenAddress } from "../../../model/format";
-import { SAMPLE_LIVE_MATCH_ID, matchPath, paths, profilePath } from "../../../routes/paths";
+import { SAMPLE_LIVE_MATCH_ID, matchPath, paths } from "../../../routes/paths";
+import { LogoMark } from "../../atoms";
 import { LanguagePicker, WalletButton } from "../../molecules";
 import { Actions, Bar, Brand, BrandName, NetworkBadge, NavItem, NavLinks } from "./TopNav.styles";
-
-/** The logo mark: three threads (the three Fates) in the resource colours. */
-function MoiraiMark(): ReactElement {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <path d="M3 8c4-4 8 4 11 0s7-4 11 0" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="thread-food" />
-      <path d="M3 14c4-4 8 4 11 0s7-4 11 0" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="thread-gold" />
-      <path d="M3 20c4-4 8 4 11 0s7-4 11 0" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="thread-ore" />
-    </svg>
-  );
-}
 
 /** The app's top bar. */
 export function TopNav(): ReactElement {
   const { LL } = useI18nContext();
   const { language, setLanguage } = useLanguage();
-  const wallet = useWalletStatus();
-  const balance = useWalletBalance();
-  const openWalletPicker = useOpenWalletPicker();
-
-  const shortAddress = wallet.address === null ? null : shortenAddress(wallet.address);
-  const balanceText = balance.data === undefined ? LL.wallet.balanceLoading() : LL.sol({ amount: balance.data });
+  const walletButton = useWalletButton();
   const languageOptions = SUPPORTED_LANGUAGES.map((code) => ({
     value: code,
     label: LANGUAGE_INFO[code].isDraft
@@ -41,7 +25,7 @@ export function TopNav(): ReactElement {
   return (
     <Bar>
       <Brand to={paths.home} aria-label={LL.nav.homeLink()}>
-        <MoiraiMark />
+        <LogoMark size="small" />
         <BrandName>{LL.appName()}</BrandName>
       </Brand>
       <NavLinks aria-label={LL.nav.main()}>
@@ -62,15 +46,7 @@ export function TopNav(): ReactElement {
           options={languageOptions}
           onChange={(value) => setLanguage(value as Locales)}
         />
-        <WalletButton
-          address={shortAddress}
-          balanceText={balanceText}
-          initials={initialsFor(wallet.address ?? "")}
-          profilePath={profilePath(wallet.address ?? "")}
-          connectLabel={LL.wallet.connect()}
-          profileLabel={LL.wallet.connected({ address: shortAddress ?? "", balance: balanceText })}
-          onConnect={openWalletPicker}
-        />
+        <WalletButton {...walletButton} />
       </Actions>
     </Bar>
   );

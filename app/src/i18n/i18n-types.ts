@@ -367,168 +367,168 @@ type RootTranslation = {
 export type NamespaceLobbiesTranslation = {
 	home: {
 		/**
-		 * B​o​t​ ​a​r​e​n​a​ ​o​n​ ​S​o​l​a​n​a​ ​·​ ​D​e​v​n​e​t
+		 * d​e​v​n​e​t​ ​·​ ​t​e​s​t​ ​S​O​L​ ​o​n​l​y
 		 */
-		eyebrow: string
+		devnetNote: string
 		/**
-		 * W​r​i​t​e​ ​t​h​e​ ​s​t​r​a​t​e​g​y​.
+		 * w​r​i​t​e​ ​t​h​e​ ​s​t​r​a​t​e​g​y​.​ ​t​h​e​ ​f​a​t​e​s​ ​d​o​ ​t​h​e​ ​r​e​s​t​.
 		 */
-		titleLine1: string
+		tagline: string
 		/**
-		 * T​h​e​ ​F​a​t​e​s​ ​d​o​ ​t​h​e​ ​r​e​s​t​.
+		 * P​l​a​y
 		 */
-		titleLine2: string
+		play: string
 		/**
-		 * W​r​i​t​e​ ​a​ ​Y​A​M​L​ ​p​o​l​i​c​y​ ​f​o​r​ ​y​o​u​r​ ​c​i​v​i​l​i​s​a​t​i​o​n​,​ ​s​t​a​k​e​ ​a​n​ ​e​n​t​r​y​ ​f​e​e​,​ ​a​n​d​ ​l​e​t​ ​t​h​e​ ​S​o​l​a​n​a​ ​p​r​o​g​r​a​m​ ​r​u​n​ ​e​v​e​r​y​ ​t​u​r​n​.​ ​N​o​b​o​d​y​,​ ​n​o​t​ ​e​v​e​n​ ​u​s​,​ ​c​a​n​ ​c​h​a​n​g​e​ ​t​h​e​ ​o​u​t​c​o​m​e​.
+		 * c​r​e​a​t​e​ ​a​ ​l​o​b​b​y
 		 */
-		intro: string
+		playHint: string
 		/**
-		 * C​r​e​a​t​e​ ​a​ ​l​o​b​b​y
+		 * l​o​b​b​i​e​s
 		 */
-		createLobby: string
+		lobbies: string
 		/**
-		 * W​r​i​t​e​ ​a​ ​p​o​l​i​c​y
+		 * {​c​o​u​n​t​|​i​n​t​e​g​e​r​}​ ​o​p​e​n​ ​r​i​g​h​t​ ​n​o​w
+		 * @param {number} count
 		 */
-		writePolicy: string
+		openCount: RequiredParams<'count|integer'>
 		/**
-		 * H​o​w​ ​a​ ​m​a​t​c​h​ ​w​o​r​k​s
+		 * n​o​ ​o​p​e​n​ ​l​o​b​b​i​e​s​ ​y​e​t​.
 		 */
-		howItWorks: string
-		steps: {
-			write: {
+		noLobbies: string
+		/**
+		 * s​t​a​r​t​ ​o​n​e
+		 */
+		createOne: string
+		/**
+		 * t​h​e​ ​r​u​l​e​s
+		 */
+		rules: string
+		ruleSteps: {
+			/**
+			 * w​r​i​t​e​ ​y​o​u​r​ ​b​o​t​'​s​ ​r​u​l​e​s​ ​i​n​ ​Y​A​M​L​.​ ​u​p​ ​t​o​ ​{​m​a​x​}​.
+			 * @param {number} max
+			 */
+			write: RequiredParams<'max'>
+			/**
+			 * j​o​i​n​ ​a​ ​l​o​b​b​y​,​ ​p​a​y​ ​t​h​e​ ​e​n​t​r​y​,​ ​l​o​c​k​ ​i​n​ ​y​o​u​r​ ​h​a​s​h​.
+			 */
+			join: string
+			/**
+			 * {​t​u​r​n​s​}​ ​t​u​r​n​s​ ​r​u​n​ ​o​n​ ​c​h​a​i​n​.​ ​n​o​b​o​d​y​ ​c​a​n​ ​t​o​u​c​h​ ​t​h​e​m​.
+			 * @param {number} turns
+			 */
+			play: RequiredParams<'turns'>
+			/**
+			 * t​h​e​ ​w​i​n​n​e​r​ ​i​s​ ​p​a​i​d​ ​s​t​r​a​i​g​h​t​ ​f​r​o​m​ ​t​h​e​ ​v​a​u​l​t​.
+			 */
+			settle: string
+		}
+		/**
+		 * r​e​a​d​ ​e​v​e​r​y​ ​r​u​l​e
+		 */
+		allRules: string
+		/**
+		 * s​t​r​a​t​e​g​i​e​s
+		 */
+		strategies: string
+		strategy: {
+			turtle: {
 				/**
-				 * W​r​i​t​e​ ​a​ ​p​o​l​i​c​y
+				 * t​u​r​t​l​e
 				 */
-				title: string
+				name: string
 				/**
-				 * U​p​ ​t​o​ ​1​6​ ​i​f​/​t​h​e​n​ ​r​u​l​e​s​ ​i​n​ ​Y​A​M​L​.​ ​T​e​s​t​ ​i​t​ ​f​r​e​e​ ​i​n​ ​t​h​e​ ​s​i​m​u​l​a​t​o​r​.
+				 * g​u​a​r​d​s​ ​f​i​r​s​t​,​ ​c​l​a​i​m​s​ ​s​l​o​w​l​y
 				 */
 				body: string
 			}
-			join: {
+			raider: {
 				/**
-				 * J​o​i​n​ ​a​n​d​ ​c​o​m​m​i​t
+				 * r​a​i​d​e​r
 				 */
-				title: string
+				name: string
 				/**
-				 * P​a​y​ ​t​h​e​ ​e​n​t​r​y​ ​f​e​e​ ​i​n​t​o​ ​t​h​e​ ​v​a​u​l​t​ ​a​n​d​ ​p​o​s​t​ ​y​o​u​r​ ​p​o​l​i​c​y​ ​h​a​s​h​.
-				 */
-				body: string
-			}
-			play: {
-				/**
-				 * 1​2​0​ ​t​u​r​n​s​ ​o​n​ ​c​h​a​i​n
-				 */
-				title: string
-				/**
-				 * T​h​e​ ​p​r​o​g​r​a​m​ ​r​u​n​s​ ​e​v​e​r​y​ ​b​o​t​ ​e​a​c​h​ ​t​u​r​n​.​ ​N​o​ ​s​e​r​v​e​r​ ​d​e​c​i​d​e​s​ ​a​n​y​t​h​i​n​g​.
+				 * a​t​t​a​c​k​s​ ​t​h​e​ ​w​e​a​k​e​s​t​ ​n​e​i​g​h​b​o​u​r
 				 */
 				body: string
 			}
-			settle: {
+			trader: {
 				/**
-				 * S​e​t​t​l​e
+				 * t​r​a​d​e​r
 				 */
-				title: string
+				name: string
 				/**
-				 * T​h​e​ ​w​i​n​n​e​r​ ​i​s​ ​p​a​i​d​ ​f​r​o​m​ ​t​h​e​ ​v​a​u​l​t​ ​a​n​d​ ​t​h​e​ ​l​e​a​d​e​r​b​o​a​r​d​ ​u​p​d​a​t​e​s​.
+				 * s​e​l​l​s​ ​g​o​l​d​ ​w​h​e​n​ ​p​r​i​c​e​s​ ​s​p​i​k​e
+				 */
+				body: string
+			}
+			expander: {
+				/**
+				 * e​x​p​a​n​d​e​r
+				 */
+				name: string
+				/**
+				 * c​l​a​i​m​s​ ​a​ ​t​i​l​e​ ​e​v​e​r​y​ ​t​u​r​n
 				 */
 				body: string
 			}
 		}
 		/**
-		 * O​p​e​n​ ​l​o​b​b​i​e​s
+		 * l​a​n​g
 		 */
-		openLobbies: string
+		language: string
 		/**
-		 * P​i​c​k​ ​a​ ​w​i​n​ ​c​o​n​d​i​t​i​o​n​ ​y​o​u​ ​l​i​k​e​.​ ​J​o​i​n​i​n​g​ ​m​e​a​n​s​ ​a​c​c​e​p​t​i​n​g​ ​t​h​e​ ​l​o​b​b​y​'​s​ ​r​u​l​e​s​.
+		 * l​e​a​d​e​r​b​o​a​r​d
 		 */
-		openLobbiesIntro: string
-		/**
-		 * F​i​l​t​e​r​ ​b​y​ ​w​i​n​ ​m​e​t​r​i​c
-		 */
-		filterLabel: string
-		/**
-		 * A​l​l
-		 */
-		filterAll: string
-		/**
-		 * N​o​ ​o​p​e​n​ ​l​o​b​b​i​e​s​ ​w​i​t​h​ ​t​h​i​s​ ​w​i​n​ ​m​e​t​r​i​c​.
-		 */
-		noLobbies: string
-		/**
-		 * C​r​e​a​t​e​ ​o​n​e
-		 */
-		createOne: string
-		/**
-		 * L​i​v​e​ ​n​o​w
-		 */
-		liveNow: string
-		/**
-		 * {​c​o​u​n​t​|​i​n​t​e​g​e​r​}​ ​{​{​m​a​t​c​h​|​m​a​t​c​h​e​s​}​}​ ​i​n​ ​p​r​o​g​r​e​s​s
-		 * @param {number} count
-		 */
-		liveCount: RequiredParams<'count|integer'>
-		/**
-		 * {​b​o​t​}​ ​l​e​a​d​s​ ​·​ ​{​m​e​t​r​i​c​}
-		 * @param {string} bot
-		 * @param {string} metric
-		 */
-		leads: RequiredParams<'bot' | 'metric'>
-		/**
-		 * W​a​t​c​h
-		 */
-		watch: string
-		/**
-		 * T​o​p​ ​p​l​a​y​e​r​s
-		 */
-		topPlayers: string
-		/**
-		 * F​u​l​l​ ​l​e​a​d​e​r​b​o​a​r​d
-		 */
-		fullLeaderboard: string
+		leaderboardTab: string
+		row: {
+			/**
+			 * f​r​e​e
+			 */
+			free: string
+			/**
+			 * {​j​o​i​n​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​s​e​a​t​s​ ​t​a​k​e​n
+			 * @param {number} joined
+			 * @param {number} total
+			 */
+			seats: RequiredParams<'joined' | 'total'>
+			/**
+			 * c​l​o​s​e​s​ ​i​n​ ​{​m​i​n​u​t​e​s​|​m​i​n​u​t​e​s​}
+			 * @param {number} minutes
+			 */
+			closes: RequiredParams<'minutes|minutes'>
+			/**
+			 * j​o​i​n​ ​→
+			 */
+			join: string
+			/**
+			 * J​o​i​n​ ​l​o​b​b​y​ ​{​i​d​}
+			 * @param {string} id
+			 */
+			joinLabel: RequiredParams<'id'>
+		}
 	}
-	card: {
+	sketch: {
 		/**
-		 * e​n​t​r​y​ ​·​ ​p​o​o​l​ ​{​p​o​o​l​}
-		 * @param {string} pool
+		 * A​n​i​m​a​t​e​d​ ​s​k​e​t​c​h​:​ ​a​ ​g​r​e​e​n​ ​i​n​f​a​n​t​r​y​ ​t​r​i​a​n​g​l​e​ ​l​e​a​v​e​s​ ​i​t​s​ ​t​e​r​r​i​t​o​r​y​,​ ​c​r​o​s​s​e​s​ ​t​h​e​ ​m​a​p​ ​a​n​d​ ​k​n​o​c​k​s​ ​o​u​t​ ​a​ ​r​e​d​ ​e​n​e​m​y​ ​t​o​w​e​r​,​ ​w​i​n​n​i​n​g​ ​a​ ​t​i​l​e​.
 		 */
-		entry: RequiredParams<'pool'>
+		label: string
 		/**
-		 * F​r​e​e
+		 * y​o​u​r​ ​b​o​t
 		 */
-		free: string
+		yourBot: string
 		/**
-		 * N​o​ ​p​r​i​z​e
+		 * a​ ​t​o​w​e​r
 		 */
-		noPrize: string
+		tower: string
 		/**
-		 * T​u​r​n​s
+		 * +​1​ ​t​i​l​e​!
 		 */
-		turns: string
+		tileWon: string
 		/**
-		 * P​a​y​o​u​t
+		 * i​n​f​a​n​t​r​y​ ​b​e​a​t​s​ ​t​o​w​e​r​ ​·​ ​e​v​e​r​y​ ​m​o​v​e​ ​d​e​c​i​d​e​d​ ​o​n​ ​c​h​a​i​n
 		 */
-		payout: string
-		/**
-		 * S​e​a​t​s
-		 */
-		seats: string
-		/**
-		 * {​j​o​i​n​e​d​}​ ​/​ ​{​t​o​t​a​l​}
-		 * @param {number} joined
-		 * @param {number} total
-		 */
-		seatsTaken: RequiredParams<'joined' | 'total'>
-		/**
-		 * J​o​i​n​ ​c​l​o​s​e​s
-		 */
-		joinCloses: string
-		/**
-		 * V​i​e​w​ ​l​o​b​b​y​ ​{​i​d​}
-		 * @param {string} id
-		 */
-		viewLobby: RequiredParams<'id'>
+		caption: string
 	}
 	create: {
 		/**
@@ -2951,161 +2951,161 @@ export type TranslationFunctions = {
 	lobbies: {
 		home: {
 			/**
-			 * Bot arena on Solana · Devnet
+			 * devnet · test SOL only
 			 */
-			eyebrow: () => LocalizedString
+			devnetNote: () => LocalizedString
 			/**
-			 * Write the strategy.
+			 * write the strategy. the fates do the rest.
 			 */
-			titleLine1: () => LocalizedString
+			tagline: () => LocalizedString
 			/**
-			 * The Fates do the rest.
+			 * Play
 			 */
-			titleLine2: () => LocalizedString
+			play: () => LocalizedString
 			/**
-			 * Write a YAML policy for your civilisation, stake an entry fee, and let the Solana program run every turn. Nobody, not even us, can change the outcome.
+			 * create a lobby
 			 */
-			intro: () => LocalizedString
+			playHint: () => LocalizedString
 			/**
-			 * Create a lobby
+			 * lobbies
 			 */
-			createLobby: () => LocalizedString
+			lobbies: () => LocalizedString
 			/**
-			 * Write a policy
+			 * {count|integer} open right now
 			 */
-			writePolicy: () => LocalizedString
+			openCount: (arg: { count: number }) => LocalizedString
 			/**
-			 * How a match works
+			 * no open lobbies yet.
 			 */
-			howItWorks: () => LocalizedString
-			steps: {
-				write: {
+			noLobbies: () => LocalizedString
+			/**
+			 * start one
+			 */
+			createOne: () => LocalizedString
+			/**
+			 * the rules
+			 */
+			rules: () => LocalizedString
+			ruleSteps: {
+				/**
+				 * write your bot's rules in YAML. up to {max}.
+				 */
+				write: (arg: { max: number }) => LocalizedString
+				/**
+				 * join a lobby, pay the entry, lock in your hash.
+				 */
+				join: () => LocalizedString
+				/**
+				 * {turns} turns run on chain. nobody can touch them.
+				 */
+				play: (arg: { turns: number }) => LocalizedString
+				/**
+				 * the winner is paid straight from the vault.
+				 */
+				settle: () => LocalizedString
+			}
+			/**
+			 * read every rule
+			 */
+			allRules: () => LocalizedString
+			/**
+			 * strategies
+			 */
+			strategies: () => LocalizedString
+			strategy: {
+				turtle: {
 					/**
-					 * Write a policy
+					 * turtle
 					 */
-					title: () => LocalizedString
+					name: () => LocalizedString
 					/**
-					 * Up to 16 if/then rules in YAML. Test it free in the simulator.
+					 * guards first, claims slowly
 					 */
 					body: () => LocalizedString
 				}
-				join: {
+				raider: {
 					/**
-					 * Join and commit
+					 * raider
 					 */
-					title: () => LocalizedString
+					name: () => LocalizedString
 					/**
-					 * Pay the entry fee into the vault and post your policy hash.
-					 */
-					body: () => LocalizedString
-				}
-				play: {
-					/**
-					 * 120 turns on chain
-					 */
-					title: () => LocalizedString
-					/**
-					 * The program runs every bot each turn. No server decides anything.
+					 * attacks the weakest neighbour
 					 */
 					body: () => LocalizedString
 				}
-				settle: {
+				trader: {
 					/**
-					 * Settle
+					 * trader
 					 */
-					title: () => LocalizedString
+					name: () => LocalizedString
 					/**
-					 * The winner is paid from the vault and the leaderboard updates.
+					 * sells gold when prices spike
+					 */
+					body: () => LocalizedString
+				}
+				expander: {
+					/**
+					 * expander
+					 */
+					name: () => LocalizedString
+					/**
+					 * claims a tile every turn
 					 */
 					body: () => LocalizedString
 				}
 			}
 			/**
-			 * Open lobbies
+			 * lang
 			 */
-			openLobbies: () => LocalizedString
+			language: () => LocalizedString
 			/**
-			 * Pick a win condition you like. Joining means accepting the lobby's rules.
+			 * leaderboard
 			 */
-			openLobbiesIntro: () => LocalizedString
-			/**
-			 * Filter by win metric
-			 */
-			filterLabel: () => LocalizedString
-			/**
-			 * All
-			 */
-			filterAll: () => LocalizedString
-			/**
-			 * No open lobbies with this win metric.
-			 */
-			noLobbies: () => LocalizedString
-			/**
-			 * Create one
-			 */
-			createOne: () => LocalizedString
-			/**
-			 * Live now
-			 */
-			liveNow: () => LocalizedString
-			/**
-			 * {count|integer} {{match|matches}} in progress
-			 */
-			liveCount: (arg: { count: number }) => LocalizedString
-			/**
-			 * {bot} leads · {metric}
-			 */
-			leads: (arg: { bot: string, metric: string }) => LocalizedString
-			/**
-			 * Watch
-			 */
-			watch: () => LocalizedString
-			/**
-			 * Top players
-			 */
-			topPlayers: () => LocalizedString
-			/**
-			 * Full leaderboard
-			 */
-			fullLeaderboard: () => LocalizedString
+			leaderboardTab: () => LocalizedString
+			row: {
+				/**
+				 * free
+				 */
+				free: () => LocalizedString
+				/**
+				 * {joined} of {total} seats taken
+				 */
+				seats: (arg: { joined: number, total: number }) => LocalizedString
+				/**
+				 * closes in {minutes|minutes}
+				 */
+				closes: (arg: { minutes: number }) => LocalizedString
+				/**
+				 * join →
+				 */
+				join: () => LocalizedString
+				/**
+				 * Join lobby {id}
+				 */
+				joinLabel: (arg: { id: string }) => LocalizedString
+			}
 		}
-		card: {
+		sketch: {
 			/**
-			 * entry · pool {pool}
+			 * Animated sketch: a green infantry triangle leaves its territory, crosses the map and knocks out a red enemy tower, winning a tile.
 			 */
-			entry: (arg: { pool: string }) => LocalizedString
+			label: () => LocalizedString
 			/**
-			 * Free
+			 * your bot
 			 */
-			free: () => LocalizedString
+			yourBot: () => LocalizedString
 			/**
-			 * No prize
+			 * a tower
 			 */
-			noPrize: () => LocalizedString
+			tower: () => LocalizedString
 			/**
-			 * Turns
+			 * +1 tile!
 			 */
-			turns: () => LocalizedString
+			tileWon: () => LocalizedString
 			/**
-			 * Payout
+			 * infantry beats tower · every move decided on chain
 			 */
-			payout: () => LocalizedString
-			/**
-			 * Seats
-			 */
-			seats: () => LocalizedString
-			/**
-			 * {joined} / {total}
-			 */
-			seatsTaken: (arg: { joined: number, total: number }) => LocalizedString
-			/**
-			 * Join closes
-			 */
-			joinCloses: () => LocalizedString
-			/**
-			 * View lobby {id}
-			 */
-			viewLobby: (arg: { id: string }) => LocalizedString
+			caption: () => LocalizedString
 		}
 		create: {
 			/**

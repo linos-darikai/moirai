@@ -1,11 +1,9 @@
 // Lobby hooks: open lobbies and one lobby, read from the civ program on devnet, plus the actions
 // a player takes in a lobby (create, join, commit, reveal, start, play, settle, cancel).
-// "Live now" matches are still SAMPLE DATA until the match pages read the chain too.
 
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import { SAMPLE_LIVE_MATCHES } from "../data/lobbies";
 import { compilePolicyDraft } from "../lib/engine";
 import {
   TOTAL_TURNS,
@@ -26,8 +24,7 @@ import type { NewMatchSettings } from "../lib/solana";
 import { policyCommitment, randomSalt } from "../model/commitment";
 import { lobbySummaryFromMatch } from "../model/lobbyFromMatch";
 import type { MatchAccountView } from "../types/chain";
-import type { LiveMatchSummary, LobbySummary, WinMetric } from "../types/game";
-import { SAMPLE_KEY, sampleQueryFn } from "./sampleQuery";
+import type { LobbySummary, WinMetric } from "../types/game";
 import { fromHex, loadCommitment, saveCommitment, toHex } from "./savedCommitments";
 
 /** How often an open lobby page refreshes from the chain. */
@@ -49,14 +46,6 @@ export function useLobbies(metric: WinMetric | "all"): UseQueryResult<LobbySumma
     queryFn: async () => (await fetchOpenMatches(connection)).map((match) => lobbySummaryFromMatch(match, nowSeconds())),
     select: (lobbies: LobbySummary[]) => (metric === "all" ? lobbies : lobbies.filter((lobby) => lobby.metric === metric)),
     refetchInterval: LOBBIES_REFRESH_MS,
-  });
-}
-
-/** Matches being played right now (SAMPLE DATA for now). */
-export function useLiveMatches(): UseQueryResult<LiveMatchSummary[]> {
-  return useQuery({
-    queryKey: [SAMPLE_KEY, "liveMatches"],
-    queryFn: sampleQueryFn([...SAMPLE_LIVE_MATCHES]),
   });
 }
 

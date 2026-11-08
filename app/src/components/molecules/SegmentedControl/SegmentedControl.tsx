@@ -1,8 +1,10 @@
 // SegmentedControl molecule: a group of toggle buttons where exactly one is on. Used for view
-// switches (YAML / Rules), periods, speeds, tokens and the lobby metric filter (pill shape).
+// switches (YAML / Rules), periods, speeds, tokens, the lobby metric filter (pill shape) and the home
+// page language switch (hand shape).
 
 import type { ReactElement } from "react";
 import { Group, Segment } from "./SegmentedControl.styles";
+import type { SegmentShape } from "./SegmentedControl.styles";
 
 export type SegmentOption<Value extends string | number> = { value: Value; label: string };
 
@@ -12,8 +14,9 @@ type SegmentedControlProps<Value extends string | number> = {
   options: readonly SegmentOption<Value>[];
   value: Value;
   onChange: (value: Value) => void;
-  /** segmented = joined buttons in a tray; pills = separate rounded buttons. */
-  shape?: "segmented" | "pills";
+  /** segmented = joined buttons in a tray; pills = separate rounded buttons; hand = handwritten
+   *  buttons in a chalk outline. */
+  shape?: SegmentShape;
   /** Stretch the buttons to fill the width (mobile tabs, token picker). */
   isFullWidth?: boolean;
 };

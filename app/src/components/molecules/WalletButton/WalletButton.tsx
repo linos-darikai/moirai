@@ -5,7 +5,7 @@ import type { ReactElement } from "react";
 import { Swatch } from "../../atoms";
 import { Address, Balance, ConnectButton, Details, ProfilePill } from "./WalletButton.styles";
 
-type WalletButtonProps = {
+export type WalletButtonProps = {
   /** Short wallet address, or null when no wallet is connected. */
   address: string | null;
   /** Formatted balance ("4.82 SOL"), or a placeholder while it loads. */

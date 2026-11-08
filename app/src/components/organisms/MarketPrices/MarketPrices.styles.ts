@@ -14,7 +14,7 @@ export const Row = styled.div<{ $look: "rows" | "cards" }>`
     $look === "rows"
       ? css`
           padding: ${theme.space(2)} 0;
-          border-top: 1px solid ${theme.colors.border};
+          border-top: ${theme.borderWidths.sketch} solid ${theme.colors.border};
         `
       : css`
           min-height: ${theme.sizes.control};

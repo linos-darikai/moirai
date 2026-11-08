@@ -11,8 +11,7 @@ import { Columns, PageContainer } from "../../components/templates";
 import { useFormatters, useProfile } from "../../hooks";
 import { useI18nContext } from "../../i18n";
 import { initialsFor, shortenAddress, signedNumber } from "../../model/format";
-import { SAMPLE_LOBBIES } from "../../data/lobbies";
-import { SAMPLE_FINISHED_MATCH_ID, lobbyPath, replayPath } from "../../routes/paths";
+import { SAMPLE_FINISHED_MATCH_ID, paths, replayPath } from "../../routes/paths";
 import type { MatchHistoryEntry } from "../../types/game";
 import { CopyButton, HeaderRow, Identity, PolicyCard, PolicyTop, RentCard, StatGrid } from "./ProfilePage.styles";
 
@@ -53,7 +52,7 @@ export function ProfilePage(): ReactElement {
             <Text as="span" tone="muted">{LL.players.profile.since({ month: format.month(player.playingSince), rank: player.rank })}</Text>
           </div>
         </Identity>
-        <Button to={lobbyPath(SAMPLE_LOBBIES[0]?.id ?? "#A41F")}>{LL.players.profile.challenge()}</Button>
+        <Button to={paths.createLobby}>{LL.players.profile.challenge()}</Button>
       </HeaderRow>
 
       <StatGrid aria-label={LL.players.profile.stats()}>

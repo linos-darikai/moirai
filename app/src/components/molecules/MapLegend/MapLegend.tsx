@@ -1,9 +1,9 @@
-// MapLegend molecule: explains the map board's marks (deposit dots, city squares, contested
-// outlines).
+// MapLegend molecule: explains the map board's hand-drawn marks (deposit circles, city spirals,
+// contested outlines).
 
 import type { ReactElement } from "react";
-import { Swatch } from "../../atoms";
-import { CityMark, CitySiteMark, ContestedMark, Item, List } from "./MapLegend.styles";
+import { SketchMark } from "../../atoms";
+import { ContestedMark, Item, List, MarkSlot } from "./MapLegend.styles";
 
 type MapLegendProps = {
   /** Accessible name of the list, e.g. "Map legend". */
@@ -29,23 +29,33 @@ export function MapLegend({
   return (
     <List aria-label={label}>
       <Item>
-        <Swatch color={{ resource: "food" }} size="xs" shape="round" />
+        <MarkSlot>
+          <SketchMark kind="deposit" tone={{ resource: "food" }} />
+        </MarkSlot>
         {foodLabel}
       </Item>
       <Item>
-        <Swatch color={{ resource: "ore" }} size="xs" shape="round" />
+        <MarkSlot>
+          <SketchMark kind="deposit" tone={{ resource: "ore" }} />
+        </MarkSlot>
         {oreLabel}
       </Item>
       <Item>
-        <Swatch color={{ resource: "gold" }} size="xs" shape="round" />
+        <MarkSlot>
+          <SketchMark kind="deposit" tone={{ resource: "gold" }} />
+        </MarkSlot>
         {goldLabel}
       </Item>
       <Item>
-        <CityMark aria-hidden="true" />
+        <MarkSlot>
+          <SketchMark kind="city" tone="muted" />
+        </MarkSlot>
         {cityLabel}
       </Item>
       <Item>
-        <CitySiteMark aria-hidden="true" />
+        <MarkSlot>
+          <SketchMark kind="citySite" tone="muted" />
+        </MarkSlot>
         {citySiteLabel}
       </Item>
       <Item>

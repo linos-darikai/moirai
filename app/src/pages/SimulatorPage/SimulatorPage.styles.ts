@@ -14,7 +14,7 @@ export const EngineBadge = styled.span`
   gap: ${({ theme }) => theme.space(2)};
   padding: ${({ theme }) => `${theme.space(1.5)} ${theme.space(3)}`};
   border-radius: ${({ theme }) => theme.radii.pill};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textMuted};
 

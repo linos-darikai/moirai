@@ -3,9 +3,9 @@ import { renderWithProviders } from "../../../test/renderWithProviders";
 import { UnitShape } from "./UnitShape";
 
 describe("UnitShape", () => {
-  it("renders a decorative shape", () => {
+  it("renders a decorative hand-drawn shape", () => {
     const { container } = renderWithProviders(<UnitShape kind="elite" civ={0} />);
 
-    expect(container.querySelector("span")).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
 });

@@ -17,7 +17,7 @@ const codeText = css`
 export const Frame = styled.div`
   border-radius: ${({ theme }) => theme.radii.xxl};
   background: ${({ theme }) => theme.colors.inset};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
 
   &:focus-within {
@@ -27,7 +27,7 @@ export const Frame = styled.div`
 
 export const FileTab = styled.div`
   padding: ${({ theme }) => `${theme.space(2.5)} ${theme.space(4)}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.textMuted};

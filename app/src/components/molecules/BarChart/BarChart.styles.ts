@@ -9,7 +9,7 @@ export const Plot = styled.div<{ $height: "sm" | "md" }>`
   gap: ${({ theme }) => theme.space(1.5)};
   height: ${({ $height }) => ($height === "sm" ? "140px" : "180px")};
   padding-bottom: ${({ theme }) => theme.space(1)};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border-bottom: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
 `;
 
 export const Group = styled.div`

@@ -7,7 +7,7 @@ export const Bar = styled.nav`
   z-index: ${({ theme }) => theme.zIndices.nav};
   display: flex;
   padding: ${({ theme }) => `${theme.space(1.5)} ${theme.space(2)} ${theme.space(3.5)}`};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   background: ${({ theme }) => theme.colors.inset};
 
   ${({ theme }) => theme.media.desktop} {

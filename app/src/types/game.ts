@@ -45,15 +45,6 @@ export type LobbySummary = {
   closesInMinutes: number;
 };
 
-/** A match currently being played, for the "Live now" list. */
-export type LiveMatchSummary = {
-  id: string;
-  leaderBot: string;
-  metric: WinMetric;
-  turn: number;
-  totalTurns: number;
-};
-
 /** One row of the leaderboard. */
 export type PlayerRanking = {
   rank: number;
@@ -83,26 +74,6 @@ export type LobbySeat = {
   hasCommitted: boolean;
   hasRevealed: boolean;
   policyHash: string | null;
-};
-
-/** One line of a lobby's on-chain activity log. */
-export type LobbyActivity = {
-  /** Local time, e.g. "12:04". */
-  time: string;
-  kind: "created" | "joinedCommitted" | "youJoined" | "youCommitted" | "allRevealed";
-  bot: string | null;
-  wallet: string | null;
-  transaction: string;
-};
-
-/** Everything the Lobby page shows. */
-export type LobbyDetail = LobbySummary & {
-  creatorWallet: string;
-  seats: LobbySeat[];
-  activity: LobbyActivity[];
-  /** Countdown text shown as-is, e.g. "14:02". */
-  joinDeadline: string;
-  revealDeadline: string;
 };
 
 /** A civ's state in a live or finished match. */

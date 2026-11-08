@@ -1,60 +1,52 @@
 import styled from "styled-components";
 import { OWNED_TILE_ALPHA, withAlpha } from "../../../theme";
-import type { CivIndex, ResourceKind, UnitKind } from "../../../types/game";
-import { UNIT_CLIP_PATH } from "../../atoms";
+import type { CivIndex, UnitKind } from "../../../types/game";
 
+/** The board: black paper inside a chalk-white, hand-drawn frame. */
 export const Grid = styled.div`
   width: 100%;
-  padding: ${({ theme }) => theme.space(2)};
+  padding: ${({ theme }) => theme.space(2.5)};
   display: grid;
   grid-template-columns: repeat(16, minmax(0, 1fr));
   gap: 2px;
-  border-radius: ${({ theme }) => theme.radii.xxl};
-  background: ${({ theme }) => theme.colors.inset};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.board};
+  background: ${({ theme }) => theme.colors.bg};
+  border: ${({ theme }) => theme.borderWidths.pen} solid ${({ theme }) => theme.colors.sketchLine};
 `;
 
+/** One tile: tinted in its owner's colour; a faint grid line, or a yellow ring when contested. */
 export const TileCell = styled.div<{ $owner: CivIndex | null; $isContested: boolean }>`
   position: relative;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: ${({ theme }) => theme.radii.xs};
+  border-radius: ${({ theme }) => theme.radii.tile};
   background: ${({ theme, $owner }) =>
-    $owner === null ? theme.colors.mapEmpty : withAlpha(theme.civColors[$owner], OWNED_TILE_ALPHA)};
-  box-shadow: ${({ theme, $isContested }) => ($isContested ? `inset 0 0 0 2px ${theme.colors.warning}` : "none")};
+    $owner === null ? "transparent" : withAlpha(theme.civColors[$owner], OWNED_TILE_ALPHA)};
+  box-shadow: ${({ theme, $isContested }) =>
+    $isContested ? `inset 0 0 0 2px ${theme.colors.highlight}` : `inset 0 0 0 1px ${theme.colors.mapGridLine}`};
 `;
 
-export const DepositDot = styled.span<{ $resource: ResourceKind }>`
+/** Deposits sit small in the top-right corner so a unit or city can share the tile. */
+export const DepositSlot = styled.span`
   position: absolute;
-  top: 12%;
-  right: 12%;
-  width: 24%;
-  height: 24%;
-  border-radius: 50%;
-  background: ${({ theme, $resource }) => theme.resourceColors[$resource]};
+  top: 4%;
+  right: 4%;
+  width: 44%;
+  height: 44%;
 `;
 
-export const CityMark = styled.span<{ $civ: CivIndex }>`
-  width: 62%;
-  height: 62%;
-  border-radius: ${({ theme }) => theme.radii.sm};
-  border: 3px solid ${({ theme, $civ }) => theme.civColors[$civ]};
-  background: ${({ theme }) => theme.colors.bg};
+export const CitySlot = styled.span<{ $isSite: boolean }>`
+  width: ${({ $isSite }) => ($isSite ? "62%" : "86%")};
+  height: ${({ $isSite }) => ($isSite ? "62%" : "86%")};
 `;
 
-/** An empty dashed square: a city could be built here. */
-export const CitySiteMark = styled.span`
-  width: 56%;
-  height: 56%;
-  border-radius: ${({ theme }) => theme.radii.sm};
-  border: 2px dashed ${({ theme }) => theme.colors.textMuted};
-`;
+/** Each unit kind's share of the tile, from the design (the star needs more room to read). */
+const UNIT_SIZE_PERCENT: Record<UnitKind, number> = { infantry: 72, guard: 70, siege: 76, elite: 80 };
 
-export const UnitMark = styled.span<{ $civ: CivIndex; $kind: UnitKind }>`
-  width: 46%;
-  height: 46%;
-  background: ${({ theme, $civ }) => theme.civColors[$civ]};
-  clip-path: ${({ $kind }) => UNIT_CLIP_PATH[$kind]};
+export const UnitSlot = styled.span<{ $kind: UnitKind }>`
+  position: relative;
+  width: ${({ $kind }) => UNIT_SIZE_PERCENT[$kind]}%;
+  height: ${({ $kind }) => UNIT_SIZE_PERCENT[$kind]}%;
 `;

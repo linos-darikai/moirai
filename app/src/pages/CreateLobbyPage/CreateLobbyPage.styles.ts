@@ -4,7 +4,7 @@ export const Fieldset = styled.fieldset`
   margin: 0;
   min-width: 0;
   padding: ${({ theme }) => theme.space(6)};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radii.card};
   background: ${({ theme }) => theme.colors.surface};
   display: flex;

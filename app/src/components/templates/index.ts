@@ -2,3 +2,4 @@
 export * from "./AppShell";
 export * from "./Columns";
 export * from "./PageContainer";
+export * from "./SketchbookFrame";

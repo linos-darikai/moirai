@@ -3,6 +3,7 @@
 
 import {
   avatarColors,
+  borderWidths,
   breakpoints,
   civColors,
   colors,
@@ -33,6 +34,7 @@ export const theme = {
   fontWeights,
   lineHeights,
   radii,
+  borderWidths,
   space,
   sizes,
   breakpoints,

@@ -28,7 +28,7 @@ export const CopyButton = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: ${({ theme }) => theme.radii.md};
-  border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.text};
   cursor: pointer;
@@ -62,5 +62,5 @@ export const RentCard = styled.div`
   gap: ${({ theme }) => theme.space(1)};
   padding: ${({ theme }) => theme.space(3.5)};
   border-radius: ${({ theme }) => theme.radii.xl};
-  border: 1px dashed ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} dashed ${({ theme }) => theme.colors.borderStrong};
 `;

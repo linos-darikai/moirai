@@ -11,8 +11,7 @@ import { usePolicyCheck, usePolicyDrafts } from "../../hooks";
 import { useI18nContext } from "../../i18n";
 import { KNOWN_ACTIONS, KNOWN_CONDITIONS, MAX_RULES_PER_POLICY } from "../../model/policyCheck";
 import { groupHash } from "../../model/format";
-import { lobbyPath, paths } from "../../routes/paths";
-import { SAMPLE_LOBBIES } from "../../data/lobbies";
+import { paths } from "../../routes/paths";
 import { POLICY_TEMPLATES } from "../../types/policy";
 import { isUnknownWord, problemText } from "./problemText";
 import { Check, CheckList, Chip, ChipRow, Notice, PolicyList, RuleItem, RuleList, StatGrid, TemplateRow } from "./EditorPage.styles";
@@ -149,7 +148,7 @@ export function EditorPage(): ReactElement {
                 </Check>
               </CheckList>
               <Button to={paths.simulator} isFullWidth>{LL.policies.editor.testInSimulator()}</Button>
-              <Button to={lobbyPath(SAMPLE_LOBBIES[0]?.id ?? "#A41F")} variant="secondary" isFullWidth>
+              <Button to={paths.home} variant="secondary" isFullWidth>
                 {LL.policies.editor.useInLobby()}
               </Button>
             </Surface>

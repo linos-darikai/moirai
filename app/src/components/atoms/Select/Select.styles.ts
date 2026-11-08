@@ -5,7 +5,7 @@ export const StyledSelect = styled.select`
   min-height: ${({ theme }) => theme.sizes.control};
   padding: 0 ${({ theme }) => theme.space(3)};
   border-radius: ${({ theme }) => theme.radii.lg};
-  border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
   background: ${({ theme }) => theme.colors.inset};
   color: ${({ theme }) => theme.colors.text};
   font-family: ${({ theme }) => theme.fonts.body};

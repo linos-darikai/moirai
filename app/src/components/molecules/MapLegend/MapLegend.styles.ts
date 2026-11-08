@@ -17,23 +17,16 @@ export const Item = styled.li`
   gap: ${({ theme }) => theme.space(1.5)};
 `;
 
-export const CityMark = styled.span`
-  width: 12px;
-  height: 12px;
-  border-radius: ${({ theme }) => theme.radii.xs};
-  border: 2px solid ${({ theme }) => theme.colors.text};
-`;
-
-export const CitySiteMark = styled.span`
-  width: 12px;
-  height: 12px;
-  border-radius: ${({ theme }) => theme.radii.xs};
-  border: 2px dashed ${({ theme }) => theme.colors.textMuted};
+/** A 16 px box that the legend's hand-drawn marks fill. */
+export const MarkSlot = styled.span`
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
 `;
 
 export const ContestedMark = styled.span`
   width: 12px;
   height: 12px;
   border-radius: ${({ theme }) => theme.radii.xs};
-  box-shadow: inset 0 0 0 2px ${({ theme }) => theme.colors.warning};
+  box-shadow: inset 0 0 0 2px ${({ theme }) => theme.colors.highlight};
 `;

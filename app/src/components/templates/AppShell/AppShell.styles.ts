@@ -27,7 +27,7 @@ export const Footer = styled.footer`
   max-width: ${({ theme }) => theme.sizes.pageNarrow};
   margin: 0 auto;
   padding: ${({ theme }) => `${theme.space(5)} ${theme.space(4)} ${theme.space(8)}`};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

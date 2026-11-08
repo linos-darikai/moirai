@@ -7,7 +7,7 @@ import type { SurfacePadding, SurfaceTone } from "./Surface.styles";
 type SurfaceProps = {
   children: ReactNode;
   /** default = card, raised = card on a card, inset = sunken, highlight = strong border,
-   *  win / verify / warning = coloured callouts. */
+   *  win / verify / warning = coloured callouts, sketch = chalk outline on bare paper. */
   tone?: SurfaceTone;
   padding?: SurfacePadding;
   /** Which element to render (section for page sections, article for cards...). */

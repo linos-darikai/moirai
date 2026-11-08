@@ -9,7 +9,7 @@ export const Bar = styled.header`
   align-items: center;
   gap: ${({ theme }) => `${theme.space(3)} ${theme.space(7)}`};
   background: ${({ theme }) => theme.colors.bg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.navBorder};
+  border-bottom: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.navBorder};
 
   ${({ theme }) => theme.media.desktop} {
     padding: ${({ theme }) => `${theme.space(3)} ${theme.space(8)}`};
@@ -27,22 +27,13 @@ export const Brand = styled(Link)`
   &:hover {
     color: ${({ theme }) => theme.colors.text};
   }
-
-  .thread-food {
-    color: ${({ theme }) => theme.resourceColors.food};
-  }
-  .thread-gold {
-    color: ${({ theme }) => theme.resourceColors.gold};
-  }
-  .thread-ore {
-    color: ${({ theme }) => theme.resourceColors.ore};
-  }
 `;
 
 export const BrandName = styled.span`
-  font-family: ${({ theme }) => theme.fonts.display};
+  font-family: ${({ theme }) => theme.fonts.hand};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  font-size: ${({ theme }) => theme.fontSizes.xxl};
+  font-size: ${({ theme }) => theme.fontSizes.handBrand};
+  line-height: 1;
 `;
 
 /** Hidden on phones, where MobileNav shows the same links at the bottom. */

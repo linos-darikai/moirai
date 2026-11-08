@@ -26,7 +26,7 @@ export const PodiumCard = styled.article<{ $place: number }>`
   gap: ${({ theme }) => theme.space(3.5)};
   border-radius: ${({ theme }) => theme.radii.podium};
   background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme, $place }) => ($place === 0 ? theme.colors.warningBorder : theme.colors.border)};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $place }) => ($place === 0 ? theme.colors.warningBorder : theme.colors.border)};
 
   a {
     color: ${({ theme }) => theme.colors.text};

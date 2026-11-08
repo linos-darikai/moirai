@@ -1,25 +1,26 @@
-// Design tokens: every colour, size and font the app uses. Values come from the "Moirai design
-// kit" artboard (claude.ai design canvas "Moirai: app UI designs"). Components read these through
-// `props.theme`; they never hard-code colours or pixel values.
+// Design tokens: every colour, size and font the app uses. Values come from the "Moirai sketchbook
+// kit" artboard (claude.ai design canvas "Moirai: app UI designs", hand-drawn version): pure black
+// paper, chalk-white lines, Caveat handwriting for titles and slightly uneven "sketched" corners.
+// Components read these through `props.theme`; they never hard-code colours or pixel values.
 
 /** Base palette. Names say what a colour is for, not what it looks like. */
 export const colors = {
-  bg: "#0B0D12",
-  surface: "#141822",
-  surfaceRaised: "#1B2030",
-  inset: "#0F131C",
-  border: "#262D3D",
-  borderStrong: "#343C50",
-  navBorder: "#232937",
-  text: "#EEF0F5",
-  textSoft: "#C9CFDC",
-  textFeed: "#D5DAE5",
-  textMuted: "#A3ACBF",
-  textSubtle: "#6F7890",
-  accent: "#8FA8FF",
-  accentHover: "#B7C6FF",
-  onAccent: "#0B0D12",
-  disabledBg: "#262D3D",
+  bg: "#000000",
+  surface: "#0B0B0B",
+  surfaceRaised: "#161616",
+  inset: "#070707",
+  border: "#3A3A3A",
+  borderStrong: "#5A5A5A",
+  navBorder: "#2E2E2E",
+  text: "#F4F4F0",
+  textSoft: "#D8D8D8",
+  textFeed: "#D8D8D8",
+  textMuted: "#B5B5B5",
+  textSubtle: "#8A8A8A",
+  accent: "#5B9BFF",
+  accentHover: "#8DBBFF",
+  onAccent: "#000000",
+  disabledBg: "#2E2E2E",
   disabledText: "#8A93A8",
   success: "#44D68F",
   successText: "#7BE3AE",
@@ -32,8 +33,7 @@ export const colors = {
   danger: "#FF7A66",
   dangerText: "#FF9C8F",
   dangerBg: "#3A1A16",
-  neutralChipBg: "#1F2433",
-  mapEmpty: "#161B27",
+  neutralChipBg: "#1C1C1C",
   actionBg: "#12302B",
   actionText: "#7BE3D3",
   winBg: "#12302B",
@@ -43,6 +43,15 @@ export const colors = {
   verifyBg: "#10261C",
   verifyBorder: "#23573D",
   verifyText: "#A9D9C0",
+  /** Chalk-white pen line: the hand-drawn borders on the home page and around the map. */
+  sketchLine: "#E8E8E2",
+  /** Faint grid line between map tiles. */
+  mapGridLine: "#1C1C1C",
+  /** Highlighter yellow: numbered steps, "devnet" note, contested tiles, "+1 tile!". */
+  highlight: "#F5C542",
+  /** Red marker pen: the arrow and note next to the Play button on the home page. */
+  markerRed: "#FF453A",
+  markerRedText: "#FF6B60",
 } as const;
 
 /** Resource colours: Food = blue, Ore = red, Gold = gold (CLAUDE.md section 8). */
@@ -79,20 +88,22 @@ export const metricColors = {
 
 /** Policy YAML syntax highlighting. */
 export const syntaxColors = {
-  plain: "#EEF0F5",
-  key: "#8FA8FF",
+  plain: "#F4F4F0",
+  key: "#5B9BFF",
   number: "#F2C14E",
   call: "#7BE3D3",
   keyword: "#C7B0FF",
   operator: "#FFB37A",
-  punctuation: "#6F7890",
+  punctuation: "#8A8A8A",
 } as const;
 
 /** Podium medal colours for ranks 1, 2 and 3. */
-export const medalColors = ["#F2C14E", "#C9CFDC", "#E0A070"] as const;
+export const medalColors = ["#F2C14E", "#D8D8D8", "#E0A070"] as const;
 
-/** Font stacks. Display = headings and numbers, body = text, mono = hashes, addresses, code. */
+/** Font stacks. Hand = handwritten page and section titles, display = numbers and names,
+ *  body = text, mono = hashes, addresses, code. */
 export const fonts = {
+  hand: "'Caveat', 'Comic Sans MS', cursive",
   display: "'Space Grotesk', Inter, system-ui, sans-serif",
   body: "Inter, system-ui, sans-serif",
   mono: "'JetBrains Mono', ui-monospace, monospace",
@@ -112,6 +123,15 @@ export const fontSizes = {
   h1: "40px",
   hero: "52px",
   display: "56px",
+  /** Handwritten sizes (Caveat looks smaller than Inter at the same px, so these run larger). */
+  handPanel: "24px",
+  handBrand: "34px",
+  handSection: "27px",
+  handTitle: "38px",
+  handPage: "54px",
+  handPlay: "64px",
+  handWin: "70px",
+  handHero: "104px",
 } as const;
 
 export const fontWeights = {
@@ -128,18 +148,34 @@ export const lineHeights = {
   code: 1.75,
 } as const;
 
-/** Corner radii in px. */
+/**
+ * Corner radii. Most are "sketched": four slightly different corners (CSS lets each corner have
+ * its own horizontal / vertical radius), so boxes look drawn by hand instead of machine-perfect.
+ */
 export const radii = {
   xs: "3px",
   sm: "6px",
-  md: "8px",
-  lg: "10px",
-  xl: "12px",
-  xxl: "14px",
-  card: "16px",
-  podium: "18px",
-  hero: "20px",
+  md: "10px 3px 12px 4px / 4px 12px 3px 10px",
+  lg: "12px 4px 14px 6px / 6px 14px 4px 12px",
+  xl: "14px 6px 16px 8px / 8px 16px 6px 14px",
+  xxl: "16px 8px 18px 10px / 10px 18px 8px 16px",
+  card: "18px 10px 20px 12px / 12px 20px 10px 18px",
+  podium: "20px 12px 22px 14px / 14px 22px 12px 20px",
+  hero: "22px 14px 24px 16px / 16px 24px 14px 22px",
+  board: "22px 8px 26px 10px / 10px 26px 8px 22px",
+  sketchPanel: "26px 10px 30px 12px / 12px 30px 10px 26px",
+  sketchPage: "34px 12px 40px 14px / 14px 40px 12px 34px",
+  playButton: "120px 60px 110px 70px / 60px 90px 50px 80px",
+  tile: "3px 5px 2px 4px",
   pill: "999px",
+} as const;
+
+/** Line widths. Sketched panels use a slightly heavier pen than plain dividers. */
+export const borderWidths = {
+  thin: "1px",
+  sketch: "1.5px",
+  pen: "2px",
+  marker: "3px",
 } as const;
 
 /** Spacing in multiples of 4 px: `space(4)` is "16px". */
@@ -174,5 +210,5 @@ export function withAlpha(hexColor: string, alphaHex: string): string {
   return `${hexColor}${alphaHex}`;
 }
 
-/** Alpha used to tint tiles owned by a civ (0x42 is about 26% opacity). */
-export const OWNED_TILE_ALPHA = "42";
+/** Alpha used to tint tiles owned by a civ (0x30 is about 19% opacity, light like a pencil wash). */
+export const OWNED_TILE_ALPHA = "30";

@@ -1,5 +1,6 @@
-// The app's router (React Router data router). Every route renders inside AppLayout; the editor,
-// simulator and replay pages are lazy-loaded so the first page loads faster.
+// The app's router (React Router data router). The home page renders inside HomeLayout (no top
+// bar, it draws its own); every other route renders inside AppLayout. The editor, simulator and
+// replay pages are lazy-loaded so the first page loads faster.
 
 import { createBrowserRouter } from "react-router";
 import {
@@ -14,10 +15,15 @@ import {
   RouteErrorPage,
   RulesPage,
 } from "../pages";
-import { AppLayout } from "./AppLayout";
+import { AppLayout, HomeLayout } from "./AppLayout";
 import { paths } from "./paths";
 
 export const router = createBrowserRouter([
+  {
+    element: <HomeLayout />,
+    errorElement: <RouteErrorPage />,
+    children: [{ path: paths.home, element: <LobbiesPage /> }],
+  },
   {
     element: <AppLayout />,
     errorElement: <RouteErrorPage />,
@@ -25,7 +31,6 @@ export const router = createBrowserRouter([
       {
         errorElement: <RouteErrorPage />,
         children: [
-          { path: paths.home, element: <LobbiesPage /> },
           { path: paths.createLobby, element: <CreateLobbyPage /> },
           { path: paths.lobby, element: <LobbyPage /> },
           {

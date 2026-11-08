@@ -8,7 +8,7 @@ export const Identity = styled.div<{ $isHighlighted: boolean }>`
   padding: ${({ theme }) => theme.space(4)};
   border-radius: ${({ theme }) => theme.radii.xl};
   background: ${({ theme }) => theme.colors.surfaceRaised};
-  border: 1px solid ${({ theme, $isHighlighted }) => ($isHighlighted ? theme.colors.accent : theme.colors.border)};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isHighlighted }) => ($isHighlighted ? theme.colors.accent : theme.colors.border)};
 `;
 
 export const Header = styled.div`

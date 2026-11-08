@@ -12,7 +12,7 @@ export const Contents = styled.nav`
     align-items: center;
     padding: 0 ${({ theme }) => theme.space(3)};
     border-radius: ${({ theme }) => theme.radii.pill};
-    border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+    border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
     color: ${({ theme }) => theme.colors.text};
     font-size: ${({ theme }) => theme.fontSizes.md};
     text-decoration: none;
@@ -29,7 +29,7 @@ export const Section = styled.section`
   padding: ${({ theme }) => theme.space(6)};
   border-radius: ${({ theme }) => theme.radii.card};
   background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space(3)};

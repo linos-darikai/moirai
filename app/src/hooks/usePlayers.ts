@@ -18,15 +18,6 @@ export function useLeaderboard(period: LeaderboardPeriod): UseQueryResult<Player
   });
 }
 
-/** The best `count` players of all time. */
-export function useTopPlayers(count: number): UseQueryResult<PlayerRanking[]> {
-  return useQuery({
-    queryKey: [SAMPLE_KEY, "leaderboard", "allTime"],
-    queryFn: sampleQueryFn([...SAMPLE_RANKINGS]),
-    select: (rankings: PlayerRanking[]) => rankings.slice(0, count),
-  });
-}
-
 /** A player's record, policies and match history. */
 export function useProfile(wallet: string): UseQueryResult<PlayerProfile> {
   return useQuery({

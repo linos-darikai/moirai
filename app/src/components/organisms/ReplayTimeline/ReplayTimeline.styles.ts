@@ -20,7 +20,7 @@ export const StepButton = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: ${({ theme }) => theme.radii.lg};
-  border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
   background: ${({ theme }) => theme.colors.surfaceRaised};
   color: ${({ theme }) => theme.colors.text};
   cursor: pointer;

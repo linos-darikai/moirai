@@ -76,7 +76,7 @@ export const StyledButton = styled.button<{
   justify-content: center;
   gap: ${({ theme }) => theme.space(2)};
   width: ${({ $isFullWidth }) => ($isFullWidth ? "100%" : "auto")};
-  border: 1px solid transparent;
+  border: ${({ theme }) => theme.borderWidths.sketch} solid transparent;
   font-family: ${({ theme }) => theme.fonts.body};
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};

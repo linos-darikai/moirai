@@ -1,13 +1,15 @@
 // MapBoard organism: the 16 x 16 board. Every page that shows a map uses this one component, so
 // Simulator, Live match, Replay, Results and mobile all draw the same board the same way.
-// The board is one image to screen readers, described by a per-civ tile summary.
+// The board is one image to screen readers, described by a per-civ tile summary. Tiles are drawn
+// in the sketchbook style: pencil circles for deposits, a spiral for cities, sketched units.
 
 import type { ReactElement } from "react";
 import { useI18nContext } from "../../../i18n";
 import type { CivIndex } from "../../../types/game";
 import type { BoardState } from "../../../types/map";
+import { SketchMark, UnitShape } from "../../atoms";
 import { QueryStatus } from "../../molecules";
-import { CityMark, CitySiteMark, DepositDot, Grid, TileCell, UnitMark } from "./MapBoard.styles";
+import { CitySlot, DepositSlot, Grid, TileCell, UnitSlot } from "./MapBoard.styles";
 
 type MapBoardProps = {
   board: BoardState | null;
@@ -37,10 +39,26 @@ export function MapBoard({ board, isPending, error, turn, civNames }: MapBoardPr
     <Grid role="img" aria-label={LL.map.label({ turn, summary })}>
       {board.tiles.map((tile) => (
         <TileCell key={`${tile.x}-${tile.y}`} $owner={tile.owner} $isContested={tile.isContested}>
-          {tile.deposit !== null && !tile.isCity && <DepositDot $resource={tile.deposit} />}
-          {tile.isCitySite && !tile.isCity && <CitySiteMark />}
-          {tile.isCity && tile.owner !== null && <CityMark $civ={tile.owner} />}
-          {tile.unit !== null && tile.owner !== null && <UnitMark $civ={tile.owner} $kind={tile.unit} />}
+          {tile.deposit !== null && !tile.isCity && (
+            <DepositSlot>
+              <SketchMark kind="deposit" tone={{ resource: tile.deposit }} />
+            </DepositSlot>
+          )}
+          {tile.isCitySite && !tile.isCity && (
+            <CitySlot $isSite>
+              <SketchMark kind="citySite" tone="muted" />
+            </CitySlot>
+          )}
+          {tile.isCity && tile.owner !== null && (
+            <CitySlot $isSite={false}>
+              <SketchMark kind="city" tone={{ civ: tile.owner }} />
+            </CitySlot>
+          )}
+          {tile.unit !== null && tile.owner !== null && (
+            <UnitSlot $kind={tile.unit}>
+              <UnitShape kind={tile.unit} civ={tile.owner} />
+            </UnitSlot>
+          )}
         </TileCell>
       ))}
     </Grid>

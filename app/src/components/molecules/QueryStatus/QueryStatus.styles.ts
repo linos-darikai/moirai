@@ -8,7 +8,7 @@ export const Message = styled.p<{ $kind: "loading" | "error" | "empty" }>`
     css`
       padding: ${theme.space(8)};
       text-align: center;
-      border: 1px dashed ${theme.colors.borderStrong};
+      border: ${theme.borderWidths.sketch} dashed ${theme.colors.borderStrong};
       border-radius: ${theme.radii.xxl};
     `}
 `;

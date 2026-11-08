@@ -5,7 +5,8 @@ import type { ReactElement, ReactNode } from "react";
 import { Banner, Footer, Main, Shell } from "./AppShell.styles";
 
 type AppShellProps = {
-  header: ReactNode;
+  /** The top bar. Left out on the home page, which draws its own handwritten header. */
+  header?: ReactNode;
   /** A thin notice above the page (e.g. "this is sample data"). */
   banner?: ReactNode;
   children: ReactNode;

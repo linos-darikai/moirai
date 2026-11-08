@@ -6,7 +6,7 @@ export const StyledInput = styled.input<{ $isMono: boolean }>`
   min-height: ${({ theme }) => theme.sizes.touchTarget};
   padding: 0 ${({ theme }) => theme.space(3.5)};
   border-radius: ${({ theme }) => theme.radii.lg};
-  border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
   background: ${({ theme }) => theme.colors.inset};
   color: ${({ theme }) => theme.colors.text};
   font-family: ${({ theme, $isMono }) => ($isMono ? theme.fonts.mono : theme.fonts.body)};

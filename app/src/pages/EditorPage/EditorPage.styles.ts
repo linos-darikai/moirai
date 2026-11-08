@@ -32,7 +32,7 @@ export const RuleItem = styled.li<{ $isWarning: boolean }>`
   padding: ${({ theme }) => `${theme.space(3.5)} ${theme.space(4)}`};
   border-radius: ${({ theme }) => theme.radii.xl};
   background: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme, $isWarning }) => ($isWarning ? theme.colors.warningBorder : theme.colors.border)};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isWarning }) => ($isWarning ? theme.colors.warningBorder : theme.colors.border)};
 `;
 
 export const Chip = styled.span<{ $tone: "condition" | "action" }>`
@@ -70,12 +70,12 @@ export const Notice = styled.div<{ $isError: boolean }>`
       ? css`
           background: ${theme.colors.dangerBg};
           color: ${theme.colors.dangerText};
-          border: 1px solid ${theme.colors.danger};
+          border: ${theme.borderWidths.sketch} solid ${theme.colors.danger};
         `
       : css`
           background: ${theme.colors.warningBg};
           color: ${theme.colors.warningText};
-          border: 1px solid ${theme.colors.warningBorder};
+          border: ${theme.borderWidths.sketch} solid ${theme.colors.warningBorder};
         `}
 `;
 

@@ -1,4 +1,4 @@
-// Heading atom: h1–h4 with the type scale from the design kit.
+// Heading atom: h1–h4 in handwriting (Caveat), sized from the sketchbook type scale.
 
 import type { ReactElement, ReactNode } from "react";
 import { StyledHeading } from "./Heading.styles";

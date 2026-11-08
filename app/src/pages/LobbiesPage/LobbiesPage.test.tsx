@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { openMatch } from "../../test/matchFixtures";
 import { renderWithProviders } from "../../test/renderWithProviders";
@@ -23,25 +22,37 @@ describe("LobbiesPage", () => {
   it("lists the open lobbies on chain, each linking to its match address", async () => {
     renderWithProviders(<LobbiesPage />);
 
-    expect(await screen.findByRole("link", { name: "View lobby #Terr" })).toHaveAttribute("href", `/lobby/${TERRITORY.address}`);
-    expect(screen.getAllByRole("article")).toHaveLength(2);
+    const joinTerritory = await screen.findByRole("link", { name: "Join lobby #Terr" });
+
+    expect(joinTerritory).toHaveAttribute("href", `/lobby/${TERRITORY.address}`);
+    expect(screen.getByRole("link", { name: "Join lobby #Conq" })).toBeInTheDocument();
+    expect(screen.getByText("2 open right now")).toBeInTheDocument();
   });
 
-  it("filters lobbies by win metric", async () => {
-    renderWithProviders(<LobbiesPage />);
-    await screen.findByRole("link", { name: "View lobby #Terr" });
-
-    await userEvent.click(screen.getByRole("button", { name: "Conquest" }));
-
-    expect(screen.getAllByRole("article")).toHaveLength(1);
-    expect(screen.getByRole("link", { name: "View lobby #Conq" })).toBeInTheDocument();
-  });
-
-  it("says so when there are no open lobbies", async () => {
+  it("offers to start a lobby when none are open", async () => {
     chain.fetchOpenMatches.mockResolvedValue([]);
 
     renderWithProviders(<LobbiesPage />);
 
-    expect(await screen.findByRole("link", { name: /create/i })).toBeInTheDocument();
+    const startOne = await screen.findByRole("link", { name: "start one" });
+
+    expect(startOne).toHaveAttribute("href", "/lobby/new");
+  });
+
+  it("sends the Play button to the create-lobby page", () => {
+    renderWithProviders(<LobbiesPage />);
+
+    const play = screen.getByRole("link", { name: "Play" });
+
+    expect(play).toHaveAttribute("href", "/lobby/new");
+  });
+
+  it("states the real rule limits in the rules panel", () => {
+    renderWithProviders(<LobbiesPage />);
+
+    const rules = screen.getByRole("region", { name: "the rules" });
+
+    expect(rules).toHaveTextContent("up to 16");
+    expect(rules).toHaveTextContent("120 turns run on chain");
   });
 });

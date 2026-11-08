@@ -7,7 +7,7 @@ const pill = css`
   gap: ${({ theme }) => theme.space(2.5)};
   min-height: ${({ theme }) => theme.sizes.touchTarget};
   border-radius: ${({ theme }) => theme.radii.pill};
-  border: 1px solid ${({ theme }) => theme.colors.borderStrong};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
   background: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.text};
   text-decoration: none;
