@@ -25,6 +25,7 @@
 //! - `growth`: turn step 3, cities grow and borders extend (and lock where they meet)
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 //! - `orders`: the `Action` enum, each civ's orders for a turn, applying one action
+//! - `policy`: rules players write (format, compiler behind the `compiler` feature, interpreter)
 //! - `production`: turn step 1, resources from owned deposits and cities
 //! - `turn`: `run_turn`, the seven steps of one turn
 //! - `upkeep`: turn step 6, units eat food; starving civs disband units
@@ -46,6 +47,7 @@ pub mod market;
 pub mod match_start;
 pub mod match_state;
 pub mod orders;
+pub mod policy;
 pub mod production;
 pub mod randomness;
 pub mod resources;
