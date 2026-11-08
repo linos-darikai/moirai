@@ -10,6 +10,8 @@ export { useCreateLobby, useLobbies, useLobby, useLobbyAction, useSavedCommitmen
 export type { LobbyActionRequest } from "./useLobbies";
 export { useBoardAtTurn, useStartingMap } from "./useMap";
 export { useNowSeconds } from "./useNowSeconds";
+export { MS_PER_TURN, usePlayback } from "./usePlayback";
+export type { Playback } from "./usePlayback";
 export { useSimulation } from "./useSimulation";
 export type { SimulationRequest } from "./useSimulation";
 export type { BoardAtTurn } from "./useMap";

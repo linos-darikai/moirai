@@ -15,6 +15,7 @@ function renderTimeline(onTurnChange = vi.fn(), onTogglePlay = vi.fn()) {
       currentMoment={null}
       isPlaying={false}
       speed={1}
+      caption="Rebuilt from the seed"
       onTurnChange={onTurnChange}
       onTogglePlay={onTogglePlay}
       onSpeedChange={vi.fn()}

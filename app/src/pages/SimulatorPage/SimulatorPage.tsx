@@ -6,11 +6,11 @@
 import { useState } from "react";
 import type { ReactElement } from "react";
 import { Link } from "react-router";
-import { Button, Heading, Input, Select, Slider, Surface, Swatch, Text } from "../../components/atoms";
+import { Button, Heading, Input, Select, Surface, Swatch, Text } from "../../components/atoms";
 import { BarChart, Field, QueryStatus, RankedRow } from "../../components/molecules";
-import { MapBoard } from "../../components/organisms";
+import { MapBoard, ReplayTimeline } from "../../components/organisms";
 import { Columns, PageContainer } from "../../components/templates";
-import { useEngineDescription, usePolicyDrafts, useSimulation } from "../../hooks";
+import { useEngineDescription, usePlayback, usePolicyDrafts, useSimulation } from "../../hooks";
 import type { SimulationRequest } from "../../hooks";
 import { useI18nContext } from "../../i18n";
 import { SAMPLE_SEED_HEX } from "../../data/matches";
@@ -36,7 +36,6 @@ export function SimulatorPage(): ReactElement {
   const [policyId, setPolicyId] = useState(policies.current.id);
   const [seedText, setSeedText] = useState(`0x${SAMPLE_SEED_HEX.slice(0, 8)}`);
   const [enabledOpponents, setEnabledOpponents] = useState<Record<string, boolean>>({});
-  const [turn, setTurn] = useState(TOTAL_TURNS);
 
   // Step 1: what to play. Changing the setup only takes effect when "Run" is pressed.
   const yourDraft = policies.drafts.find((draft) => draft.id === policyId) ?? policies.current;
@@ -57,14 +56,15 @@ export function SimulatorPage(): ReactElement {
     setRequest(requestFromSetup());
     setOpponentNames(opponents.map((opponent) => opponent.id));
     setYourName(yourDraft.name);
-    setTurn(TOTAL_TURNS);
   };
 
   // Step 2: the match, played by civ-core in the browser.
   const simulation = useSimulation(request);
   const result = simulation.data;
   const lastTurn = result === undefined ? TOTAL_TURNS : result.turns.length - 1;
-  const shownTurn = Math.min(turn, lastTurn);
+  // Step 3: play it like a video, from turn 0 every time a new match comes in.
+  const playback = usePlayback(lastTurn, { restartKey: result?.fingerprint ?? "" });
+  const shownTurn = playback.turn;
   const snapshot = result?.turns[shownTurn];
   const armies = (snapshot?.civs ?? []).flatMap((civ, index) =>
     civ.armyAt === null ? [] : [{ civ: index as CivIndex, x: civ.armyAt.x, y: civ.armyAt.y }],
@@ -117,13 +117,18 @@ export function SimulatorPage(): ReactElement {
             <div>
               <Heading level={2} size="card" id="board">{LL.policies.simulator.board({ turn: shownTurn })}</Heading>
               <MapBoard board={board} isPending={simulation.isPending} error={simulation.error} turn={shownTurn} civNames={civNames} />
-              <Field
-                label={LL.policies.simulator.scrub()}
-                htmlFor="sim-turn"
-                labelAside={<Text as="span" isMono size="md">{LL.policies.simulator.scrubValue({ turn: shownTurn, total: lastTurn })}</Text>}
-              >
-                <Slider id="sim-turn" value={shownTurn} min={0} max={lastTurn} onChange={setTurn} />
-              </Field>
+              <ReplayTimeline
+                turn={shownTurn}
+                totalTurns={lastTurn}
+                moments={[]}
+                currentMoment={null}
+                isPlaying={playback.isPlaying}
+                speed={playback.speed}
+                onTurnChange={playback.seek}
+                onTogglePlay={playback.togglePlay}
+                onSpeedChange={playback.setSpeed}
+                caption={LL.policies.simulator.scrubValue({ turn: shownTurn, total: lastTurn })}
+              />
               {result !== undefined && <Text size="xs" tone="muted">{LL.policies.simulator.realNote({ fingerprint: result.fingerprint })}</Text>}
             </div>
             <SimulationPanels result={result} shownTurn={shownTurn} seats={seats} yourYaml={request.botsYaml[0] ?? ""} />

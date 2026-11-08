@@ -2,15 +2,13 @@
 // moments and the "verified against the chain" panel. Design artboard "Replay and verify".
 // SAMPLE: the state hash and transaction per turn are placeholders until replay re-runs real turns.
 
-import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import { useParams } from "react-router";
 import { Button, Heading, Icon, Surface, Text } from "../../components/atoms";
 import { Breadcrumb, KeyValueList, QueryStatus, RankedRow } from "../../components/molecules";
 import { MapBoard, ReplayTimeline } from "../../components/organisms";
-import type { ReplaySpeed } from "../../components/organisms";
 import { Columns, PageContainer } from "../../components/templates";
-import { useBoardAtTurn, useMatchResults, useReplayMoments } from "../../hooks";
+import { useBoardAtTurn, useMatchResults, usePlayback, useReplayMoments } from "../../hooks";
 import { useI18nContext } from "../../i18n";
 import { civNamesFrom } from "../../model/civNames";
 import { idFromUrl, resultsPath } from "../../routes/paths";
@@ -18,8 +16,6 @@ import type { CivIndex, ReplayMoment } from "../../types/game";
 import { HeaderRow, HeaderActions, VerifyTitle } from "./ReplayPage.styles";
 
 const TOTAL_TURNS = 60;
-const START_TURN = 44;
-const MS_PER_TURN = 700;
 const CIVS: readonly CivIndex[] = [0, 1, 2, 3];
 
 /** The latest moment at or before `turn`. */
@@ -44,25 +40,10 @@ export function ReplayPage(): ReactElement {
   const id = idFromUrl(matchId);
   const results = useMatchResults(id);
   const moments = useReplayMoments(id);
-  const [turn, setTurn] = useState(START_TURN);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState<ReplaySpeed>(1);
+  // Plays like a video from turn 0; the timeline can be dragged while it plays.
+  const playback = usePlayback(TOTAL_TURNS, { restartKey: id });
+  const turn = playback.turn;
   const board = useBoardAtTurn(results.data?.seedHex ?? "", turn);
-
-  // While playing, advance one turn every MS_PER_TURN / speed, and stop at the last turn.
-  useEffect(() => {
-    if (!isPlaying) return undefined;
-    const timer = window.setInterval(() => {
-      setTurn((current) => {
-        if (current >= TOTAL_TURNS) {
-          setIsPlaying(false);
-          return current;
-        }
-        return current + 1;
-      });
-    }, MS_PER_TURN / speed);
-    return () => window.clearInterval(timer);
-  }, [isPlaying, speed]);
 
   if (results.isPending || moments.isPending) return <PageContainer><QueryStatus kind="loading" text={LL.states.loading()} /></PageContainer>;
   if (results.isError) return <PageContainer><QueryStatus kind="error" text={LL.states.error({ message: results.error.message })} /></PageContainer>;
@@ -74,10 +55,6 @@ export function ReplayPage(): ReactElement {
   const standings = board.board === null ? [] : [...CIVS].sort((a, b) => (board.board?.tilesByCiv[b] ?? 0) - (board.board?.tilesByCiv[a] ?? 0));
   const maxTiles = board.board === null ? 1 : Math.max(1, ...CIVS.map((civ) => board.board?.tilesByCiv[civ] ?? 0));
 
-  const togglePlay = (): void => {
-    if (!isPlaying && turn >= TOTAL_TURNS) setTurn(0);
-    setIsPlaying(!isPlaying);
-  };
 
   return (
     <PageContainer width="wide" gap="md">
@@ -103,11 +80,12 @@ export function ReplayPage(): ReactElement {
           totalTurns={TOTAL_TURNS}
           moments={allMoments}
           currentMoment={moment}
-          isPlaying={isPlaying}
-          speed={speed}
-          onTurnChange={setTurn}
-          onTogglePlay={togglePlay}
-          onSpeedChange={setSpeed}
+          isPlaying={playback.isPlaying}
+          speed={playback.speed}
+          caption={LL.matches.replay.rebuilt({ total: TOTAL_TURNS })}
+          onTurnChange={playback.seek}
+          onTogglePlay={playback.togglePlay}
+          onSpeedChange={playback.setSpeed}
         />
       </Surface>
 

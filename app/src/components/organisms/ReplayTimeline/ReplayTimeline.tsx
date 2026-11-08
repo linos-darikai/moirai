@@ -19,6 +19,8 @@ type ReplayTimelineProps = {
   currentMoment: ReplayMoment | null;
   isPlaying: boolean;
   speed: ReplaySpeed;
+  /** A short line next to the controls, e.g. where the turns came from. */
+  caption: string;
   onTurnChange: (turn: number) => void;
   onTogglePlay: () => void;
   onSpeedChange: (speed: ReplaySpeed) => void;
@@ -32,6 +34,7 @@ export function ReplayTimeline({
   currentMoment,
   isPlaying,
   speed,
+  caption,
   onTurnChange,
   onTogglePlay,
   onSpeedChange,
@@ -58,7 +61,7 @@ export function ReplayTimeline({
           onChange={onSpeedChange}
         />
         <Text as="span" size="md" tone="muted">
-          {LL.matches.replay.rebuilt({ total: totalTurns })}
+          {caption}
         </Text>
       </Controls>
       <Track>

@@ -38,10 +38,15 @@ vi.mock("../../lib/engine", () => ({
 }));
 
 describe("SimulatorPage", () => {
-  it("plays the match and shows the final board, standings and what your rules did", async () => {
+  it("plays the match from turn 0 like a video, and steps through it when paused", async () => {
     renderWithProviders(<SimulatorPage />);
 
-    expect(await screen.findByRole("img", { name: /^Map at turn 2: .* 30 tiles/ })).toBeInTheDocument();
+    expect(await screen.findByRole("img", { name: /^Map at turn 0: .* 10 tiles/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Pause" }));
+    await userEvent.click(screen.getByRole("button", { name: "Next turn" }));
+    await userEvent.click(screen.getByRole("button", { name: "Next turn" }));
+
+    expect(screen.getByRole("img", { name: /^Map at turn 2: .* 30 tiles/ })).toBeInTheDocument();
     expect(screen.getByText(/fingerprint 1234/)).toBeInTheDocument();
     expect(screen.getByText(/^Rule 1 .* fired 4 times$/)).toBeInTheDocument();
     expect(screen.getByText(/^Rule 2 .* never fired$/)).toBeInTheDocument();
@@ -49,7 +54,7 @@ describe("SimulatorPage", () => {
 
   it("plays only the opponents that are switched on when run again", async () => {
     renderWithProviders(<SimulatorPage />);
-    await screen.findByRole("img", { name: /^Map at turn 2/ });
+    await screen.findByRole("img", { name: /^Map at turn \d+/ });
 
     const [raider] = screen.getAllByRole("checkbox"); // red-raider is the first opponent
     if (raider !== undefined) await userEvent.click(raider);
