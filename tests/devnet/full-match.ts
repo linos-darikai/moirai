@@ -41,7 +41,7 @@ const ENTRY_FEE = 0.01 * LAMPORTS_PER_SOL;
 /** What each player wallet is funded with: entry fee + Profile rent + fees, with margin. */
 const PLAYER_FUNDING = 0.03 * LAMPORTS_PER_SOL;
 const BOTS = ["turtle", "raider"];
-const TOTAL_TURNS = 60;
+const TOTAL_TURNS = 120;
 const RUNNING = 1;
 /** programs/civ SEED_REQUEST_TIMEOUT_SECONDS, plus a little margin. */
 const SEED_RETRY_AFTER_MS = 130_000;

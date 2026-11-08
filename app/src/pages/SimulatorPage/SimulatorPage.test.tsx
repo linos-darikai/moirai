@@ -53,7 +53,7 @@ describe("SimulatorPage", () => {
 
     const [raider] = screen.getAllByRole("checkbox"); // red-raider is the first opponent
     if (raider !== undefined) await userEvent.click(raider);
-    await userEvent.click(screen.getByRole("button", { name: "Run 60 turns" }));
+    await userEvent.click(screen.getByRole("button", { name: "Run 120 turns" }));
 
     expect(simulation.calls.at(-1)).toHaveLength(3);
   });
@@ -64,7 +64,7 @@ describe("SimulatorPage", () => {
 
     await userEvent.clear(seed);
     await userEvent.type(seed, "not hex");
-    await userEvent.click(screen.getByRole("button", { name: "Run 60 turns" }));
+    await userEvent.click(screen.getByRole("button", { name: "Run 120 turns" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("invalid seed");
   });

@@ -1,4 +1,4 @@
-//! The Phase 1 gate (PLAN.md section 9): a 60-turn match between the four sample bots in
+//! The Phase 1 gate (PLAN.md section 9): a full match (TOTAL_TURNS, now 120 turns) between the four sample bots in
 //! `policies/` runs locally and is identical every time.
 //!
 //! An integration test: it uses civ-core only through its public API, like civ-cli and civ-wasm.
@@ -26,7 +26,7 @@ const SAMPLE_BOTS: [&str; 4] = [
 /// The final fingerprint of the sample match with every seed byte 42. Locks the whole game: if a
 /// rule, a bot or the turn order changes, this changes. Update it on purpose only, and the WASM
 /// check in app/src/lib/engine expects the same number.
-const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 8_239_992_931_703_824_454;
+const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 12_561_166_484_484_629_597;
 
 fn compiled_bots() -> Vec<Vec<u8>> {
     SAMPLE_BOTS
@@ -49,7 +49,7 @@ fn play_sample_match(seed_byte: u8) -> MatchState {
 }
 
 #[test]
-fn the_sample_match_lasts_sixty_turns_and_is_identical_every_time() {
+fn the_sample_match_lasts_every_turn_and_is_identical_every_time() {
     let first = play_sample_match(42);
     let second = play_sample_match(42);
 

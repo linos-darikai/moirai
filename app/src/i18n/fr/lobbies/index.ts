@@ -15,7 +15,7 @@ const fr_lobbies = {
     steps: {
       write: { title: "Écrivez une stratégie", body: "Jusqu'à 16 règles si/alors en YAML. Testez-la gratuitement dans le simulateur." },
       join: { title: "Rejoignez et engagez-vous", body: "Payez les frais au coffre et publiez le hash de votre stratégie." },
-      play: { title: "60 tours sur la chaîne", body: "Le programme exécute chaque bot à chaque tour. Aucun serveur ne décide de rien." },
+      play: { title: "120 tours sur la chaîne", body: "Le programme exécute chaque bot à chaque tour. Aucun serveur ne décide de rien." },
       settle: { title: "Règlement", body: "Le gagnant est payé depuis le coffre et le classement se met à jour." },
     },
     openLobbies: "Salons ouverts",
@@ -78,7 +78,7 @@ const fr_lobbies = {
     submit: "Créer le salon",
     submitting: "Création du salon…",
     needWallet: "Connectez un portefeuille pour créer un salon. Vous ne payez que le loyer des comptes, rendu à la fermeture de la partie.",
-    turnsFixed: "Chaque partie dure 60 tours dans cette version.",
+    turnsFixed: "Chaque partie dure 120 tours dans cette version.",
     failed: "Le salon n'a pas été créé : {message}",
     networkFee: "Frais de réseau d'environ 0,00001 SOL · loyer remboursé au règlement",
   },

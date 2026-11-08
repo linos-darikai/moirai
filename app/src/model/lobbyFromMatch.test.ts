@@ -90,7 +90,7 @@ describe("nextLobbyStep", () => {
 
   it("plays the turns, then settles, then the lobby is closed", () => {
     expect(nextLobbyStep(lobby({ status: "running", turn: 12 }), null, NOW)).toBe("play");
-    expect(nextLobbyStep(lobby({ status: "running", turn: 60 }), null, NOW)).toBe("settle");
+    expect(nextLobbyStep(lobby({ status: "running", turn: 120 }), null, NOW)).toBe("settle");
     expect(nextLobbyStep(null, null, NOW)).toBe("closed");
   });
 });

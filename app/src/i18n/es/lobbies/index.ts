@@ -15,7 +15,7 @@ const es_lobbies = {
     steps: {
       write: { title: "Escribe una política", body: "Hasta 16 reglas si/entonces en YAML. Pruébala gratis en el simulador." },
       join: { title: "Únete y comprométete", body: "Paga la cuota al depósito y publica el hash de tu política." },
-      play: { title: "60 turnos en cadena", body: "El programa ejecuta cada bot en cada turno. Ningún servidor decide nada." },
+      play: { title: "120 turnos en cadena", body: "El programa ejecuta cada bot en cada turno. Ningún servidor decide nada." },
       settle: { title: "Liquidación", body: "El ganador cobra del depósito y la clasificación se actualiza." },
     },
     openLobbies: "Salas abiertas",
@@ -78,7 +78,7 @@ const es_lobbies = {
     submit: "Crear sala",
     submitting: "Creando la sala…",
     needWallet: "Conecta una cartera para crear una sala. Solo pagas el alquiler de las cuentas, que se devuelve al cerrar la partida.",
-    turnsFixed: "En esta versión todas las partidas duran 60 turnos.",
+    turnsFixed: "En esta versión todas las partidas duran 120 turnos.",
     failed: "No se creó la sala: {message}",
     networkFee: "Comisión de red de unos 0,00001 SOL · el alquiler se devuelve en la liquidación",
   },

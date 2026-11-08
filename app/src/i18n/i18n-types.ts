@@ -417,7 +417,7 @@ export type NamespaceLobbiesTranslation = {
 			}
 			play: {
 				/**
-				 * 6​0​ ​t​u​r​n​s​ ​o​n​ ​c​h​a​i​n
+				 * 1​2​0​ ​t​u​r​n​s​ ​o​n​ ​c​h​a​i​n
 				 */
 				title: string
 				/**
@@ -680,7 +680,7 @@ export type NamespaceLobbiesTranslation = {
 		 */
 		needWallet: string
 		/**
-		 * E​v​e​r​y​ ​m​a​t​c​h​ ​i​s​ ​6​0​ ​t​u​r​n​s​ ​i​n​ ​t​h​i​s​ ​v​e​r​s​i​o​n​.
+		 * E​v​e​r​y​ ​m​a​t​c​h​ ​i​s​ ​1​2​0​ ​t​u​r​n​s​ ​i​n​ ​t​h​i​s​ ​v​e​r​s​i​o​n​.
 		 */
 		turnsFixed: string
 		/**
@@ -2187,7 +2187,7 @@ export type NamespacePoliciesTranslation = {
 		 */
 		territoryOverTime: string
 		/**
-		 * T​i​l​e​s​ ​o​w​n​e​d​ ​a​t​ ​t​u​r​n​s​ ​1​0​ ​t​o​ ​6​0​.​ ​{​s​u​m​m​a​r​y​}​.
+		 * T​i​l​e​s​ ​o​w​n​e​d​ ​a​t​ ​t​u​r​n​s​ ​2​0​ ​t​o​ ​1​2​0​.​ ​{​s​u​m​m​a​r​y​}​.
 		 * @param {string} summary
 		 */
 		chartLabel: RequiredParams<'summary'>
@@ -3001,7 +3001,7 @@ export type TranslationFunctions = {
 				}
 				play: {
 					/**
-					 * 60 turns on chain
+					 * 120 turns on chain
 					 */
 					title: () => LocalizedString
 					/**
@@ -3253,7 +3253,7 @@ export type TranslationFunctions = {
 			 */
 			needWallet: () => LocalizedString
 			/**
-			 * Every match is 60 turns in this version.
+			 * Every match is 120 turns in this version.
 			 */
 			turnsFixed: () => LocalizedString
 			/**
@@ -4621,7 +4621,7 @@ export type TranslationFunctions = {
 			 */
 			territoryOverTime: () => LocalizedString
 			/**
-			 * Tiles owned at turns 10 to 60. {summary}.
+			 * Tiles owned at turns 20 to 120. {summary}.
 			 */
 			chartLabel: (arg: { summary: string }) => LocalizedString
 			/**

@@ -92,7 +92,7 @@ const en_policies = {
     scrubValue: "{turn:number} / {total:number}",
     standings: "Standings",
     territoryOverTime: "Territory over time",
-    chartLabel: "Tiles owned at turns 10 to 60. {summary:string}.",
+    chartLabel: "Tiles owned at turns 20 to 120. {summary:string}.",
     chartCiv: "{name:string} ends with {count:number}",
     rulesDid: "What your rules did",
     ruleFired: "Rule {rule:number} {action:string} fired {count:number} {{count:time|times}}",

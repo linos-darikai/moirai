@@ -22,12 +22,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn sixty_turns_of_rewards_add_up_to_one_and_a_half_percent_of_the_pot() {
-        // 4 players × 1 SOL = 4 SOL pot; 1.5% = 0.06 SOL over 60 turns = 0.001 SOL a turn.
+    fn a_whole_match_of_rewards_adds_up_to_one_and_a_half_percent_of_the_pot() {
+        // 4 players × 1 SOL = 4 SOL pot; 1.5% = 0.06 SOL over 120 turns = 0.0005 SOL a turn.
         let reward = crank_reward_per_turn(1_000_000_000, 4);
 
-        assert_eq!(reward, Some(1_000_000));
-        assert_eq!(1_000_000 * u64::from(TOTAL_TURNS), 60_000_000);
+        assert_eq!(reward, Some(500_000));
+        assert_eq!(500_000 * u64::from(TOTAL_TURNS), 60_000_000);
     }
 
     #[test]

@@ -23,7 +23,7 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `orders` | `Action` (StartBuild, RushBuild, FoundCity, ClaimTile, AssignWorkers, Sell, Buy, Attack), `CivOrders` (up to 3 per turn), `ActionPhase` and `apply_action` |
 | `policy` | Policies (docs/decisions/0008). `format`: compiled bytes (3-byte header + fixed 31-byte rules, at most 499 bytes; `validate_policy`, `read_rule`, `encode_policy`). `compiler` (feature `compiler` only): YAML to bytes with line-numbered errors. `interpreter`: `decide_all` / `play_turn` / `play_until_finished`; `targets` picks tiles and civs |
 | `production` | `produce_resources(&aggregates, &mut civs)`: turn step 2. Deposits need Workers: each Worker works one owned deposit for 2 a turn (focus resource first, then spread evenly; `worked_deposits`). Each city adds 2 Food, 1 Ore, 1 Gold and 1 coin per size (docs/decisions/0007) |
-| `turn` | `run_turn(&mut state, &orders) -> TurnReport`: the seven steps of a turn (aggregates, produce, grow + finish builds, decide, resolve by phase in rotating civ order, upkeep, eliminate). Tests in `turn_tests.rs` include a 60-turn match played twice with identical fingerprints |
+| `turn` | `run_turn(&mut state, &orders) -> TurnReport`: the seven steps of a turn (aggregates, produce, grow + finish builds, decide, resolve by phase in rotating civ order, upkeep, eliminate). Tests in `turn_tests.rs` include a full match played twice with identical fingerprints |
 | `scoring` | `final_standings(&state, metric)`: Territory, Wealth (coins + resources at final prices), Conquest, Score; knocked-out civs score 0; ties all win |
 | `upkeep` | `pay_upkeep(&mut civs)`: turn step 6. Each unit eats its food upkeep (Elite 2, others 1). A civ that can't pay disbands units in `DISBAND_ORDER` (Elite, Settler, Siege, Guard, Infantry) until it can; food never goes below 0 |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, `unit_stats(kind)` and the disband order, market, battle, scoring. Integer maths; percentages in basis points |
@@ -38,8 +38,8 @@ program can use it as zero-copy account data, no panics (bounds-checked coordina
 instead of array lookups), no truncating casts, and nothing large returned by value.
 
 Determinism is locked by tests that pin a known output: `random_u64` for a fixed seed, the map
-fingerprint for seed 42 (`14264378160424497879`), and the final fingerprint of a 60-turn match
-between the four sample bots for seed 42 (`8239992931703824454` since the bots were rebalanced, in
+fingerprint for seed 42 (`14264378160424497879`), and the final fingerprint of a full (120-turn) match
+between the four sample bots for seed 42 (`12561166484484629597` since matches became 120 turns, in
 `tests/sample_bots_match.rs`, the Phase 1 gate). The app's `src/lib/engine/determinism.test.ts`
 checks the WASM build gives the same two fingerprints. If one changes, every past match would
 replay differently, so change them only on purpose (and in both places).
@@ -49,7 +49,7 @@ replay differently, so change them only on purpose (and in both places).
 ```sh
 cargo build -p civ-core
 cargo test -p civ-core                       # unit tests (no YAML compiler)
-cargo test -p civ-core --features compiler   # plus the compiler and the 60-turn gate test
+cargo test -p civ-core --features compiler   # plus the compiler and the full-match gate test
 cargo run -p civ-cli -- play                 # watch the four sample bots play
 ```
 

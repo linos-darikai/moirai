@@ -1,5 +1,5 @@
 //! Tests for turn.rs: the turn steps, phase and rotation order, the end of a match, and
-//! determinism over a full 60-turn match.
+//! determinism over a full match.
 
 use super::*;
 use crate::civ::CivId;
@@ -208,7 +208,7 @@ fn play_full_match(seed_byte: u8) -> u64 {
 }
 
 #[test]
-fn a_full_sixty_turn_match_played_twice_ends_in_exactly_the_same_state() {
+fn a_full_match_played_twice_ends_in_exactly_the_same_state() {
     let first = play_full_match(42);
     let second = play_full_match(42);
 

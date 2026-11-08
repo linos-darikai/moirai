@@ -17,7 +17,7 @@ const PRIORITY_FEE_MICRO_LAMPORTS = 10_000;
 /** How many times one turn is sent before giving up. */
 const MAX_TURN_ATTEMPTS = 5;
 /** Turns in a match (civ-core TOTAL_TURNS). */
-export const TOTAL_TURNS = 60;
+export const TOTAL_TURNS = 120;
 
 const WIN_METRIC_BYTES: Record<WinMetric, number> = { territory: 0, wealth: 1, conquest: 2, score: 3 };
 const PAYOUT_BYTES: Record<Exclude<PayoutKind, "practice">, number> = { winnerTakesAll: 0, topThree: 1 };

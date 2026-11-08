@@ -22,8 +22,8 @@ import type { CivIndex } from "../../types/game";
 import type { SimulationResult } from "../../types/map";
 import { EngineBadge, HeaderRow, OpponentRow, Panels } from "./SimulatorPage.styles";
 
-const TOTAL_TURNS = 60;
-const CHART_TURNS = [10, 20, 30, 40, 50, 60] as const;
+const TOTAL_TURNS = 120;
+const CHART_TURNS = [20, 40, 60, 80, 100, 120] as const;
 
 /** The civs in a simulation: you (civ 0), then the opponents that are switched on. */
 type SimulatedSeat = { civ: CivIndex; name: string };

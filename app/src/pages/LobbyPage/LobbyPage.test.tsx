@@ -92,8 +92,8 @@ describe("LobbyPage", () => {
   it("shows the turn while the match is played", async () => {
     renderLobby(openMatch({ players: [WALLET_ALICE, WALLET_BOB], status: "running", turn: 12 }));
 
-    expect(await screen.findByText("12 / 60")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Play the turns (12 / 60)" })).toBeInTheDocument();
+    expect(await screen.findByText("12 / 120")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Play the turns (12 / 120)" })).toBeInTheDocument();
   });
 
   it("says the match is over once its accounts are closed", async () => {

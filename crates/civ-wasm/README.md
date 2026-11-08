@@ -22,7 +22,7 @@ This writes an npm-style package to `crates/civ-wasm/pkg/` (gitignored). The app
 | `compilePolicy(yaml)` | YAML policy to compiled bytes; throws every problem as `line N: ...` |
 | `matchFingerprint(seed, botsYaml)` | Plays a whole match between YAML bots and returns the final fingerprint |
 
-`app/src/lib/engine/determinism.test.ts` checks the map and the 60-turn sample-bot match give the
+`app/src/lib/engine/determinism.test.ts` checks the map and the full sample-bot match give the
 same fingerprints as native Rust.
 
 ## Where to start reading

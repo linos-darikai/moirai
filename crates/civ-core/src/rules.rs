@@ -14,7 +14,7 @@ pub const BPS_PER_WHOLE: u32 = 10_000;
 // ----- Match -----
 
 /// Turns in a match.
-pub const TOTAL_TURNS: u16 = 60;
+pub const TOTAL_TURNS: u16 = 120;
 
 /// What every civ starts the match with (docs/decisions/0008, "Starting stock").
 pub const STARTING_RESOURCES: ResourceStock = ResourceStock {

@@ -21,7 +21,7 @@ import {
   startedSampleMatch,
 } from "./support/chain";
 
-const TOTAL_TURNS = 60;
+const TOTAL_TURNS = 120;
 const PAYOUT_WINNER_TAKES_ALL = 0;
 const PAYOUT_TOP_THREE = 1;
 

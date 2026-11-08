@@ -92,7 +92,7 @@ const fr_policies = {
     scrubValue: "{turn} / {total}",
     standings: "Classement",
     territoryOverTime: "Territoire au fil du temps",
-    chartLabel: "Cases possédées aux tours 10 à 60. {summary}.",
+    chartLabel: "Cases possédées aux tours 20 à 120. {summary}.",
     chartCiv: "{name} termine avec {count}",
     rulesDid: "Ce qu'ont fait vos règles",
     ruleFired: "La règle {rule} {action} s'est déclenchée {count} {{count:fois|fois}}",

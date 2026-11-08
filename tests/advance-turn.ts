@@ -1,5 +1,5 @@
 // Integration tests for advance_turn (Phase 2): the whole flow on chain. Four players join, commit
-// and reveal the four sample bots, the match starts from seed 42, and 60 advance_turn calls play
+// and reveal the four sample bots, the match starts from seed 42, and the advance_turn calls play
 // it out. Records the compute units of every turn (docs/decisions/0009) and checks the final game
 // is byte-for-byte the one native Rust and WASM reach (the Phase 1 gate fingerprint).
 // Needs a local-testing build to start the match: run with `pnpm test:program`.
@@ -20,9 +20,9 @@ import {
 } from "./support/chain";
 
 /** Final fingerprint of the sample match for seed 42 (crates/civ-core/tests/sample_bots_match.rs). */
-const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 8_239_992_931_703_824_454n;
-const TOTAL_TURNS = 60;
-/** 4 × 0.1 SOL pot × 1.5% ÷ 60 turns (programs/civ/src/crank.rs). */
+const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 12_561_166_484_484_629_597n;
+const TOTAL_TURNS = 120;
+/** 4 × 0.1 SOL pot × 1.5% ÷ 120 turns (programs/civ/src/crank.rs). */
 const CRANK_REWARD = (4 * ENTRY_FEE * 150) / 10_000 / TOTAL_TURNS;
 
 describe("advance turn", () => {

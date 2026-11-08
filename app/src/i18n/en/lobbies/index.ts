@@ -15,7 +15,7 @@ const en_lobbies = {
     steps: {
       write: { title: "Write a policy", body: "Up to 16 if/then rules in YAML. Test it free in the simulator." },
       join: { title: "Join and commit", body: "Pay the entry fee into the vault and post your policy hash." },
-      play: { title: "60 turns on chain", body: "The program runs every bot each turn. No server decides anything." },
+      play: { title: "120 turns on chain", body: "The program runs every bot each turn. No server decides anything." },
       settle: { title: "Settle", body: "The winner is paid from the vault and the leaderboard updates." },
     },
     openLobbies: "Open lobbies",
@@ -78,7 +78,7 @@ const en_lobbies = {
     submit: "Create lobby",
     submitting: "Creating the lobby…",
     needWallet: "Connect a wallet to create a lobby. You pay only the accounts' rent, which comes back when the match closes.",
-    turnsFixed: "Every match is 60 turns in this version.",
+    turnsFixed: "Every match is 120 turns in this version.",
     failed: "The lobby wasn't created: {message:string}",
     networkFee: "Network fee about 0.00001 SOL · rent refunded at settlement",
   },

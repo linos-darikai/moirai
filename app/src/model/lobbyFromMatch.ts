@@ -9,7 +9,7 @@ import { shortenAddress } from "./format";
 /** Lamports in one SOL. */
 const LAMPORTS_PER_SOL = 1_000_000_000;
 /** Turns in a match (civ-core TOTAL_TURNS). */
-export const MATCH_TURNS = 60;
+export const MATCH_TURNS = 120;
 /** programs/civ SEED_REQUEST_TIMEOUT_SECONDS: after this the seed may be requested again. */
 export const SEED_REQUEST_TIMEOUT_SECONDS = 120;
 

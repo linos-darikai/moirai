@@ -27,7 +27,7 @@ export const GAME_RULES = {
   mapSize: 16,
   minCivs: 2,
   maxCivs: 4,
-  totalTurns: 60,
+  totalTurns: 120,
   depositChancePercent: 30,
   /** What every civ starts with. */
   startingStock: { food: 30, ore: 10, gold: 10 } satisfies ResourceAmounts,

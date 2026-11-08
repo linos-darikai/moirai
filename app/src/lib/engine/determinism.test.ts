@@ -2,7 +2,7 @@
 // Determinism check (CLAUDE.md section 6): the WASM build of civ-core must generate exactly the
 // same map, and play exactly the same match, as native Rust. The expected values are the
 // KNOWN_FINGERPRINT_FOR_SEED_42 constants in crates/civ-core/src/map_generation.rs (the map) and
-// crates/civ-core/tests/sample_bots_match.rs (a full 60-turn match between the four sample bots
+// crates/civ-core/tests/sample_bots_match.rs (a full 120-turn match between the four sample bots
 // in policies/); if one changes, both must change together.
 // Runs in Node (not jsdom) so it can read the .wasm file straight from disk.
 
@@ -12,7 +12,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { compilePolicy, initSync, mapFingerprint, matchFingerprint, simulateMatch } from "civ-wasm";
 
 const NATIVE_FINGERPRINT_FOR_SEED_42 = "14264378160424497879";
-const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = "8239992931703824454";
+const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = "12561166484484629597";
 
 /** The four sample bots, read from the repo's policies/ folder, in join order. */
 function sampleBots(): string[] {
@@ -36,7 +36,7 @@ describe("civ-core WASM determinism", () => {
     expect(fingerprint).toBe(NATIVE_FINGERPRINT_FOR_SEED_42);
   });
 
-  it("plays the 60-turn sample-bot match exactly like native Rust", () => {
+  it("plays the full sample-bot match exactly like native Rust", () => {
     const seed = new Uint8Array(32).fill(42);
 
     const fingerprint = matchFingerprint(seed, sampleBots());
@@ -49,8 +49,8 @@ describe("civ-core WASM determinism", () => {
 
     const simulation = simulateMatch(seed, sampleBots());
 
-    expect(simulation.snapshotCount()).toBe(61);
-    expect(simulation.mapTiles(60)).toHaveLength(768);
+    expect(simulation.snapshotCount()).toBe(121);
+    expect(simulation.mapTiles(120)).toHaveLength(768);
     expect(simulation.fingerprint()).toBe(NATIVE_MATCH_FINGERPRINT_FOR_SEED_42);
     simulation.free();
   });

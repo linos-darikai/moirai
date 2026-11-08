@@ -92,7 +92,7 @@ const es_policies = {
     scrubValue: "{turn} / {total}",
     standings: "Clasificación",
     territoryOverTime: "Territorio a lo largo del tiempo",
-    chartLabel: "Casillas en los turnos 10 a 60. {summary}.",
+    chartLabel: "Casillas en los turnos 20 a 120. {summary}.",
     chartCiv: "{name} termina con {count}",
     rulesDid: "Qué hicieron tus reglas",
     ruleFired: "La regla {rule} {action} se activó {count} {{count:vez|veces}}",
