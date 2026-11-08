@@ -14,6 +14,7 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `civ` | `CivId` and `Civ` (88 plain bytes: alive, units, resources, 8 city slots; read via `capital()`, `cities()`, `city_count()`, `is_alive()`) |
 | `borders` | Tiles within a city's reach (`for_each_tile_within`, Manhattan radius = size + 1); claim, count free tiles, count owned deposits |
 | `growth` | `grow_cities(&mut map, &mut civs, turn)`: turn step 3. Each city gains 1 + owned deposits in its border per turn; at 20 × size² it grows and claims the free tiles of its bigger border. If that would gain nothing, the border locks for good. Who grows first rotates each turn |
+| `actions` | What a civ can do on its turn, checks first and nothing changes if one fails: `build_unit(&mut civ, kind)` (pays the cost; one Elite per city size), `found_city(&mut map, &mut civ, site, turn)` (uses a Settler on a city site in or next to the civ's land). Refusals are `ActionError` variants |
 | `aggregates` | `aggregate_map(&map)`: each civ's tiles, cities and owned deposits, counted in one pass per turn |
 | `production` | `produce_resources(&aggregates, &mut civs)`: turn step 1. Each owned deposit yields 1 unit; each city adds `CITY_INCOME_PER_SIZE` (food 2, ore 1, gold 1) once per size |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, `unit_stats(kind)` and the disband order, market, battle, scoring. Integer maths; percentages in basis points |

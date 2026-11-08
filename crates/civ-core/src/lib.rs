@@ -6,6 +6,7 @@
 //! HashMap iteration, no system time or OS randomness, checked/saturating arithmetic.
 //!
 //! Modules (one topic each):
+//! - `actions`: what a civ can do on its turn (build_unit, found_city), checks first
 //! - `randomness`: deterministic random numbers from the match seed
 //! - `resources`: Food / Ore / Gold and a civ's stock
 //! - `units`: the four unit kinds and unit counts
@@ -20,6 +21,7 @@
 //! - `production`: turn step 1, resources from owned deposits and cities
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
+pub mod actions;
 pub mod aggregates;
 pub mod borders;
 pub mod city;

@@ -92,6 +92,19 @@ impl ResourceStock {
             Resource::Gold => self.gold = self.gold.saturating_add(amount),
         }
     }
+
+    /// True if this stock holds at least `cost` of every resource.
+    pub fn can_afford(&self, cost: &ResourceStock) -> bool {
+        self.food >= cost.food && self.ore >= cost.ore && self.gold >= cost.gold
+    }
+
+    /// Takes `cost` out of the stock, stopping at zero instead of going negative. Check
+    /// `can_afford` first when the full cost must be paid.
+    pub fn subtract(&mut self, cost: &ResourceStock) {
+        self.food = self.food.saturating_sub(cost.food);
+        self.ore = self.ore.saturating_sub(cost.ore);
+        self.gold = self.gold.saturating_sub(cost.gold);
+    }
 }
 
 #[cfg(test)]
@@ -107,6 +120,52 @@ mod tests {
         assert_eq!(stock.amount(Resource::Ore), 5);
         assert_eq!(stock.amount(Resource::Food), 0);
         assert_eq!(stock.amount(Resource::Gold), 0);
+    }
+
+    #[test]
+    fn a_stock_can_afford_a_cost_only_if_it_covers_every_resource() {
+        let stock = ResourceStock {
+            food: 30,
+            ore: 5,
+            gold: 0,
+        };
+
+        let cheap = ResourceStock {
+            food: 10,
+            ..ResourceStock::EMPTY
+        };
+        let too_much_ore = ResourceStock {
+            food: 10,
+            ore: 10,
+            gold: 0,
+        };
+
+        assert!(stock.can_afford(&cheap));
+        assert!(!stock.can_afford(&too_much_ore));
+    }
+
+    #[test]
+    fn subtracting_stops_at_zero() {
+        let mut stock = ResourceStock {
+            food: 30,
+            ore: 5,
+            gold: 0,
+        };
+
+        stock.subtract(&ResourceStock {
+            food: 10,
+            ore: 10,
+            gold: 0,
+        });
+
+        assert_eq!(
+            stock,
+            ResourceStock {
+                food: 20,
+                ore: 0,
+                gold: 0
+            }
+        );
     }
 
     #[test]

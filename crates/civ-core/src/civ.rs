@@ -84,6 +84,12 @@ impl Civ {
         &mut self.cities
     }
 
+    /// The first empty city slot, borrowed so the caller can put a city in it, or `None` if the
+    /// civ already has MAX_CITIES_PER_CIV cities.
+    pub fn free_city_slot(&mut self) -> Option<&mut City> {
+        self.cities.iter_mut().find(|city| !city.is_in_use())
+    }
+
     /// How many cities the civ has.
     pub fn city_count(&self) -> usize {
         let mut count = 0;
