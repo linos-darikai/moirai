@@ -90,6 +90,14 @@ impl Civ {
         self.cities.iter_mut().find(|city| !city.is_in_use())
     }
 
+    /// Which slot holds the civ's city on `tile`, or `None` if the civ has no city there.
+    pub fn city_slot_at(&self, tile: TileCoordinate) -> Option<usize> {
+        // `.position(...)` is like `findIndex` in TypeScript, but returns None instead of -1.
+        self.cities
+            .iter()
+            .position(|city| city.tile() == Some(tile))
+    }
+
     /// How many cities the civ has.
     pub fn city_count(&self) -> usize {
         let mut count = 0;

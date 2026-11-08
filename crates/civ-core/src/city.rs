@@ -128,6 +128,33 @@ impl City {
         self.growth_points = 0;
     }
 
+    /// Makes this city the capital, or takes the title away.
+    pub fn set_capital(&mut self, is_capital: bool) {
+        if is_capital {
+            self.flags |= CAPITAL_FLAG;
+        } else {
+            self.flags &= !CAPITAL_FLAG;
+        }
+    }
+
+    /// This city as its new owner gets it after a capture (docs/decisions/0006, section 5): one
+    /// size smaller (never below 1), growth restarted, never a capital, captured on `turn`. A
+    /// locked border stays locked.
+    pub fn captured(&self, turn: u16) -> City {
+        let mut flags = IN_USE_FLAG;
+        if self.has_stopped_growing() {
+            flags |= GROWTH_STOPPED_FLAG;
+        }
+        City {
+            x: self.x,
+            y: self.y,
+            size: self.size.saturating_sub(1).max(STARTING_CITY_SIZE),
+            flags,
+            growth_points: 0,
+            founded_turn: turn,
+        }
+    }
+
     /// Locks the city at its current size for the rest of the match.
     pub fn stop_growing(&mut self) {
         self.flags |= GROWTH_STOPPED_FLAG;
@@ -196,6 +223,27 @@ mod tests {
         assert!(!biggest.can_grow());
         assert!(!locked.can_grow());
         assert!(City::founded(tile, 0, false).can_grow());
+    }
+
+    #[test]
+    fn a_captured_city_drops_one_size_and_is_no_longer_a_capital() {
+        let mut capital = City::founded(TileCoordinate::new(3, 3).expect("on the map"), 0, true);
+        capital.grow();
+        capital.grow();
+
+        let captured = capital.captured(30);
+
+        assert_eq!(captured.size(), 2);
+        assert!(!captured.is_capital());
+        assert_eq!(captured.founded_turn(), 30);
+        assert_eq!(captured.tile(), capital.tile());
+    }
+
+    #[test]
+    fn a_captured_size_one_city_stays_size_one() {
+        let city = City::founded(TileCoordinate::new(3, 3).expect("on the map"), 0, false);
+
+        assert_eq!(city.captured(5).size(), 1);
     }
 
     #[test]
