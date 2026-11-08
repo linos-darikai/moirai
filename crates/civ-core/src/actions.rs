@@ -3,14 +3,14 @@
 //! (docs/decisions/0006, section 6). Each function checks everything first and changes nothing
 //! when a check fails, so a refused action costs nothing.
 //!
-//! Here: `found_city`, and the `ActionError` every action returns. Building units is in builds.rs,
-//! `attack` in attack.rs. Trades and `claim_tile` come in later steps.
+//! Here: `found_city`, `claim_tile`, and the `ActionError` every action returns. Building units is
+//! in builds.rs, `attack` in attack.rs, market trades in market.rs.
 
 use crate::borders::claim_unowned_tiles_within;
 use crate::city::{City, STARTING_CITY_SIZE};
 use crate::civ::Civ;
 use crate::map::{Map, TileCoordinate};
-use crate::rules::border_radius;
+use crate::rules::{border_radius, CLAIM_TILE_COST};
 use crate::units::UnitKind;
 
 /// Why an action was refused. Like a TypeScript union of error strings, but checked by the
@@ -39,6 +39,8 @@ pub enum ActionError {
     AlreadyACity,
     /// Another civ owns that tile.
     OwnedByAnotherCiv,
+    /// `claim_tile` on a tile the civ already owns.
+    AlreadyYours,
     /// The tile is neither inside the civ's territory nor next to it.
     NotNextToTerritory,
     /// The civ already has MAX_CITIES_PER_CIV cities.
@@ -105,6 +107,37 @@ fn check_can_found_city(map: &Map, civ: &Civ, site: TileCoordinate) -> Result<()
     if civ.city_count() >= civ.cities().len() {
         return Err(ActionError::NoFreeCitySlot);
     }
+    Ok(())
+}
+
+/// Buys one free tile next to the civ's land (docs/decisions/0006, "Paid claim_tile"): faster
+/// than waiting for a city to grow.
+///
+/// Checks: civ is alive; nobody owns the tile; it shares an edge with the civ's land; the civ can
+/// afford CLAIM_TILE_COST (10 Food + 10 Gold).
+/// Effects: takes the cost, the tile becomes the civ's.
+pub fn claim_tile(map: &mut Map, civ: &mut Civ, tile: TileCoordinate) -> Result<(), ActionError> {
+    // Step 1: checks
+    if !civ.is_alive() {
+        return Err(ActionError::CivIsOut);
+    }
+    // `Some(owner) if ...` is a match arm with an extra test (a "guard"): it only matches when the
+    // tile is owned AND the owner is this civ. Other owners fall through to `Some(_)`.
+    match map.tile(tile).owner() {
+        Some(owner) if owner == civ.id() => return Err(ActionError::AlreadyYours),
+        Some(_) => return Err(ActionError::OwnedByAnotherCiv),
+        None => {}
+    }
+    if !touches_territory(map, civ, tile) {
+        return Err(ActionError::NotNextToTerritory);
+    }
+    if !civ.resources.can_afford(&CLAIM_TILE_COST) {
+        return Err(ActionError::CannotAfford);
+    }
+
+    // Step 2: pay and take the tile
+    civ.resources.subtract(&CLAIM_TILE_COST);
+    map.tile_mut(tile).set_owner(Some(civ.id()));
     Ok(())
 }
 
@@ -226,5 +259,57 @@ mod tests {
         let result = found_city(&mut map, &mut civ, coordinate(3, 3), 12);
 
         assert_eq!(result, Err(ActionError::AlreadyACity));
+    }
+
+    #[test]
+    fn claiming_a_free_tile_next_to_your_land_costs_ten_food_and_ten_gold() {
+        let mut map = map_with_a_site_next_to_civ_zero();
+        let mut civ = rich_civ();
+
+        let result = claim_tile(&mut map, &mut civ, coordinate(6, 3));
+
+        assert_eq!(result, Ok(()));
+        assert_eq!(map.tile(coordinate(6, 3)).owner(), Some(CivId(0)));
+        assert_eq!(civ.resources.food, 1_000 - 10);
+        assert_eq!(civ.resources.gold, 1_000 - 10);
+        assert_eq!(civ.resources.ore, 1_000);
+    }
+
+    #[test]
+    fn claiming_a_tile_away_from_your_land_is_refused() {
+        let mut map = map_with_a_site_next_to_civ_zero();
+        let mut civ = rich_civ();
+
+        let result = claim_tile(&mut map, &mut civ, coordinate(7, 3));
+
+        assert_eq!(result, Err(ActionError::NotNextToTerritory));
+        assert_eq!(civ.resources.food, 1_000);
+    }
+
+    #[test]
+    fn owned_tiles_cannot_be_claimed() {
+        let mut map = map_with_a_site_next_to_civ_zero();
+        map.tile_mut(coordinate(6, 3)).set_owner(Some(CivId(1)));
+        let mut civ = rich_civ();
+
+        let enemy = claim_tile(&mut map, &mut civ, coordinate(6, 3));
+        let own = claim_tile(&mut map, &mut civ, coordinate(4, 3));
+
+        assert_eq!(enemy, Err(ActionError::OwnedByAnotherCiv));
+        assert_eq!(own, Err(ActionError::AlreadyYours));
+    }
+
+    #[test]
+    fn a_civ_that_cannot_afford_the_claim_keeps_its_stock() {
+        let mut map = map_with_a_site_next_to_civ_zero();
+        let mut civ = Civ::new(CivId(0), coordinate(3, 3));
+        civ.resources.food = 10;
+        civ.resources.gold = 9;
+
+        let result = claim_tile(&mut map, &mut civ, coordinate(6, 3));
+
+        assert_eq!(result, Err(ActionError::CannotAfford));
+        assert_eq!(map.tile(coordinate(6, 3)).owner(), None);
+        assert_eq!(civ.resources.food, 10);
     }
 }
