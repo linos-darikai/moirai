@@ -1,0 +1,13 @@
+[package]
+name = "civ-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Runs local moirai matches between YAML bots and prints the map as text."
+publish = false
+
+[[bin]]
+name = "civ"
+path = "src/main.rs"
+
+[dependencies]
+civ-core = { path = "../civ-core", features = ["compiler"] }

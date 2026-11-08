@@ -1,0 +1,14 @@
+[package]
+name = "civ-core"
+version = "0.1.0"
+edition = "2021"
+description = "All moirai game rules. Pure Rust with no Solana dependencies, shared by the program, WASM and CLI."
+publish = false
+
+[features]
+default = []
+# The YAML policy compiler (added in Phase 1). Off by default so YAML parsing is never compiled
+# into the on-chain program; civ-wasm and civ-cli turn it on.
+compiler = []
+
+[dependencies]

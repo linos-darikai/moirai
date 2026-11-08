@@ -1,0 +1,19 @@
+# Rust workspace: one Cargo.lock and one target/ folder for every Rust package in the repo.
+# - programs/*: the on-chain Anchor program
+# - crates/*:   civ-core (game rules), civ-wasm (browser wrapper), civ-cli (local runner)
+[workspace]
+members = [
+    "programs/*",
+    "crates/*",
+]
+resolver = "2"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1

@@ -1,0 +1,28 @@
+# Kept local on purpose (plan, decisions and agent rules are not published)
+/docs
+CLAUDE.md
+
+# Rust / Anchor build output
+target/
+.anchor/
+test-ledger/
+.surfpool/
+**/*.rs.bk
+
+# JavaScript
+node_modules/
+dist/
+.yarn/
+
+# wasm-pack output
+crates/civ-wasm/pkg/
+
+# Keypairs and secrets: never commit these
+*.keypair.json
+**/*-keypair.json
+id.json
+.env*
+!.env.example
+
+# OS / editor
+.DS_Store

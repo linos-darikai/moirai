@@ -1,0 +1,8 @@
+# Pins the Rust compiler for this repo. 1.89.0 is the version Anchor 1.0.2 generates and the one
+# MagicBlock's guides are tested with. rustup installs it automatically the first time you build.
+# See docs/decisions/0001-toolchain.md.
+[toolchain]
+channel = "1.89.0"
+components = ["rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"
