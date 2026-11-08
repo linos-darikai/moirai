@@ -1,13 +1,18 @@
-# iron-turtle: builds a strong economy and a wall of Guards, never attacks.
+# iron-turtle: a wall of Guards (and an Elite when it can) around steadily bought land; never
+# attacks. Works gold once its food is safe, because land and Elites cost gold.
 name: iron-turtle
 rules:
-  - if: my.workers < 5
+  - if: food < 25
+    do: assign_workers(food)
+  - if: food > 60
+    do: assign_workers(gold)
+  - if: my.workers < 6 and food >= 20
     do: build(worker)
-  - if: my.guards < 6 and ore >= 15
+  - if: gold >= 40 and coins >= 40
+    do: build(elite)
+  - if: food >= 25 and gold >= 10
+    do: claim_tile(nearest_free)
+  - if: my.guards < 12 and ore >= 15
     do: build(guard)
-  - if: food < 20 and coins >= 30
-    do: buy(food, 20)
-  - if: gold > 40
-    do: sell(gold, 20)
-  - if: always
-    do: claim_tile(nearest_deposit)
+  - if: gold < 10 and food > 60
+    do: sell(food, 20)

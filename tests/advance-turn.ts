@@ -20,7 +20,7 @@ import {
 } from "./support/chain";
 
 /** Final fingerprint of the sample match for seed 42 (crates/civ-core/tests/sample_bots_match.rs). */
-const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 13_451_523_736_825_787_217n;
+const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 8_239_992_931_703_824_454n;
 const TOTAL_TURNS = 60;
 /** 4 × 0.1 SOL pot × 1.5% ÷ 60 turns (programs/civ/src/crank.rs). */
 const CRANK_REWARD = (4 * ENTRY_FEE * 150) / 10_000 / TOTAL_TURNS;

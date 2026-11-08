@@ -26,7 +26,7 @@ const SAMPLE_BOTS: [&str; 4] = [
 /// The final fingerprint of the sample match with every seed byte 42. Locks the whole game: if a
 /// rule, a bot or the turn order changes, this changes. Update it on purpose only, and the WASM
 /// check in app/src/lib/engine expects the same number.
-const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 13_451_523_736_825_787_217;
+const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 8_239_992_931_703_824_454;
 
 fn compiled_bots() -> Vec<Vec<u8>> {
     SAMPLE_BOTS

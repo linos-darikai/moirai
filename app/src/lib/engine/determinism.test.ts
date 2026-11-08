@@ -12,7 +12,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { compilePolicy, initSync, mapFingerprint, matchFingerprint } from "civ-wasm";
 
 const NATIVE_FINGERPRINT_FOR_SEED_42 = "14264378160424497879";
-const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = "13451523736825787217";
+const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = "8239992931703824454";
 
 /** The four sample bots, read from the repo's policies/ folder, in join order. */
 function sampleBots(): string[] {

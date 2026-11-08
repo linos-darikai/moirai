@@ -9,7 +9,7 @@ rules:
     do: build(settler)
   - if: my.workers < 4 and food >= 20
     do: build(worker)
-  - if: food >= 50 and gold >= 10
+  - if: food >= 35 and gold >= 10
     do: claim_tile(nearest_free)
-  - if: my.guards < 2
+  - if: my.guards < 3
     do: build(guard)

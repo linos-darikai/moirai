@@ -39,7 +39,7 @@ instead of array lookups), no truncating casts, and nothing large returned by va
 
 Determinism is locked by tests that pin a known output: `random_u64` for a fixed seed, the map
 fingerprint for seed 42 (`14264378160424497879`), and the final fingerprint of a 60-turn match
-between the four sample bots for seed 42 (`13451523736825787217`, in
+between the four sample bots for seed 42 (`8239992931703824454` since the bots were rebalanced, in
 `tests/sample_bots_match.rs`, the Phase 1 gate). The app's `src/lib/engine/determinism.test.ts`
 checks the WASM build gives the same two fingerprints. If one changes, every past match would
 replay differently, so change them only on purpose (and in both places).

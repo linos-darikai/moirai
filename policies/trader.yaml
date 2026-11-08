@@ -1,18 +1,18 @@
-# silk-trader: works gold when it has food to spare, sells gold when the price is high and buys
-# ore when it is cheap.
+# silk-trader: a big worker economy that turns every surplus into coins, keeping its wealth in
+# coins (their value doesn't fall when the market floods).
 name: silk-trader
 rules:
-  - if: food < 25
+  - if: food < 30
     do: assign_workers(food)
-  - if: food > 60
-    do: assign_workers(gold)
-  - if: my.workers < 6 and food >= 25
+  - if: my.workers < 8 and food >= 25
     do: build(worker)
-  - if: gold_price > 120% base_gold_price and gold >= 20
+  - if: ore > 40
+    do: sell(ore, 20)
+  - if: gold > 40
     do: sell(gold, 20)
-  - if: ore_price < 80% base_ore_price and coins >= 40
-    do: buy(ore, 20)
-  - if: ore >= 15 and my.guards < 4
+  - if: food > 80
+    do: sell(food, 20)
+  - if: my.guards < 3 and ore >= 15
     do: build(guard)
   - if: food >= 40 and gold >= 10
     do: claim_tile(nearest_deposit)
