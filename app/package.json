@@ -8,9 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "oxlint",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "pnpm i18n && tsc -b --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "i18n": "typesafe-i18n --no-watch"
   },
   "dependencies": {
     "@anchor-lang/core": "1.0.2",
@@ -24,7 +25,8 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router": "^8.5.1",
-    "styled-components": "^6.6.0"
+    "styled-components": "^6.6.0",
+    "typesafe-i18n": "5.27.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
@@ -36,7 +38,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "jsdom": "^31.0.0",
     "oxlint": "^1.90.0",
-    "typescript": "~7.0.2",
+    "typescript": "~5.9.3",
     "vite": "^8.3.6",
     "vitest": "^5.1.0"
   }

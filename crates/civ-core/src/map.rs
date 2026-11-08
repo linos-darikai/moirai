@@ -200,6 +200,12 @@ impl Map {
         &self.tiles
     }
 
+    /// The map's raw storage: 768 bytes, 3 per tile in row order (owner, deposit, flags), exactly
+    /// as an on-chain Map account stores it. The browser decodes this to draw the board.
+    pub fn as_bytes(&self) -> &[u8] {
+        bytemuck::bytes_of(self)
+    }
+
     /// A 64-bit summary of every tile, used to check two maps are identical (for example the
     /// native build and the WASM build). Uses FNV-1a, a simple hash that is the same everywhere.
     ///

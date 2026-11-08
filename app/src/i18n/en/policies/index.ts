@@ -1,0 +1,87 @@
+// English: the Policy editor and the local Simulator.
+
+import type { BaseTranslation } from "../../i18n-types.js";
+
+const en_policies = {
+  editor: {
+    myPolicies: "My policies",
+    newPolicy: "New policy",
+    untitled: "untitled-policy",
+    templates: "Start from a template",
+    template: {
+      turtle: "Turtle",
+      raider: "Raider",
+      trader: "Trader",
+      expander: "Expander",
+    },
+    draftMeta: "Draft · {count:number} {{count:rule|rules}}",
+    usedMeta: "Used in {matches:number} matches · {wins:number} wins",
+    status: "Draft · saved in this browser · not committed to any match",
+    view: "View",
+    viewYaml: "YAML",
+    viewRules: "Rules",
+    fileName: "policy.yaml",
+    yamlLabel: "Policy YAML",
+    if: "IF",
+    then: "THEN",
+    compiled: "Compiled policy",
+    rules: "Rules",
+    rulesValue: "{count:number} / {max:number}",
+    size: "YAML size",
+    sizeValue: "{count:number|integer} bytes",
+    hash: "Hash (changes with every edit)",
+    hashNote: "Hash of the YAML text until the civ-core compiler is wired in.",
+    checks: {
+      yaml: "Rules found under rules:",
+      known: "Every condition and action is known",
+      limit: "Within the {max:number}-rule limit",
+      warnings: "{count:number} {{count:warning|warnings}}",
+      noWarnings: "No warnings",
+    },
+    problems: {
+      noRules: "Add at least one rule under rules:.",
+      missingDo: "Rule {rule:number} (line {line:number}) has an if: but no do:.",
+      unknownCondition: "Line {line:number}: “{word:string}” isn't a known condition.",
+      unknownAction: "Line {line:number}: “{word:string}” isn't a known action.",
+      tooManyRules: "{count:number} rules: the limit is {max:number}.",
+      shadowed:
+        "Line {line:number}, rule {rule:number} rarely runs. Rule {alwaysRule:number} matches every turn, and only the first 3 matching rules act. Move rule {rule:number} above rule {alwaysRule:number} if it matters.",
+    },
+    testInSimulator: "Test in simulator",
+    useInLobby: "Use in a lobby",
+    reference: "Reference",
+    conditions: "Conditions",
+    actions: "Actions",
+  },
+  simulator: {
+    title: "Simulator",
+    intro:
+      "Runs the exact same game rules as the chain, right in your browser. Free, private, and nothing is sent anywhere.",
+    engineBadge: "Same engine as the program ({version:string})",
+    setup: "Setup",
+    yourPolicy: "Your policy",
+    opponents: "Opponents",
+    style: {
+      aggressive: "aggressive",
+      economic: "economic",
+      expansion: "expansion",
+    },
+    seed: "Map seed",
+    seedHint: "Hex, up to 64 characters. The same seed always makes the same map.",
+    run: "Run {turns:number} turns",
+    runMany: "Run 100 matches, random seeds",
+    board: "Board at turn {turn:number}",
+    scrub: "Scrub turns",
+    scrubValue: "{turn:number} / {total:number}",
+    standings: "Standings",
+    territoryOverTime: "Territory over time",
+    chartLabel: "Tiles owned at turns 10 to 60. {summary:string}.",
+    chartCiv: "{name:string} ends with {count:number}",
+    rulesDid: "What your rules did",
+    ruleFired: "Rule {rule:number} {action:string} fired {count:number} {{count:time|times}}",
+    ruleNeverFired: "Rule {rule:number} {action:string} never fired",
+    backToEditor: "Back to the editor",
+  },
+} satisfies BaseTranslation;
+
+export default en_policies;

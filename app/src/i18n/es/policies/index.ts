@@ -1,0 +1,87 @@
+// Español (BORRADOR): editor de políticas y simulador. Pendiente de revisión nativa.
+
+import type { NamespacePoliciesTranslation } from "../../i18n-types.js";
+
+const es_policies = {
+  editor: {
+    myPolicies: "Mis políticas",
+    newPolicy: "Nueva política",
+    untitled: "politica-sin-nombre",
+    templates: "Empezar con una plantilla",
+    template: {
+      turtle: "Tortuga",
+      raider: "Saqueador",
+      trader: "Comerciante",
+      expander: "Expansionista",
+    },
+    draftMeta: "Borrador · {count} {{count:regla|reglas}}",
+    usedMeta: "Usada en {matches} partidas · {wins} victorias",
+    status: "Borrador · guardado en este navegador · no comprometido en ninguna partida",
+    view: "Vista",
+    viewYaml: "YAML",
+    viewRules: "Reglas",
+    fileName: "policy.yaml",
+    yamlLabel: "YAML de la política",
+    if: "SI",
+    then: "ENTONCES",
+    compiled: "Política compilada",
+    rules: "Reglas",
+    rulesValue: "{count} / {max}",
+    size: "Tamaño del YAML",
+    sizeValue: "{count|integer} bytes",
+    hash: "Hash (cambia con cada edición)",
+    hashNote: "Hash del texto YAML hasta que se conecte el compilador de civ-core.",
+    checks: {
+      yaml: "Reglas encontradas bajo rules:",
+      known: "Todas las condiciones y acciones son conocidas",
+      limit: "Dentro del límite de {max} reglas",
+      warnings: "{count} {{count:aviso|avisos}}",
+      noWarnings: "Sin avisos",
+    },
+    problems: {
+      noRules: "Añade al menos una regla bajo rules:.",
+      missingDo: "La regla {rule} (línea {line}) tiene if: pero no do:.",
+      unknownCondition: "Línea {line}: «{word}» no es una condición conocida.",
+      unknownAction: "Línea {line}: «{word}» no es una acción conocida.",
+      tooManyRules: "{count} reglas: el límite es {max}.",
+      shadowed:
+        "Línea {line}: la regla {rule} casi nunca se ejecuta. La regla {alwaysRule} se cumple en cada turno y solo actúan las 3 primeras reglas que se cumplen. Sube la regla {rule} por encima de la {alwaysRule} si importa.",
+    },
+    testInSimulator: "Probar en el simulador",
+    useInLobby: "Usar en una sala",
+    reference: "Referencia",
+    conditions: "Condiciones",
+    actions: "Acciones",
+  },
+  simulator: {
+    title: "Simulador",
+    intro:
+      "Ejecuta exactamente las mismas reglas que la cadena, en tu navegador. Gratis, privado y sin enviar nada a ningún sitio.",
+    engineBadge: "El mismo motor que el programa ({version})",
+    setup: "Configuración",
+    yourPolicy: "Tu política",
+    opponents: "Rivales",
+    style: {
+      aggressive: "agresivo",
+      economic: "económico",
+      expansion: "expansión",
+    },
+    seed: "Semilla del mapa",
+    seedHint: "Hexadecimal, hasta 64 caracteres. La misma semilla siempre genera el mismo mapa.",
+    run: "Jugar {turns} turnos",
+    runMany: "Jugar 100 partidas con semillas aleatorias",
+    board: "Tablero en el turno {turn}",
+    scrub: "Recorrer turnos",
+    scrubValue: "{turn} / {total}",
+    standings: "Clasificación",
+    territoryOverTime: "Territorio a lo largo del tiempo",
+    chartLabel: "Casillas en los turnos 10 a 60. {summary}.",
+    chartCiv: "{name} termina con {count}",
+    rulesDid: "Qué hicieron tus reglas",
+    ruleFired: "La regla {rule} {action} se activó {count} {{count:vez|veces}}",
+    ruleNeverFired: "La regla {rule} {action} nunca se activó",
+    backToEditor: "Volver al editor",
+  },
+} satisfies NamespacePoliciesTranslation;
+
+export default es_policies;

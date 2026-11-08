@@ -1,0 +1,87 @@
+// Français (BROUILLON) : éditeur de stratégies et simulateur. À faire relire.
+
+import type { NamespacePoliciesTranslation } from "../../i18n-types.js";
+
+const fr_policies = {
+  editor: {
+    myPolicies: "Mes stratégies",
+    newPolicy: "Nouvelle stratégie",
+    untitled: "strategie-sans-nom",
+    templates: "Partir d'un modèle",
+    template: {
+      turtle: "Tortue",
+      raider: "Pillard",
+      trader: "Marchand",
+      expander: "Bâtisseur",
+    },
+    draftMeta: "Brouillon · {count} {{count:règle|règles}}",
+    usedMeta: "Utilisée dans {matches} parties · {wins} victoires",
+    status: "Brouillon · enregistré dans ce navigateur · engagé dans aucune partie",
+    view: "Affichage",
+    viewYaml: "YAML",
+    viewRules: "Règles",
+    fileName: "policy.yaml",
+    yamlLabel: "YAML de la stratégie",
+    if: "SI",
+    then: "ALORS",
+    compiled: "Stratégie compilée",
+    rules: "Règles",
+    rulesValue: "{count} / {max}",
+    size: "Taille du YAML",
+    sizeValue: "{count|integer} octets",
+    hash: "Hash (change à chaque modification)",
+    hashNote: "Hash du texte YAML en attendant le compilateur civ-core.",
+    checks: {
+      yaml: "Règles trouvées sous rules:",
+      known: "Toutes les conditions et actions sont connues",
+      limit: "Dans la limite de {max} règles",
+      warnings: "{count} {{count:avertissement|avertissements}}",
+      noWarnings: "Aucun avertissement",
+    },
+    problems: {
+      noRules: "Ajoutez au moins une règle sous rules:.",
+      missingDo: "La règle {rule} (ligne {line}) a un if: mais pas de do:.",
+      unknownCondition: "Ligne {line} : « {word} » n'est pas une condition connue.",
+      unknownAction: "Ligne {line} : « {word} » n'est pas une action connue.",
+      tooManyRules: "{count} règles : la limite est de {max}.",
+      shadowed:
+        "Ligne {line} : la règle {rule} ne s'exécute presque jamais. La règle {alwaysRule} est vraie à chaque tour et seules les 3 premières règles vraies agissent. Placez la règle {rule} au-dessus de la règle {alwaysRule} si elle compte.",
+    },
+    testInSimulator: "Tester dans le simulateur",
+    useInLobby: "Utiliser dans un salon",
+    reference: "Référence",
+    conditions: "Conditions",
+    actions: "Actions",
+  },
+  simulator: {
+    title: "Simulateur",
+    intro:
+      "Exécute exactement les mêmes règles que la chaîne, dans votre navigateur. Gratuit, privé, rien n'est envoyé nulle part.",
+    engineBadge: "Même moteur que le programme ({version})",
+    setup: "Configuration",
+    yourPolicy: "Votre stratégie",
+    opponents: "Adversaires",
+    style: {
+      aggressive: "agressif",
+      economic: "économique",
+      expansion: "expansion",
+    },
+    seed: "Graine de la carte",
+    seedHint: "Hexadécimal, jusqu'à 64 caractères. La même graine donne toujours la même carte.",
+    run: "Jouer {turns} tours",
+    runMany: "Jouer 100 parties, graines aléatoires",
+    board: "Plateau au tour {turn}",
+    scrub: "Parcourir les tours",
+    scrubValue: "{turn} / {total}",
+    standings: "Classement",
+    territoryOverTime: "Territoire au fil du temps",
+    chartLabel: "Cases possédées aux tours 10 à 60. {summary}.",
+    chartCiv: "{name} termine avec {count}",
+    rulesDid: "Ce qu'ont fait vos règles",
+    ruleFired: "La règle {rule} {action} s'est déclenchée {count} {{count:fois|fois}}",
+    ruleNeverFired: "La règle {rule} {action} ne s'est jamais déclenchée",
+    backToEditor: "Retour à l'éditeur",
+  },
+} satisfies NamespacePoliciesTranslation;
+
+export default fr_policies;
