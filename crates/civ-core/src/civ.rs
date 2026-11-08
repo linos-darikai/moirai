@@ -98,6 +98,18 @@ impl Civ {
         count
     }
 
+    /// The sizes of all the civ's cities added up (a size 3 city and a size 1 city make 4).
+    /// City income scales with this.
+    pub fn total_city_size(&self) -> u32 {
+        let mut total: u32 = 0;
+        for city in &self.cities {
+            if city.is_in_use() {
+                total = total.saturating_add(u32::from(city.size()));
+            }
+        }
+        total
+    }
+
     /// The civ's capital, or `None` if it has no cities left.
     pub fn capital(&self) -> Option<&City> {
         // `.find(...)` returns the first city the test is true for, or None.
@@ -160,6 +172,17 @@ mod tests {
         let empty_slots = civ.cities().iter().filter(|city| !city.is_in_use()).count();
 
         assert_eq!(empty_slots, MAX_CITIES_PER_CIV - 1);
+    }
+
+    #[test]
+    fn total_city_size_adds_up_every_city() {
+        let mut civ = Civ::new(CivId(0), coordinate(3, 3));
+        civ.cities_mut()[0].grow();
+        civ.cities_mut()[1] = City::founded(coordinate(6, 3), 5, false);
+
+        let total = civ.total_city_size();
+
+        assert_eq!(total, 2 + 1);
     }
 
     #[test]

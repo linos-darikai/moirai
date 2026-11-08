@@ -1,24 +1,26 @@
 //! Production: step 1 of every turn (PLAN.md section 2, "Turn order": produce resources first).
 //!
-//! Each owned deposit tile produces 1 unit of its resource per turn, and each city tile a civ owns
-//! adds its base income (rules.rs). City sizes arrive with the cities module; until then every
-//! city counts as size 1. Production reads the per-civ aggregates (one map scan per turn)
-//! rather than scanning the map again.
+//! Each owned deposit tile produces 1 unit of its resource per turn, and each city adds
+//! `CITY_INCOME_PER_SIZE` once per size (rules.rs): a size 3 city earns three times a size 1 city.
+//! Deposits come from the per-civ aggregates (one map scan per turn); city sizes come from the
+//! civ's own city list.
 
 use crate::aggregates::{deposits_of, MapAggregates};
 use crate::civ::Civ;
 use crate::resources::{Resource, ResourceStock};
 use crate::rules::{CITY_INCOME_PER_SIZE, DEPOSIT_YIELD_PER_TURN};
 
-/// What `civ` gains this turn from the land it owns, given this turn's aggregates.
+/// What `civ` gains this turn from its deposits (given this turn's aggregates) and its cities.
 pub fn turn_income(aggregates: &MapAggregates, civ: &Civ) -> ResourceStock {
     let owned = aggregates.for_civ(civ.id());
-    let cities = u32::from(owned.cities_owned);
+    let total_city_size = civ.total_city_size();
 
     let mut income = ResourceStock::EMPTY;
     for resource in Resource::ALL {
         let from_deposits = deposits_of(&owned, resource).saturating_mul(DEPOSIT_YIELD_PER_TURN);
-        let from_cities = CITY_INCOME_PER_SIZE.amount(resource).saturating_mul(cities);
+        let from_cities = CITY_INCOME_PER_SIZE
+            .amount(resource)
+            .saturating_mul(total_city_size);
         income.add(resource, from_deposits.saturating_add(from_cities));
     }
     income
@@ -85,6 +87,25 @@ mod tests {
     }
 
     #[test]
+    fn a_bigger_city_earns_its_base_income_once_per_size() {
+        let aggregates = aggregate_map(&Map::empty());
+        let mut civs = [Civ::new(CivId(0), coordinate(3, 3))];
+        civs[0].cities_mut()[0].grow();
+        civs[0].cities_mut()[0].grow();
+
+        produce_resources(&aggregates, &mut civs);
+
+        assert_eq!(
+            civs[0].resources,
+            ResourceStock {
+                food: 3 * 2,
+                ore: 3,
+                gold: 3
+            }
+        );
+    }
+
+    #[test]
     fn deposits_nobody_owns_produce_nothing() {
         let mut map = Map::empty();
         map.tile_mut(coordinate(8, 8))
@@ -94,7 +115,8 @@ mod tests {
 
         produce_resources(&aggregates, &mut civs);
 
-        assert_eq!(civs[0].resources, ResourceStock::EMPTY);
+        // Only the capital's base income; the unowned gold adds nothing.
+        assert_eq!(civs[0].resources, CITY_INCOME_PER_SIZE);
     }
 
     #[test]
