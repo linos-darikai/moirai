@@ -1,5 +1,5 @@
 //! The `attack` action (docs/decisions/0006, section 5): a civ sends its whole army (every unit
-//! except Settlers) at one enemy tile or city next to its territory.
+//! except Settlers and Workers) at one enemy tile or city next to its territory.
 //!
 //! The battle maths is in battle.rs and what happens to a fallen city is in conquest.rs; this
 //! file checks the action, picks the defenders, runs the battle and applies the result.
@@ -115,13 +115,15 @@ fn borders_attacker_land(map: &Map, attacker: CivId, target: TileCoordinate) -> 
     false
 }
 
-/// The units that fight: everything except Settlers.
+/// The units that fight: every kind where `UnitKind::is_fighter` is true (not Settlers or Workers).
 pub fn fighting_units(units: &UnitCounts) -> UnitCounts {
-    // `..*units` copies every other field from `units`, like `{ ...units, settler: 0 }` in TS.
-    UnitCounts {
-        settler: 0,
-        ..*units
+    let mut fighters = UnitCounts::NONE;
+    for kind in UnitKind::ALL {
+        if kind.is_fighter() {
+            fighters.add(kind, units.count(kind));
+        }
     }
+    fighters
 }
 
 /// The defender's army is spread over its cities and its borders, so one target is defended by

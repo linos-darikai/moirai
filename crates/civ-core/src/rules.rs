@@ -1,8 +1,9 @@
-//! Every rule number of the game in one place (docs/decisions/0006-game-rules-v2.md). Other
-//! modules read these constants; the app's Rules page shows the same values (app/src/data/rules.ts).
+//! Every rule number of the game in one place (docs/decisions/0006-game-rules-v2.md and
+//! 0007-coins-workers-build-time.md). Other modules read these constants; the app's Rules page
+//! shows the same values (app/src/data/rules.ts).
 //!
-//! All maths is integer. Percentages are basis points (bps): 10_000 bps = 100%. Prices are in
-//! "gold units" × 10_000, so 12_500 means 1.25 gold.
+//! All maths is integer. Percentages are basis points (bps): 10_000 bps = 100%. Market prices are
+//! in coins × 10_000, so 12_500 means 1.25 coins (docs/decisions/0007).
 
 use crate::resources::ResourceStock;
 use crate::units::UnitKind;
@@ -43,8 +44,12 @@ pub fn border_radius(size: u8) -> u8 {
 
 // ----- Economy -----
 
-/// Units an owned deposit tile produces each turn.
-pub const DEPOSIT_YIELD_PER_TURN: u32 = 1;
+/// Units an owned deposit produces each turn while a Worker works it (docs/decisions/0007).
+/// Unworked deposits produce nothing.
+pub const WORKED_DEPOSIT_YIELD: u32 = 2;
+
+/// Coins each city produces per size, per turn (docs/decisions/0007).
+pub const COIN_INCOME_PER_CITY_SIZE: u32 = 1;
 
 /// What each city produces per size, per turn.
 pub const CITY_INCOME_PER_SIZE: ResourceStock = ResourceStock {
@@ -62,15 +67,19 @@ pub const CLAIM_TILE_COST: ResourceStock = ResourceStock {
 
 // ----- Units -----
 
-/// One unit kind's numbers (docs/decisions/0006, section 4).
+/// One unit kind's numbers (docs/decisions/0006 section 4, 0007).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct UnitStats {
     /// Strength when attacking.
     pub attack: u32,
     /// Strength when defending.
     pub defence: u32,
-    /// What building one costs.
+    /// The resources building one costs.
     pub cost: ResourceStock,
+    /// The coins building one costs, on top of `cost`.
+    pub coin_cost: u32,
+    /// Turns a city spends building one.
+    pub build_turns: u8,
     /// Food it eats every turn.
     pub upkeep_food: u32,
 }
@@ -83,46 +92,65 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             attack: 3,
             defence: 2,
             cost: resources(10, 0, 0),
+            coin_cost: 5,
+            build_turns: 1,
             upkeep_food: 1,
         },
         UnitKind::Guard => UnitStats {
             attack: 2,
             defence: 5,
             cost: resources(0, 15, 0),
+            coin_cost: 10,
+            build_turns: 2,
             upkeep_food: 1,
         },
         UnitKind::Siege => UnitStats {
             attack: 6,
             defence: 1,
             cost: resources(0, 10, 10),
+            coin_cost: 15,
+            build_turns: 3,
             upkeep_food: 1,
         },
         UnitKind::Elite => UnitStats {
             attack: 8,
             defence: 8,
             cost: resources(0, 0, 40),
+            coin_cost: 40,
+            build_turns: 4,
             upkeep_food: 2,
         },
         UnitKind::Settler => UnitStats {
             attack: 0,
             defence: 1,
             cost: resources(30, 10, 0),
+            coin_cost: 20,
+            build_turns: 3,
+            upkeep_food: 1,
+        },
+        UnitKind::Worker => UnitStats {
+            attack: 0,
+            defence: 1,
+            cost: resources(15, 0, 0),
+            coin_cost: 5,
+            build_turns: 2,
             upkeep_food: 1,
         },
     }
 }
 
-/// A civ may field one Elite per city size it owns in total.
+/// A civ may field one Elite per city size it owns in total (Elites being built count too).
 pub const ELITES_PER_CITY_SIZE: u32 = 1;
 
 /// When a civ can't feed its army, units are disbanded in this order: most valuable first, judged
-/// by cost at base market prices (Elite 60, Settler 42.5, Siege 27.5, Guard 18.75, Infantry 10
-/// gold units).
-pub const DISBAND_ORDER: [UnitKind; 5] = [
+/// by cost at base market prices plus coins (Elite 100, Settler 62.5, Siege 42.5, Guard 28.75,
+/// Worker 20, Infantry 15 coins).
+pub const DISBAND_ORDER: [UnitKind; 6] = [
     UnitKind::Elite,
     UnitKind::Settler,
     UnitKind::Siege,
     UnitKind::Guard,
+    UnitKind::Worker,
     UnitKind::Infantry,
 ];
 
@@ -145,7 +173,7 @@ pub const MARKET_SPREAD_BPS: u32 = 500;
 // Checked when compiling: the price bounds must surround the base price (100%). If someone edits
 // them wrongly, the build fails instead of the market misbehaving.
 const _: () = assert!(MARKET_MIN_PRICE_BPS < BPS_PER_WHOLE && MARKET_MAX_PRICE_BPS > BPS_PER_WHOLE);
-/// Base prices in gold units × 10_000: Food 1.00, Ore 1.25, Gold 1.50.
+/// Base prices in coins × 10_000: Food 1.00, Ore 1.25, Gold 1.50 coins (docs/decisions/0007).
 pub const MARKET_BASE_PRICE: ResourceStock = ResourceStock {
     food: 10_000,
     ore: 12_500,

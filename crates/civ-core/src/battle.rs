@@ -124,7 +124,8 @@ pub fn resolve_battle(
     }
 }
 
-/// Σ units × attack × matchup bonus, bps-scaled. Settlers have 0 attack, so they add nothing.
+/// Σ units × attack × matchup bonus, bps-scaled. Settlers and Workers have 0 attack, so they add
+/// nothing.
 pub fn attack_strength(attackers: &UnitCounts, defenders: &UnitCounts, is_city: bool) -> u64 {
     let mut total: u64 = 0;
     for kind in UnitKind::ALL {
@@ -189,14 +190,14 @@ fn matchup_bonus_bps(kind: UnitKind, defenders: &UnitCounts, is_city: bool) -> u
     weighted / total_defenders
 }
 
-/// The rock-paper-scissors table: which kind each kind beats. Elite and Settler have none (the
-/// Elite's bonus is handled on its own).
+/// The rock-paper-scissors table: which kind each kind beats. Elite, Settler and Worker have
+/// none (the Elite's bonus is handled on its own).
 pub fn strong_against(kind: UnitKind) -> Option<UnitKind> {
     match kind {
         UnitKind::Infantry => Some(UnitKind::Siege),
         UnitKind::Guard => Some(UnitKind::Infantry),
         UnitKind::Siege => Some(UnitKind::Guard),
-        UnitKind::Elite | UnitKind::Settler => None,
+        UnitKind::Elite | UnitKind::Settler | UnitKind::Worker => None,
     }
 }
 
@@ -231,6 +232,7 @@ mod tests {
             siege,
             elite,
             settler: 0,
+            worker: 0,
         }
     }
 

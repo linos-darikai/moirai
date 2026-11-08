@@ -1,13 +1,13 @@
 //! Civs: one player's civilisation inside a match. See the glossary in CLAUDE.md section 3.
 //!
-//! Storage layout: `Civ` is 88 plain bytes (`#[repr(C)]`, `Pod`) so the program can use it as
+//! Storage layout: `Civ` is 112 plain bytes (`#[repr(C)]`, `Pod`) so the program can use it as
 //! zero-copy account data, like the map (docs/decisions/0004). Read it through the methods.
 
 use bytemuck::{Pod, Zeroable};
 
 use crate::city::City;
 use crate::map::TileCoordinate;
-use crate::resources::ResourceStock;
+use crate::resources::{Resource, ResourceStock};
 use crate::rules::MAX_CITIES_PER_CIV;
 use crate::units::UnitCounts;
 
@@ -34,11 +34,11 @@ impl CivId {
     }
 }
 
-/// One civ's state, as 88 plain bytes.
+/// One civ's state, as 112 plain bytes.
 ///
-/// Field order matters for `#[repr(C)]`: 2 single bytes + 10 bytes of unit counts end exactly at
-/// byte 12, where the 4-byte-aligned resource stock can start, followed by the cities. `Pod`
-/// forbids hidden padding, and this order needs none.
+/// Field order matters for `#[repr(C)]`: 2 single bytes + 12 bytes of unit counts + 2 more single
+/// bytes end exactly at byte 16, where the 4-byte-aligned resource stock and coins can start,
+/// followed by the cities. `Pod` forbids hidden padding, and this order needs none.
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Pod, Zeroable)]
 pub struct Civ {
@@ -48,8 +48,15 @@ pub struct Civ {
     flags: u8,
     /// Units of each kind.
     pub units: UnitCounts,
+    /// Resource that Workers go to first, as `Resource::to_byte` (0 = no focus, spread evenly).
+    worker_focus: u8,
+    /// Unused; always zero. Keeps `resources` on a 4-byte boundary without hidden padding.
+    reserved: u8,
     /// Food, ore and gold on hand.
     pub resources: ResourceStock,
+    /// Coins on hand (docs/decisions/0007): earned from cities and market sales, spent on units
+    /// and market purchases.
+    pub coins: u32,
     /// Up to MAX_CITIES_PER_CIV cities. Slots not in use are `City::EMPTY`. The capital is
     /// whichever city has the capital flag, not always slot 0 (it moves when the capital falls).
     cities: [City; MAX_CITIES_PER_CIV],
@@ -64,7 +71,10 @@ impl Civ {
             id: id.0,
             flags: ALIVE_FLAG,
             units: UnitCounts::NONE,
+            worker_focus: 0,
+            reserved: 0,
             resources: ResourceStock::EMPTY,
+            coins: 0,
             cities,
         }
     }
@@ -125,6 +135,19 @@ impl Civ {
     pub fn capital(&self) -> Option<&City> {
         // `.find(...)` returns the first city the test is true for, or None.
         self.cities.iter().find(|city| city.is_capital())
+    }
+
+    /// The resource Workers go to first, or `None` to spread them evenly.
+    pub fn worker_focus(&self) -> Option<Resource> {
+        Resource::from_byte(self.worker_focus)
+    }
+
+    /// Sets (or clears, with `None`) the resource Workers go to first.
+    pub fn set_worker_focus(&mut self, focus: Option<Resource>) {
+        self.worker_focus = match focus {
+            Some(resource) => resource.to_byte(),
+            None => 0,
+        };
     }
 
     /// False once the civ has lost its last city (relevant for the Conquest win metric).
@@ -206,9 +229,10 @@ mod tests {
     }
 
     #[test]
-    fn a_civ_is_88_plain_bytes() {
+    fn a_civ_is_112_plain_bytes() {
         // The on-chain Civ account's size depends on this; rethink the layout before changing it.
-        // 2 (id, flags) + 10 (units) + 12 (resources) + 8 cities x 8 bytes.
-        assert_eq!(std::mem::size_of::<Civ>(), 88);
+        // 2 (id, flags) + 12 (units) + 2 (worker focus, reserved) + 12 (resources) + 4 (coins)
+        // + 8 cities x 10 bytes.
+        assert_eq!(std::mem::size_of::<Civ>(), 112);
     }
 }

@@ -9,9 +9,9 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | --- | --- |
 | `randomness` | Deterministic random numbers: a pure hash of (match seed, purpose, a, b). No hidden state. |
 | `resources` | `Resource` (Food, Ore, Gold) and `ResourceStock` (saturating adds) |
-| `units` | `UnitKind` (Infantry, Guard, Siege, Elite, Settler) and `UnitCounts` (10 plain bytes; `add`, `remove`, `total`) |
-| `city` | `City` (8 plain bytes: tile, size, growth points, founded turn, capital / growth-stopped flags) |
-| `civ` | `CivId` and `Civ` (88 plain bytes: alive, units, resources, 8 city slots; read via `capital()`, `cities()`, `city_count()`, `is_alive()`) |
+| `units` | `UnitKind` (Infantry, Guard, Siege, Elite, Settler, Worker; `is_fighter`, `to_byte`) and `UnitCounts` (12 plain bytes; `add`, `remove`, `total`) |
+| `city` | `City` (10 plain bytes: tile, size, growth points, founded turn, capital / growth-stopped flags, the unit being built and its turns left) |
+| `civ` | `CivId` and `Civ` (112 plain bytes: alive, units, worker focus, resources, coins, 8 city slots; read via `capital()`, `cities()`, `city_count()`, `total_city_size()`, `is_alive()`) |
 | `attack` | `attack(&mut map, &mut civs, &random, attacker, target, choice, turn)`: the whole army (minus Settlers) hits one enemy tile next to the attacker's land. Defended by `units ÷ (cities + 1)`. A win takes the tile, or captures / razes the city on it. Returns an `AttackReport`. Tests in `attack_tests.rs` |
 | `battle` | `resolve_battle(&attackers, &defenders, city, rolls)`: pure battle maths. Attack = Σ units × attack × matchup bonus (×1.5 vs the kind it beats, weighted by the defenders' mix; Elite ×1.25; Siege ×1.5 vs a city). Defence = Σ units × defence + walls (10 × size, +50% capital). Each side rolls ±10% (`BattleRolls::for_battle`). Win: defenders there are destroyed. Loss or tie: both lose in proportion |
 | `borders` | Tiles within a city's reach (`for_each_tile_within`, Manhattan radius = size + 1); claim, count free tiles, count owned deposits |
@@ -19,7 +19,7 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `growth` | `grow_cities(&mut map, &mut civs, turn)`: turn step 3. Each city gains 1 + owned deposits in its border per turn; at 20 × size² it grows and claims the free tiles of its bigger border. If that would gain nothing, the border locks for good. Who grows first rotates each turn |
 | `actions` | What a civ can do on its turn, checks first and nothing changes if one fails: `build_unit(&mut civ, kind)` (pays the cost; one Elite per city size), `found_city(&mut map, &mut civ, site, turn)` (uses a Settler on a city site in or next to the civ's land). Refusals are `ActionError` variants |
 | `aggregates` | `aggregate_map(&map)`: each civ's tiles, cities and owned deposits, counted in one pass per turn |
-| `production` | `produce_resources(&aggregates, &mut civs)`: turn step 1. Each owned deposit yields 1 unit; each city adds `CITY_INCOME_PER_SIZE` (food 2, ore 1, gold 1) once per size |
+| `production` | `produce_resources(&aggregates, &mut civs)`: turn step 2. Deposits need Workers: each Worker works one owned deposit for 2 a turn (focus resource first, then spread evenly; `worked_deposits`). Each city adds 2 Food, 1 Ore, 1 Gold and 1 coin per size (docs/decisions/0007) |
 | `upkeep` | `pay_upkeep(&mut civs)`: turn step 6. Each unit eats its food upkeep (Elite 2, others 1). A civ that can't pay disbands units in `DISBAND_ORDER` (Elite, Settler, Siege, Guard, Infantry) until it can; food never goes below 0 |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, `unit_stats(kind)` and the disband order, market, battle, scoring. Integer maths; percentages in basis points |
 | `map` | `TileCoordinate` (always on the map), `Tile` (3 plain bytes, read via `owner()`, `deposit()`, `is_city()`), `Map` (768 bytes, zero-copy ready) and `Map::fingerprint()` |

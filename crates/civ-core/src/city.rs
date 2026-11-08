@@ -1,13 +1,16 @@
 //! Cities: one city of a civ (docs/decisions/0006, "Cities"). A civ keeps its cities in a fixed
 //! array of `MAX_CITIES_PER_CIV` slots inside `Civ` (civ.rs); a slot is either in use or empty.
 //!
-//! Storage layout: `City` is 8 plain bytes (`#[repr(C)]`, `Pod`), like the rest of the civ, so the
+//! Each city also builds at most one unit at a time (docs/decisions/0007, "Build time").
+//!
+//! Storage layout: `City` is 10 plain bytes (`#[repr(C)]`, `Pod`), like the rest of the civ, so the
 //! program can read it straight out of account data (docs/decisions/0004).
 
 use bytemuck::{Pod, Zeroable};
 
 use crate::map::TileCoordinate;
 use crate::rules::MAX_CITY_SIZE;
+use crate::units::UnitKind;
 
 /// Bit in `City::flags`: this slot holds a real city (an all-zero slot is an empty one).
 const IN_USE_FLAG: u8 = 0b0000_0001;
@@ -20,10 +23,10 @@ const GROWTH_STOPPED_FLAG: u8 = 0b0000_0100;
 /// The size every city starts at.
 pub const STARTING_CITY_SIZE: u8 = 1;
 
-/// One city, as 8 plain bytes.
+/// One city, as 10 plain bytes.
 ///
-/// Field order: four single bytes, then two 2-byte numbers, so there is no hidden padding
-/// (which `Pod` forbids).
+/// Field order: four single bytes, two 2-byte numbers, then two more single bytes. Everything
+/// lines up on 2-byte boundaries, so there is no hidden padding (which `Pod` forbids).
 // `#[derive(...)]` asks the compiler to write standard code for us: copying, comparing, printing
 // for tests (`Debug`), and `Pod`/`Zeroable` from bytemuck, which promise "any bytes are a valid
 // City", so it can be read straight from account data.
@@ -43,6 +46,10 @@ pub struct City {
     /// The turn the city was founded (or captured). Breaks ties when picking a new capital:
     /// the oldest city wins.
     founded_turn: u16,
+    /// The unit kind being built, as `UnitKind::to_byte` (0 = not building anything).
+    building: u8,
+    /// Turns until the unit being built is ready.
+    build_turns_left: u8,
 }
 
 impl City {
@@ -54,6 +61,8 @@ impl City {
         flags: 0,
         growth_points: 0,
         founded_turn: 0,
+        building: 0,
+        build_turns_left: 0,
     };
 
     /// A brand-new size 1 city on `tile`, founded on `founded_turn`.
@@ -69,6 +78,8 @@ impl City {
             flags,
             growth_points: 0,
             founded_turn,
+            building: 0,
+            build_turns_left: 0,
         }
     }
 
@@ -139,7 +150,7 @@ impl City {
 
     /// This city as its new owner gets it after a capture (docs/decisions/0006, section 5): one
     /// size smaller (never below 1), growth restarted, never a capital, captured on `turn`. A
-    /// locked border stays locked.
+    /// locked border stays locked. The unit it was building is lost (docs/decisions/0007).
     pub fn captured(&self, turn: u16) -> City {
         let mut flags = IN_USE_FLAG;
         if self.has_stopped_growing() {
@@ -152,7 +163,38 @@ impl City {
             flags,
             growth_points: 0,
             founded_turn: turn,
+            building: 0,
+            build_turns_left: 0,
         }
+    }
+
+    /// The unit kind this city is building, or `None` if it is free to start a build.
+    pub fn building(&self) -> Option<UnitKind> {
+        UnitKind::from_byte(self.building)
+    }
+
+    /// Turns until the current build is ready (0 when not building).
+    pub fn build_turns_left(&self) -> u8 {
+        self.build_turns_left
+    }
+
+    /// Starts building `kind`, ready in `build_turns` turns. The caller has already checked that
+    /// the city is free and the cost is paid.
+    pub fn start_build(&mut self, kind: UnitKind, build_turns: u8) {
+        self.building = kind.to_byte();
+        self.build_turns_left = build_turns;
+    }
+
+    /// Moves the current build on by one turn. Returns the finished unit kind when it is done
+    /// (and frees the city for its next build); `None` otherwise.
+    pub fn advance_build(&mut self) -> Option<UnitKind> {
+        let kind = self.building()?;
+        self.build_turns_left = self.build_turns_left.saturating_sub(1);
+        if self.build_turns_left > 0 {
+            return None;
+        }
+        self.building = 0;
+        Some(kind)
     }
 
     /// Locks the city at its current size for the rest of the match.
@@ -247,8 +289,33 @@ mod tests {
     }
 
     #[test]
-    fn a_city_is_8_plain_bytes() {
+    fn a_build_finishes_after_its_build_turns_and_frees_the_city() {
+        let mut city = City::founded(TileCoordinate::new(3, 3).expect("on the map"), 0, true);
+        city.start_build(UnitKind::Siege, 3);
+
+        let after_one = city.advance_build();
+        let after_two = city.advance_build();
+        let after_three = city.advance_build();
+
+        assert_eq!(after_one, None);
+        assert_eq!(after_two, None);
+        assert_eq!(after_three, Some(UnitKind::Siege));
+        assert_eq!(city.building(), None);
+    }
+
+    #[test]
+    fn a_captured_city_loses_the_unit_it_was_building() {
+        let mut city = City::founded(TileCoordinate::new(3, 3).expect("on the map"), 0, false);
+        city.start_build(UnitKind::Elite, 4);
+
+        let captured = city.captured(9);
+
+        assert_eq!(captured.building(), None);
+    }
+
+    #[test]
+    fn a_city_is_10_plain_bytes() {
         // Civ holds MAX_CITIES_PER_CIV of these; rethink the Civ layout before changing it.
-        assert_eq!(std::mem::size_of::<City>(), 8);
+        assert_eq!(std::mem::size_of::<City>(), 10);
     }
 }

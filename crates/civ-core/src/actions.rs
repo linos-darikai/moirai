@@ -37,7 +37,7 @@ pub enum ActionError {
     NoFreeCitySlot,
     /// `attack` needs a tile owned by another civ that is still in the game.
     NotAnEnemyTile,
-    /// `attack` needs at least one fighting unit (Settlers don't fight).
+    /// `attack` needs at least one fighting unit (Settlers and Workers don't fight).
     NoArmy,
 }
 
