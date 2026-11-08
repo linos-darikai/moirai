@@ -23,6 +23,8 @@ pub enum RandomPurpose {
     DepositPresence = 1,
     /// Which resource a deposit holds.
     DepositResource = 2,
+    /// Where the city sites in a map quarter go.
+    CitySite = 3,
 }
 
 /// Source of random numbers for one match. Create it once from the seed and reuse it: the 32-byte

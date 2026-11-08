@@ -27,7 +27,7 @@ fn main() {
                 map.fingerprint()
             );
             println!("{}", render_map(&map));
-            println!("legend: 0-3 = city of civ N, F/O/G = Food/Ore/Gold deposit, . = empty");
+            println!("legend: 0-3 = city of civ N, s = city site, F/O/G = Food/Ore/Gold deposit, . = empty");
         }
         Err(error) => eprintln!("could not generate the map: {error:?}"),
     }
@@ -55,14 +55,17 @@ fn render_map(map: &Map) -> String {
     text
 }
 
-/// One character for a tile: the owner's number for a city, a resource letter for a deposit,
-/// '.' for an empty tile.
+/// One character for a tile: the owner's number for a city, 's' for a city site, a resource
+/// letter for a deposit, '.' for an empty tile.
 fn tile_symbol(tile: &Tile) -> char {
     if tile.is_city() {
         if let Some(owner) = tile.owner() {
             // Civ ids are 0-3, so this gives '0'..'3' ('?' if that ever stops being true).
             return char::from_digit(u32::from(owner.0), 10).unwrap_or('?');
         }
+    }
+    if tile.is_city_site() {
+        return 's';
     }
     match tile.deposit() {
         Some(resource) => resource.letter(),

@@ -8,12 +8,20 @@ use crate::civ::{CivId, MAX_CIVS};
 use crate::map::{Map, TileCoordinate, MAP_HEIGHT, MAP_WIDTH};
 use crate::randomness::{MatchRandom, MatchSeed, RandomPurpose};
 use crate::resources::Resource;
+use crate::rules::{CITY_SITES_PER_QUADRANT, MIN_CITY_SITE_DISTANCE};
 
 /// Chance (in percent) that a tile gets a resource deposit.
 pub const DEPOSIT_CHANCE_PERCENT: u64 = 30;
 
 /// Width and height of one quarter of the map (8 x 8).
 pub const QUADRANT_SIZE: u8 = MAP_WIDTH / 2;
+
+/// City sites are picked within columns and rows 0..=6 of a quarter, so a site and its mirror in
+/// the next quarter (column 15 - x) stay at least MIN_CITY_SITE_DISTANCE apart across the middle.
+const CITY_SITE_AREA_MAX: u8 = 6;
+
+/// Candidate tiles tried per quarter before giving up on finding all the city sites.
+const CITY_SITE_ATTEMPTS: u64 = 64;
 
 /// How far a city sits from its corner of the map, in tiles. Spawns are (3,3), (12,3), (3,12)
 /// and (12,12).
@@ -48,7 +56,10 @@ pub fn generate_map_into(
     // Step 1: decide the top-left quarter from the seed and copy it into all four quarters.
     place_mirrored_deposits(&random, map);
 
-    // Step 2: put each civ's city on its spawn tile.
+    // Step 2: pick the city sites in the top-left quarter and mirror them too.
+    place_mirrored_city_sites(&random, map);
+
+    // Step 3: put each civ's city (its capital, on a site) on its spawn tile.
     for join_order in 0..civ_count {
         let civ = CivId(join_order);
         let tile = map.tile_mut(spawn_point(civ));
@@ -108,6 +119,69 @@ fn place_mirrored_deposits(random: &MatchRandom, map: &mut Map) {
             }
         }
     }
+}
+
+/// Marks the capital tile and up to CITY_SITES_PER_QUADRANT random tiles of the top-left quarter as
+/// city sites, mirrored into all four quarters. Sites hold no deposit.
+fn place_mirrored_city_sites(random: &MatchRandom, map: &mut Map) {
+    let spawn = TileCoordinate {
+        x: SPAWN_INSET,
+        y: SPAWN_INSET,
+    };
+    let mut sites: [Option<TileCoordinate>; CITY_SITES_PER_QUADRANT + 1] =
+        [None; CITY_SITES_PER_QUADRANT + 1];
+    sites[0] = Some(spawn);
+    let chosen = choose_city_sites(random, spawn);
+    for (slot, site) in sites.iter_mut().skip(1).zip(chosen) {
+        *slot = site;
+    }
+
+    for site in sites.into_iter().flatten() {
+        for quadrant in 0..4 {
+            let tile = map.tile_mut(mirror_into_quadrant(site, quadrant));
+            tile.set_city_site(true);
+            tile.set_deposit(None);
+        }
+    }
+}
+
+/// Picks the city sites of the top-left quarter from the seed: random tiles in the site area that
+/// are far enough from the capital and from each other. Tries a fixed number of candidates, so
+/// the result is always the same for a seed (and the loop always ends).
+fn choose_city_sites(
+    random: &MatchRandom,
+    spawn: TileCoordinate,
+) -> [Option<TileCoordinate>; CITY_SITES_PER_QUADRANT] {
+    let mut chosen: [Option<TileCoordinate>; CITY_SITES_PER_QUADRANT] =
+        [None; CITY_SITES_PER_QUADRANT];
+    let mut found: usize = 0;
+    let area_width = u64::from(CITY_SITE_AREA_MAX) + 1;
+
+    for attempt in 0..CITY_SITE_ATTEMPTS {
+        if found == CITY_SITES_PER_QUADRANT {
+            break;
+        }
+        let (Ok(x), Ok(y)) = (
+            u8::try_from(random.below(RandomPurpose::CitySite, attempt, 0, area_width)),
+            u8::try_from(random.below(RandomPurpose::CitySite, attempt, 1, area_width)),
+        ) else {
+            continue;
+        };
+        let candidate = TileCoordinate { x, y };
+        let is_far_from_capital = candidate.manhattan_distance(spawn) >= MIN_CITY_SITE_DISTANCE;
+        let is_far_from_sites = chosen
+            .iter()
+            .flatten()
+            .all(|site| candidate.manhattan_distance(*site) >= MIN_CITY_SITE_DISTANCE);
+        if !is_far_from_capital || !is_far_from_sites {
+            continue;
+        }
+        if let Some(slot) = chosen.get_mut(found) {
+            *slot = Some(candidate);
+            found += 1;
+        }
+    }
+    chosen
 }
 
 /// Decides whether a top-left-quarter tile has a deposit, and which resource.
@@ -280,6 +354,76 @@ mod tests {
         }
     }
 
+    /// Every city-site tile on a map.
+    fn city_sites(map: &Map) -> Vec<TileCoordinate> {
+        (0..TILE_COUNT)
+            .filter_map(TileCoordinate::from_index)
+            .filter(|coordinate| map.tile(*coordinate).is_city_site())
+            .collect()
+    }
+
+    #[test]
+    fn every_capital_starts_on_a_city_site() {
+        let map = generate_map(&seed_filled_with(11), 4).expect("valid count");
+
+        for civ in 0..4 {
+            assert!(map.tile(spawn_point(CivId(civ))).is_city_site());
+        }
+    }
+
+    #[test]
+    fn city_sites_are_mirrored_into_every_quarter() {
+        for seed_byte in 0..20 {
+            let map = generate_map(&seed_filled_with(seed_byte), 4).expect("valid count");
+
+            for site in city_sites(&map)
+                .into_iter()
+                .filter(|site| site.x < QUADRANT_SIZE && site.y < QUADRANT_SIZE)
+            {
+                for quadrant in 1..4 {
+                    assert!(map
+                        .tile(mirror_into_quadrant(site, quadrant))
+                        .is_city_site());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn city_sites_are_far_apart_and_hold_no_deposit() {
+        for seed_byte in 0..20 {
+            let map = generate_map(&seed_filled_with(seed_byte), 4).expect("valid count");
+            let sites = city_sites(&map);
+
+            // The capital plus up to 3 sites in each of the 4 quarters.
+            assert!(sites.len() >= 4 && sites.len() <= 4 * (CITY_SITES_PER_QUADRANT + 1));
+            for (index, site) in sites.iter().enumerate() {
+                assert_eq!(map.tile(*site).deposit(), None);
+                for other in sites.iter().skip(index + 1) {
+                    assert!(
+                        site.manhattan_distance(*other) >= MIN_CITY_SITE_DISTANCE,
+                        "{site:?} vs {other:?}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn most_seeds_find_every_city_site() {
+        let full_maps = (0..50u8)
+            .filter(|seed_byte| {
+                let map = generate_map(&seed_filled_with(*seed_byte), 4).expect("valid count");
+                city_sites(&map).len() == 4 * (CITY_SITES_PER_QUADRANT + 1)
+            })
+            .count();
+
+        assert!(
+            full_maps >= 45,
+            "only {full_maps} of 50 seeds placed every site"
+        );
+    }
+
     #[test]
     fn the_map_for_a_known_seed_never_changes() {
         // Locks map generation: if this fingerprint changes, every past match would replay on a
@@ -289,5 +433,5 @@ mod tests {
         assert_eq!(map.fingerprint(), KNOWN_FINGERPRINT_FOR_SEED_42);
     }
 
-    const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 13_807_811_971_971_621_171;
+    const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 14_264_378_160_424_497_879;
 }

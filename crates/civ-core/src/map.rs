@@ -68,6 +68,14 @@ impl TileCoordinate {
         Some(TileCoordinate { x, y })
     }
 
+    /// Steps between two tiles moving only up, down, left or right (no diagonals). This is how far
+    /// a city "reaches" and how far apart city sites must be.
+    pub fn manhattan_distance(self, other: TileCoordinate) -> u8 {
+        self.x
+            .abs_diff(other.x)
+            .saturating_add(self.y.abs_diff(other.y))
+    }
+
     /// The four tiles that share an edge with this one, in the order north, east, south, west.
     /// Entries are `None` where the map ends.
     pub fn neighbors(self) -> [Option<TileCoordinate>; 4] {
@@ -87,6 +95,8 @@ impl TileCoordinate {
 
 /// Bit in `Tile::flags` that marks a city.
 const CITY_FLAG: u8 = 0b0000_0001;
+/// Bit in `Tile::flags` that marks a city site: a tile where a city may be built.
+const CITY_SITE_FLAG: u8 = 0b0000_0010;
 
 /// One square of the map, stored as 3 plain bytes. Read and change it through the methods
 /// (`owner()`, `set_owner(...)`, ...), which turn the bytes into proper Rust types.
@@ -154,6 +164,21 @@ impl Tile {
             self.flags |= CITY_FLAG;
         } else {
             self.flags &= !CITY_FLAG;
+        }
+    }
+
+    /// Whether a city may be built here (a city site). Capitals start on sites; a razed city's
+    /// tile becomes a site again.
+    pub fn is_city_site(&self) -> bool {
+        self.flags & CITY_SITE_FLAG != 0
+    }
+
+    /// Marks or unmarks the tile as a city site.
+    pub fn set_city_site(&mut self, is_site: bool) {
+        if is_site {
+            self.flags |= CITY_SITE_FLAG;
+        } else {
+            self.flags &= !CITY_SITE_FLAG;
         }
     }
 }
@@ -228,7 +253,7 @@ const FNV_OFFSET_BASIS: u64 = 0xcbf2_9ce4_8422_2325;
 const FNV_PRIME: u64 = 0x0000_0100_0000_01b3;
 
 /// The three bytes a tile contributes to the fingerprint: owner (255 = none), deposit (0 = none,
-/// 1 = Food, 2 = Ore, 3 = Gold) and city (0 or 1).
+/// 1 = Food, 2 = Ore, 3 = Gold) and marks (bit 0 = city, bit 1 = city site).
 fn fingerprint_bytes(tile: &Tile) -> [u8; 3] {
     let owner_byte: u8 = match tile.owner() {
         Some(civ) => civ.0,
@@ -238,7 +263,8 @@ fn fingerprint_bytes(tile: &Tile) -> [u8; 3] {
         Some(resource) => resource.to_byte(),
         None => 0,
     };
-    [owner_byte, deposit_byte, u8::from(tile.is_city())]
+    let marks_byte: u8 = u8::from(tile.is_city()) | (u8::from(tile.is_city_site()) << 1);
+    [owner_byte, deposit_byte, marks_byte]
 }
 
 #[cfg(test)]

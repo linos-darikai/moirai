@@ -15,14 +15,14 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `production` | `produce_resources(&aggregates, &mut civs)`: turn step 1. Each owned deposit yields 1 unit; each owned city adds `CITY_INCOME_PER_SIZE` (food 2, ore 1, gold 1) |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, market, battle, scoring. Integer maths; percentages in basis points |
 | `map` | `TileCoordinate` (always on the map), `Tile` (3 plain bytes, read via `owner()`, `deposit()`, `is_city()`), `Map` (768 bytes, zero-copy ready) and `Map::fingerprint()` |
-| `map_generation` | `generate_map_into(seed, civ_count, &mut map)` / `generate_map(...)`: the top-left quarter comes from the seed and is mirrored into the other three, so every civ gets identical surroundings. Cities at (3,3), (12,3), (3,12), (12,12); two-civ games use opposite corners. 30% of tiles get a deposit. |
+| `map_generation` | `generate_map_into(seed, civ_count, &mut map)` / `generate_map(...)`: the top-left quarter comes from the seed and is mirrored into the other three, so every civ gets identical surroundings. 3 mirrored city sites per quarter (≥3 tiles apart; capitals are sites too). Cities at (3,3), (12,3), (3,12), (12,12); two-civ games use opposite corners. 30% of tiles get a deposit. |
 
 On-chain rules this crate follows (details in docs/decisions/0004): plain-bytes `Pod` state so the
 program can use it as zero-copy account data, no panics (bounds-checked coordinates, `match`
 instead of array lookups), no truncating casts, and nothing large returned by value.
 
 Determinism is locked by tests that pin a known output: `random_u64` for a fixed seed, and the map
-fingerprint for seed 42 (`13807811971971621171`). The app's
+fingerprint for seed 42 (`14264378160424497879`, changed when city sites were added). The app's
 `src/lib/engine/determinism.test.ts` checks that the WASM build produces the same fingerprint.
 If either value changes, every past match would replay differently, so change them only on purpose.
 

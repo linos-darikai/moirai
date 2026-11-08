@@ -9,7 +9,7 @@ import { createRequire } from "node:module";
 import { beforeAll, describe, expect, it } from "vitest";
 import { initSync, mapFingerprint } from "civ-wasm";
 
-const NATIVE_FINGERPRINT_FOR_SEED_42 = "13807811971971621171";
+const NATIVE_FINGERPRINT_FOR_SEED_42 = "14264378160424497879";
 
 describe("civ-core WASM determinism", () => {
   beforeAll(() => {
