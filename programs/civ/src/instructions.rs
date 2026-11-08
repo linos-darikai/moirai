@@ -1,9 +1,7 @@
 //! Instructions of the civ program. One file per instruction in `instructions/`, each holding its
 //! accounts struct and its handler.
 
-pub mod bench_create;
-pub mod bench_set_policy;
-pub mod bench_turn;
+pub mod advance_turn;
 pub mod cancel_match;
 pub mod commit_policy;
 pub mod create_match;
@@ -20,9 +18,7 @@ pub mod start_match;
 pub mod start_match_local_test;
 pub mod undelegate_counter;
 
-pub use bench_create::*;
-pub use bench_set_policy::*;
-pub use bench_turn::*;
+pub use advance_turn::*;
 pub use cancel_match::*;
 pub use commit_policy::*;
 pub use create_match::*;

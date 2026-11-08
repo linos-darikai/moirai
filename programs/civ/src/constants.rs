@@ -18,10 +18,6 @@ pub const COUNTER_SEED: &[u8] = b"counter";
 #[constant]
 pub const RANDOM_SEED_SEED: &[u8] = b"random_seed";
 
-/// Seed for the Phase 2 measuring spike TurnBench PDA: `["turn_bench", authority]`.
-#[constant]
-pub const TURN_BENCH_SEED: &[u8] = b"turn_bench";
-
 /// Seed for a Match PDA: `["match", creator, match_id as 8 little-endian bytes]`.
 #[constant]
 pub const MATCH_SEED: &[u8] = b"match";

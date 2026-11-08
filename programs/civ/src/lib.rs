@@ -12,8 +12,7 @@
 //! `fulfill_match_seed` (the oracle's callback; builds turn 0) and `start_match_local_test`
 //! (local validator only).
 //!
-//! Phase 2 measuring spike (docs/decisions/0009): `bench_create`, `bench_set_policy`,
-//! `bench_turn` run civ-core's turn on chain so tests can measure compute units and stack use.
+//! Phase 2 game: `advance_turn` plays one turn (anyone may call it; pays a crank reward).
 
 // clippy flags code that `#[program]` generates once `#[ephemeral]` is added (not our code; it is
 // emitted at crate level, so a module-level allow doesn't reach it). Only this one lint is off.
@@ -21,6 +20,7 @@
 
 pub mod commitment;
 pub mod constants;
+pub mod crank;
 pub mod errors;
 pub mod game_start;
 pub mod instructions;
@@ -142,26 +142,8 @@ pub mod civ {
         handle_start_match_local_test(context, seed)
     }
 
-    /// Create the caller's TurnBench and start a match in it (measuring spike).
-    pub fn bench_create(
-        context: Context<BenchCreate>,
-        seed: [u8; 32],
-        civ_count: u8,
-    ) -> Result<()> {
-        handle_bench_create(context, seed, civ_count)
-    }
-
-    /// Store one civ's compiled policy in the caller's TurnBench (measuring spike).
-    pub fn bench_set_policy(
-        context: Context<BenchSetPolicy>,
-        civ_index: u8,
-        policy: Vec<u8>,
-    ) -> Result<()> {
-        handle_bench_set_policy(context, civ_index, policy)
-    }
-
-    /// Play one turn of a TurnBench's match on chain (measuring spike).
-    pub fn bench_turn(context: Context<BenchTurn>) -> Result<()> {
-        handle_bench_turn(context)
+    /// Play the next turn of a running match; the caller gets the crank reward.
+    pub fn advance_turn(context: Context<AdvanceTurn>) -> Result<()> {
+        handle_advance_turn(context)
     }
 }

@@ -165,3 +165,15 @@ export function compiledBot(name: string): Buffer {
 export function commitmentOf(policy: Buffer, salt: Buffer): number[] {
   return Array.from(createHash("sha256").update(policy).update(salt).digest());
 }
+
+/** FNV-1a over the bytes: the same hash as civ-core's MatchState::fingerprint. */
+export function fingerprint(bytes: Uint8Array): bigint {
+  const prime = 0x100000001b3n;
+  const mask = (1n << 64n) - 1n;
+  let hash = 0xcbf29ce484222325n;
+  for (const byte of bytes) {
+    hash ^= BigInt(byte);
+    hash = (hash * prime) & mask;
+  }
+  return hash;
+}

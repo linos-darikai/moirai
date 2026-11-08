@@ -13,16 +13,6 @@ pub enum ErrorCode {
     SeedAlreadyRequested,
     #[msg("This seed is not waiting for randomness (it was never requested, or already filled)")]
     SeedNotRequested,
-    #[msg("A match needs between 1 and 4 civs")]
-    BenchInvalidCivCount,
-    #[msg("Those bytes are not a valid compiled policy")]
-    BenchBadPolicy,
-    #[msg("There is no civ with that number in this match")]
-    BenchBadCivIndex,
-    #[msg("This match is over: no more turns can be played")]
-    BenchMatchOver,
-    #[msg("The match data in this account is not laid out as expected")]
-    BenchMisalignedState,
     #[msg("A match needs between 2 and 4 players")]
     InvalidPlayerCount,
     #[msg("Unknown win metric: use 0 Territory, 1 Wealth, 2 Conquest or 3 Score")]
@@ -73,4 +63,10 @@ pub enum ErrorCode {
     LocalTestingDisabled,
     #[msg("The oracle may still deliver the seed: retry once the request has timed out")]
     SeedRequestNotTimedOut,
+    #[msg("This match isn't being played")]
+    MatchNotRunning,
+    #[msg("This match is over: no more turns can be played")]
+    MatchOver,
+    #[msg("The crank reward is too large to compute")]
+    RewardOverflow,
 }
