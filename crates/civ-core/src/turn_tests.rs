@@ -8,7 +8,7 @@ use crate::orders::Action;
 use crate::randomness::{MatchSeed, MATCH_SEED_LENGTH};
 use crate::resources::{Resource, ResourceStock};
 use crate::rules::TOTAL_TURNS;
-use crate::units::UnitKind;
+use crate::units::{UnitCounts, UnitKind};
 
 fn coordinate(x: u8, y: u8) -> TileCoordinate {
     TileCoordinate::new(x, y).expect("test coordinates are on the map")
@@ -16,6 +16,18 @@ fn coordinate(x: u8, y: u8) -> TileCoordinate {
 
 fn new_match(seed_byte: u8, civ_count: u8) -> MatchState {
     MatchState::new(&MatchSeed([seed_byte; MATCH_SEED_LENGTH]), civ_count).expect("valid count")
+}
+
+/// A match whose civs start with nothing (no starting stock, no Workers), to keep the maths in a
+/// test easy to follow.
+fn bare_match(seed_byte: u8, civ_count: u8) -> MatchState {
+    let mut state = new_match(seed_byte, civ_count);
+    for civ in state.active_civs_mut() {
+        civ.resources = ResourceStock::EMPTY;
+        civ.coins = 0;
+        civ.units = UnitCounts::NONE;
+    }
+    state
 }
 
 fn give_plenty(state: &mut MatchState) {
@@ -31,7 +43,7 @@ fn give_plenty(state: &mut MatchState) {
 
 #[test]
 fn a_turn_with_no_orders_pays_income_and_moves_to_the_next_turn() {
-    let mut state = new_match(1, 2);
+    let mut state = bare_match(1, 2);
 
     let report = run_turn(&mut state, &[]);
 
@@ -123,7 +135,7 @@ fn when_two_civs_claim_the_same_tile_the_first_civ_this_turn_gets_it() {
 fn builds_resolve_before_trades_whatever_order_the_policy_lists_them() {
     // The civ sells all its food first in its list, but the build phase comes first, so the
     // Infantry (10 food) is paid for before the sale.
-    let mut state = new_match(1, 2);
+    let mut state = bare_match(1, 2);
     state.civs[0].resources.food = 10;
     state.civs[0].coins = 5;
     let orders = [CivOrders::from_actions(&[
@@ -156,7 +168,7 @@ fn no_turn_runs_after_the_last_one() {
 
 #[test]
 fn a_civ_that_cannot_feed_its_army_disbands_and_the_report_says_so() {
-    let mut state = new_match(1, 2);
+    let mut state = bare_match(1, 2);
     state.civs[0].units.add(UnitKind::Elite, 3);
 
     let report = run_turn(&mut state, &[]).expect("running");

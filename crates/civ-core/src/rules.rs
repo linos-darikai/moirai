@@ -16,6 +16,17 @@ pub const BPS_PER_WHOLE: u32 = 10_000;
 /// Turns in a match.
 pub const TOTAL_TURNS: u16 = 60;
 
+/// What every civ starts the match with (docs/decisions/0008, "Starting stock").
+pub const STARTING_RESOURCES: ResourceStock = ResourceStock {
+    food: 30,
+    ore: 10,
+    gold: 10,
+};
+/// Coins every civ starts with.
+pub const STARTING_COINS: u32 = 20;
+/// Workers every civ starts with, so its first deposits produce from turn 0.
+pub const STARTING_WORKERS: u16 = 2;
+
 // ----- Cities, growth and borders -----
 
 /// Most cities one civ can hold (capital included).

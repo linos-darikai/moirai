@@ -1,7 +1,8 @@
 //! Match start: builds turn 0 of a match, the map and every civ, from the match seed.
 //!
 //! The map marks each capital's tile as a city, and each civ records the same tile as its capital.
-//! Each capital then claims its size 1 border (radius 2). Doing all of it in one function keeps the
+//! Each capital then claims its size 1 border (radius 2), and every civ gets the starting stock
+//! (docs/decisions/0008). Doing all of it in one function keeps the
 //! map and the civs from ever disagreeing. Called once when a match
 //! starts: on chain by the start instruction, and by the simulator and civ-cli.
 
@@ -11,7 +12,8 @@ use crate::civ::{Civ, CivId};
 use crate::map::Map;
 use crate::map_generation::{generate_map_into, spawn_point, MapGenerationError};
 use crate::randomness::MatchSeed;
-use crate::rules::border_radius;
+use crate::rules::{border_radius, STARTING_COINS, STARTING_RESOURCES, STARTING_WORKERS};
+use crate::units::UnitKind;
 
 /// Fills `map` and `civs` with the starting state of a match for `civs.len()` civs (1 to 4).
 ///
@@ -37,6 +39,9 @@ pub fn start_match(
         let id = CivId(join_order);
         let capital = spawn_point(id);
         *civ = Civ::new(id, capital);
+        civ.resources = STARTING_RESOURCES;
+        civ.coins = STARTING_COINS;
+        civ.units.add(UnitKind::Worker, STARTING_WORKERS);
         claim_unowned_tiles_within(map, id, capital, border_radius(STARTING_CITY_SIZE));
     }
 
@@ -91,6 +96,20 @@ mod tests {
                 .filter(|tile| tile.owner() == Some(civ.id()))
                 .count();
             assert_eq!(owned, 13);
+        }
+    }
+
+    #[test]
+    fn every_civ_starts_with_the_same_stock_and_two_workers() {
+        let mut map = Map::empty();
+        let mut civs = blank_civs();
+
+        start_match(&seed_filled_with(3), &mut map, &mut civs).expect("valid count");
+
+        for civ in &civs {
+            assert_eq!(civ.resources, STARTING_RESOURCES);
+            assert_eq!(civ.coins, STARTING_COINS);
+            assert_eq!(civ.units.count(UnitKind::Worker), STARTING_WORKERS);
         }
     }
 
