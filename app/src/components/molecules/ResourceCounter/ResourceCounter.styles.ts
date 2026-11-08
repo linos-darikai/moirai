@@ -6,7 +6,7 @@ export const Pill = styled.span`
   gap: ${({ theme }) => theme.space(1.5)};
   padding: ${({ theme }) => `${theme.space(1)} ${theme.space(2)}`};
   border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.colors.surfaceRaised};
+  border: ${({ theme }) => theme.borderWidths.thin} solid ${({ theme }) => theme.colors.border};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   white-space: nowrap;
 `;

@@ -1,19 +1,19 @@
 import styled, { css } from "styled-components";
 import type { DefaultTheme } from "styled-components";
 
-/** segmented = joined buttons in a tray; pills = separate rounded buttons; hand = handwritten
- *  buttons in a chalk-outlined box (the home page's language switch). */
+/** segmented = joined buttons in a chalk-outlined tray; pills = separate outlined buttons;
+ *  hand = bigger handwritten buttons (the home page's language switch). All three are handwritten
+ *  and the "on" segment fills with chalk, so every switch in the app looks drawn the same way. */
 export type SegmentShape = "segmented" | "pills" | "hand";
 
 type ShapeStyle = (theme: DefaultTheme) => ReturnType<typeof css>;
 
 const groupStyles: Record<SegmentShape, ShapeStyle> = {
   segmented: (theme) => css`
-    gap: 0;
+    gap: ${theme.space(1)};
     padding: ${theme.space(1)};
     border-radius: ${theme.radii.lg};
-    background: ${theme.colors.inset};
-    border: ${theme.borderWidths.sketch} solid ${theme.colors.border};
+    border: ${theme.borderWidths.pen} solid ${theme.colors.sketchLine};
   `,
   pills: (theme) => css`
     gap: ${theme.space(2)};
@@ -30,19 +30,21 @@ const groupStyles: Record<SegmentShape, ShapeStyle> = {
 const segmentStyles: Record<SegmentShape, ShapeStyle> = {
   segmented: (theme) => css`
     min-height: 36px;
-    font-size: ${theme.fontSizes.md};
-    font-weight: ${theme.fontWeights.semibold};
+    font-family: ${theme.fonts.hand};
+    font-size: ${theme.fontSizes.xl};
+    font-weight: ${theme.fontWeights.bold};
     background: transparent;
     border: 0;
     border-radius: ${theme.radii.md};
   `,
   pills: (theme) => css`
     min-height: 40px;
-    font-size: ${theme.fontSizes.md};
-    font-weight: ${theme.fontWeights.medium};
-    background: ${theme.colors.surface};
-    border: ${theme.borderWidths.sketch} solid ${theme.colors.borderStrong};
-    border-radius: ${theme.radii.pill};
+    font-family: ${theme.fonts.hand};
+    font-size: ${theme.fontSizes.xl};
+    font-weight: ${theme.fontWeights.bold};
+    background: transparent;
+    border: ${theme.borderWidths.sketch} solid ${theme.colors.border};
+    border-radius: ${theme.radii.lg};
   `,
   hand: (theme) => css`
     min-height: 40px;
@@ -59,13 +61,13 @@ const segmentStyles: Record<SegmentShape, ShapeStyle> = {
 /** How a segment looks when it is on. The hand shape fills with chalk white instead of blue. */
 const onStyles: Record<SegmentShape, ShapeStyle> = {
   segmented: (theme) => css`
-    background: ${theme.colors.accent};
-    color: ${theme.colors.onAccent};
+    background: ${theme.colors.sketchLine};
+    color: ${theme.colors.bg};
   `,
   pills: (theme) => css`
-    background: ${theme.colors.accent};
-    border-color: ${theme.colors.accent};
-    color: ${theme.colors.onAccent};
+    background: ${theme.colors.sketchLine};
+    border-color: ${theme.colors.sketchLine};
+    color: ${theme.colors.bg};
   `,
   hand: (theme) => css`
     background: ${theme.colors.sketchLine};

@@ -14,13 +14,16 @@ export const Table = styled.table<{ $minWidth: number }>`
 export const HeaderCell = styled.th<{ $isEnd: boolean }>`
   padding: ${({ theme }) => `${theme.space(2.5)} ${theme.space(2)}`};
   text-align: ${({ $isEnd }) => ($isEnd ? "right" : "left")};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  /* Column titles are handwritten, like the small notes on the home page. */
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.textMuted};
 `;
 
 export const Row = styled.tr<{ $isHighlighted: boolean }>`
-  border-top: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
+  /* Dashed pencil lines between rows, like the home page's lobby list. */
+  border-top: ${({ theme }) => theme.borderWidths.thin} dashed ${({ theme }) => theme.colors.border};
   background: ${({ theme, $isHighlighted }) => ($isHighlighted ? theme.colors.surfaceRaised : "transparent")};
 `;
 

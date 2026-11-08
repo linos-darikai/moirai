@@ -13,9 +13,11 @@ export const EngineBadge = styled.span`
   align-items: center;
   gap: ${({ theme }) => theme.space(2)};
   padding: ${({ theme }) => `${theme.space(1.5)} ${theme.space(3)}`};
-  border-radius: ${({ theme }) => theme.radii.pill};
+  border-radius: ${({ theme }) => theme.radii.lg};
   border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.textMuted};
 
   &::before {
@@ -75,7 +77,7 @@ export const OpponentRow = styled.label`
   margin-bottom: ${({ theme }) => theme.space(2)};
   padding: 0 ${({ theme }) => theme.space(3)};
   border-radius: ${({ theme }) => theme.radii.lg};
-  background: ${({ theme }) => theme.colors.surfaceRaised};
+  border: ${({ theme }) => theme.borderWidths.thin} solid ${({ theme }) => theme.colors.border};
   cursor: pointer;
 
   input {

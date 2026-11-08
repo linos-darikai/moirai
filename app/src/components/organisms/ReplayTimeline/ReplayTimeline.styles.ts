@@ -20,8 +20,8 @@ export const StepButton = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: ${({ theme }) => theme.radii.lg};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
-  background: ${({ theme }) => theme.colors.surfaceRaised};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
+  background: transparent;
   color: ${({ theme }) => theme.colors.text};
   cursor: pointer;
 `;
@@ -32,10 +32,11 @@ export const PlayButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  border: 0;
-  background: ${({ theme }) => theme.colors.accent};
-  color: ${({ theme }) => theme.colors.onAccent};
+  /* A hand-drawn circle filled with chalk, like the selected language button on the home page. */
+  border-radius: ${({ theme }) => theme.radii.playButton};
+  border: ${({ theme }) => theme.borderWidths.pen} solid ${({ theme }) => theme.colors.sketchLine};
+  background: ${({ theme }) => theme.colors.sketchLine};
+  color: ${({ theme }) => theme.colors.bg};
   cursor: pointer;
 `;
 

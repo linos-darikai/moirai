@@ -5,39 +5,44 @@ export type ButtonVariant = "primary" | "secondary" | "subtle" | "success";
 export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 const variantStyles: Record<ButtonVariant, (theme: DefaultTheme) => ReturnType<typeof css>> = {
+  /* Filled with chalk, like the selected language on the home page. */
   primary: (theme) => css`
-    background: ${theme.colors.accent};
-    color: ${theme.colors.onAccent};
-    border-color: ${theme.colors.accent};
+    background: ${theme.colors.sketchLine};
+    color: ${theme.colors.bg};
+    border-color: ${theme.colors.sketchLine};
     &:hover {
-      background: ${theme.colors.accentHover};
-      color: ${theme.colors.onAccent};
+      background: ${theme.colors.text};
+      color: ${theme.colors.bg};
     }
   `,
+  /* A chalk outline, like the home page's Play button. */
   secondary: (theme) => css`
     background: transparent;
     color: ${theme.colors.text};
-    border-color: ${theme.colors.borderStrong};
+    border-color: ${theme.colors.sketchLine};
     &:hover {
       background: ${theme.colors.surfaceRaised};
       color: ${theme.colors.text};
     }
   `,
+  /* A pencil-grey outline for less important actions. */
   subtle: (theme) => css`
-    background: ${theme.colors.surfaceRaised};
+    background: transparent;
     color: ${theme.colors.text};
-    border-color: ${theme.colors.borderStrong};
+    border-color: ${theme.colors.border};
     &:hover {
-      border-color: ${theme.colors.accent};
+      border-color: ${theme.colors.sketchLine};
       color: ${theme.colors.text};
     }
   `,
+  /* A green pen outline: "claim", "verified" and other good outcomes. */
   success: (theme) => css`
-    background: ${theme.colors.success};
-    color: ${theme.colors.onAccent};
+    background: transparent;
+    color: ${theme.colors.successText};
     border-color: ${theme.colors.success};
     &:hover {
-      color: ${theme.colors.onAccent};
+      background: ${theme.colors.successBg};
+      color: ${theme.colors.successText};
     }
   `,
 };
@@ -77,18 +82,20 @@ export const StyledButton = styled.button<{
   gap: ${({ theme }) => theme.space(2)};
   width: ${({ $isFullWidth }) => ($isFullWidth ? "100%" : "auto")};
   border: ${({ theme }) => theme.borderWidths.sketch} solid transparent;
-  font-family: ${({ theme }) => theme.fonts.body};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => `calc(${theme.fontSizes.base} * ${theme.handScale})`};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
   text-decoration: none;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease;
   ${({ theme, $variant }) => variantStyles[$variant](theme)}
   ${({ theme, $size }) => sizeStyles[$size](theme)}
 
+  /* Disabled: a dashed pencil outline, so it reads as "not ready yet" rather than greyed out. */
   &:disabled {
-    background: ${({ theme }) => theme.colors.disabledBg};
-    border-color: ${({ theme }) => theme.colors.disabledBg};
+    background: transparent;
+    border-color: ${({ theme }) => theme.colors.border};
+    border-style: dashed;
     color: ${({ theme }) => theme.colors.disabledText};
     cursor: not-allowed;
   }

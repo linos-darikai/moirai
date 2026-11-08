@@ -9,7 +9,8 @@ export const Bar = styled.header`
   align-items: center;
   gap: ${({ theme }) => `${theme.space(3)} ${theme.space(7)}`};
   background: ${({ theme }) => theme.colors.bg};
-  border-bottom: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.navBorder};
+  /* A dashed pencil line under the bar, like the dividers inside the home page's panels. */
+  border-bottom: ${({ theme }) => theme.borderWidths.sketch} dashed ${({ theme }) => theme.colors.navBorder};
 
   ${({ theme }) => theme.media.desktop} {
     padding: ${({ theme }) => `${theme.space(3)} ${theme.space(8)}`};
@@ -52,10 +53,10 @@ export const NavItem = styled(NavLink)`
   min-height: 40px;
   display: inline-flex;
   align-items: center;
-  padding: 0 ${({ theme }) => theme.space(3.5)};
-  border-radius: ${({ theme }) => theme.radii.md};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  padding: 0 ${({ theme }) => theme.space(3)};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => theme.fontSizes.handPanel};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.textMuted};
   text-decoration: none;
 
@@ -63,10 +64,12 @@ export const NavItem = styled(NavLink)`
     color: ${({ theme }) => theme.colors.text};
   }
 
-  /* NavLink sets aria-current="page" on the active link. */
+  /* NavLink sets aria-current="page" on the active link: underline it with the highlighter. */
   &[aria-current="page"] {
     color: ${({ theme }) => theme.colors.text};
-    background: ${({ theme }) => theme.colors.surfaceRaised};
+    text-decoration: underline wavy ${({ theme }) => theme.colors.highlight};
+    text-decoration-thickness: ${({ theme }) => theme.borderWidths.sketch};
+    text-underline-offset: ${({ theme }) => theme.space(1.5)};
   }
 `;
 
@@ -83,19 +86,9 @@ export const NetworkBadge = styled.span`
   align-items: center;
   gap: ${({ theme }) => theme.space(2)};
   min-height: 32px;
-  padding: 0 ${({ theme }) => theme.space(3)};
-  border-radius: ${({ theme }) => theme.radii.pill};
-  border: 1px solid ${({ theme }) => theme.colors.warningBorder};
-  background: ${({ theme }) => theme.colors.warningBg};
-  color: ${({ theme }) => theme.colors.warning};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.semibold};
-
-  &::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-  }
+  /* Written in highlighter, like "devnet · test SOL only" on the home page. */
+  color: ${({ theme }) => theme.colors.highlight};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => theme.fontSizes.xxl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
 `;

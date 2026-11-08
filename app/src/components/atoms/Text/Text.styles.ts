@@ -23,7 +23,10 @@ export const StyledText = styled.p<{
   $weight: "regular" | "medium" | "semibold" | "bold";
 }>`
   margin: 0;
-  font-size: ${({ theme, $size }) => theme.fontSizes[$size]};
+  /* Handwritten (display) text is scaled up so it reads as big as the body text around it. */
+  font-size: ${({ theme, $size, $isDisplay }) =>
+    $isDisplay ? `calc(${theme.fontSizes[$size]} * ${theme.handScale})` : theme.fontSizes[$size]};
+  line-height: ${({ theme, $isDisplay }) => ($isDisplay ? theme.lineHeights.snug : "inherit")};
   font-weight: ${({ theme, $weight }) => theme.fontWeights[$weight]};
   color: ${({ theme, $tone }) => toneColor[$tone](theme)};
   font-family: ${({ theme, $isMono, $isDisplay }) =>

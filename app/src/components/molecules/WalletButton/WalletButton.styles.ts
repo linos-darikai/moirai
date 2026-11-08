@@ -6,9 +6,9 @@ const pill = css`
   align-items: center;
   gap: ${({ theme }) => theme.space(2.5)};
   min-height: ${({ theme }) => theme.sizes.touchTarget};
-  border-radius: ${({ theme }) => theme.radii.pill};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
-  background: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radii.xl};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
+  background: transparent;
   color: ${({ theme }) => theme.colors.text};
   text-decoration: none;
 `;
@@ -16,10 +16,12 @@ const pill = css`
 export const ConnectButton = styled.button`
   ${pill}
   padding: 0 ${({ theme }) => theme.space(4)};
-  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => theme.fontSizes.handPanel};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
   cursor: pointer;
   &:hover {
-    border-color: ${({ theme }) => theme.colors.accent};
+    border-color: ${({ theme }) => theme.colors.highlight};
   }
 `;
 
@@ -28,7 +30,7 @@ export const ProfilePill = styled(Link)`
   padding: 0 ${({ theme }) => `${theme.space(3.5)} 0 ${theme.space(1.5)}`};
   &:hover {
     color: ${({ theme }) => theme.colors.text};
-    border-color: ${({ theme }) => theme.colors.accent};
+    border-color: ${({ theme }) => theme.colors.highlight};
   }
 `;
 

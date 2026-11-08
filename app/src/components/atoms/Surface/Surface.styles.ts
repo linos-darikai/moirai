@@ -5,39 +5,44 @@ export type SurfaceTone = "default" | "raised" | "inset" | "highlight" | "win" |
 export type SurfacePadding = "none" | "sm" | "md" | "lg" | "xl";
 
 const toneStyles: Record<SurfaceTone, (theme: DefaultTheme) => ReturnType<typeof css>> = {
+  /* A chalk-outlined panel drawn on the paper, like the home page's panels. */
   default: (theme) => css`
-    background: ${theme.colors.surface};
-    border-color: ${theme.colors.border};
-    border-radius: ${theme.radii.card};
+    background: transparent;
+    border-color: ${theme.colors.sketchLine};
+    border-radius: ${theme.radii.sketchPanel};
   `,
+  /* A smaller box inside a panel: pencil-grey outline so it doesn't compete with the panel. */
   raised: (theme) => css`
-    background: ${theme.colors.surfaceRaised};
+    background: transparent;
     border-color: ${theme.colors.border};
     border-radius: ${theme.radii.xl};
   `,
+  /* A dashed pencil box: code, logs and other "inside" areas. */
   inset: (theme) => css`
-    background: ${theme.colors.inset};
+    background: transparent;
     border-color: ${theme.colors.border};
+    border-style: dashed;
     border-radius: ${theme.radii.xl};
   `,
+  /* Drawn with the highlighter instead of chalk. */
   highlight: (theme) => css`
-    background: ${theme.colors.surface};
-    border-color: ${theme.colors.borderStrong};
-    border-radius: ${theme.radii.card};
+    background: transparent;
+    border-color: ${theme.colors.highlight};
+    border-radius: ${theme.radii.sketchPanel};
   `,
   win: (theme) => css`
-    background: ${theme.colors.winBg};
-    border-color: ${theme.colors.winBorder};
+    background: transparent;
+    border-color: ${theme.colors.actionText};
     border-radius: ${theme.radii.hero};
   `,
   verify: (theme) => css`
-    background: ${theme.colors.verifyBg};
-    border-color: ${theme.colors.verifyBorder};
+    background: transparent;
+    border-color: ${theme.colors.successText};
     border-radius: ${theme.radii.card};
   `,
   warning: (theme) => css`
-    background: ${theme.colors.warningBg};
-    border-color: ${theme.colors.warningBorder};
+    background: transparent;
+    border-color: ${theme.colors.highlight};
     border-radius: ${theme.radii.xl};
     color: ${theme.colors.warningText};
   `,
@@ -68,6 +73,6 @@ export const StyledSurface = styled.div<{
   ${({ theme, $isSelected }) =>
     $isSelected &&
     css`
-      border-color: ${theme.colors.accent};
+      border-color: ${theme.colors.highlight};
     `}
 `;

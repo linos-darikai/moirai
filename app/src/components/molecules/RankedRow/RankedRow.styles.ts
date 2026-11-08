@@ -12,7 +12,7 @@ export const Row = styled.li<{ $look: "plain" | "boxed"; $isHighlighted: boolean
       padding: 0 ${theme.space(3)};
       border-radius: ${theme.radii.xl};
       background: ${theme.colors.surface};
-      border: ${theme.borderWidths.sketch} solid ${$isHighlighted ? theme.colors.accent : theme.colors.border};
+      border: ${theme.borderWidths.sketch} solid ${$isHighlighted ? theme.colors.highlight : theme.colors.border};
     `}
 `;
 

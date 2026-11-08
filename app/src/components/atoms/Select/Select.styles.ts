@@ -5,9 +5,10 @@ export const StyledSelect = styled.select`
   min-height: ${({ theme }) => theme.sizes.control};
   padding: 0 ${({ theme }) => theme.space(3)};
   border-radius: ${({ theme }) => theme.radii.lg};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
-  background: ${({ theme }) => theme.colors.inset};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
+  background: ${({ theme }) => theme.colors.bg};
   color: ${({ theme }) => theme.colors.text};
-  font-family: ${({ theme }) => theme.fonts.body};
-  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-family: ${({ theme }) => theme.fonts.hand};
+  font-size: ${({ theme }) => `calc(${theme.fontSizes.base} * ${theme.handScale})`};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
 `;

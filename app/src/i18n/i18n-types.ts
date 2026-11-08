@@ -102,7 +102,7 @@ type RootTranslation = {
 	}
 	preview: {
 		/**
-		 * P​r​e​v​i​e​w​:​ ​l​o​b​b​i​e​s​,​ ​m​a​t​c​h​e​s​ ​a​n​d​ ​p​l​a​y​e​r​s​ ​a​r​e​ ​s​a​m​p​l​e​ ​d​a​t​a​ ​u​n​t​i​l​ ​t​h​e​ ​m​a​t​c​h​ ​p​r​o​g​r​a​m​ ​s​h​i​p​s​.​ ​T​h​e​ ​m​a​p​,​ ​g​a​m​e​ ​e​n​g​i​n​e​ ​a​n​d​ ​w​a​l​l​e​t​ ​a​r​e​ ​l​i​v​e​.
+		 * P​r​e​v​i​e​w​:​ ​p​l​a​y​e​r​s​,​ ​r​a​n​k​i​n​g​s​ ​a​n​d​ ​p​a​s​t​ ​m​a​t​c​h​e​s​ ​a​r​e​ ​s​a​m​p​l​e​ ​d​a​t​a​ ​f​o​r​ ​n​o​w​.​ ​L​o​b​b​i​e​s​,​ ​t​h​e​ ​m​a​p​,​ ​t​h​e​ ​g​a​m​e​ ​e​n​g​i​n​e​ ​a​n​d​ ​t​h​e​ ​w​a​l​l​e​t​ ​a​r​e​ ​l​i​v​e​ ​o​n​ ​d​e​v​n​e​t​.
 		 */
 		banner: string
 	}
@@ -2719,7 +2719,7 @@ export type TranslationFunctions = {
 	}
 	preview: {
 		/**
-		 * Preview: lobbies, matches and players are sample data until the match program ships. The map, game engine and wallet are live.
+		 * Preview: players, rankings and past matches are sample data for now. Lobbies, the map, the game engine and the wallet are live on devnet.
 		 */
 		banner: () => LocalizedString
 	}

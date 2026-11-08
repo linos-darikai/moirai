@@ -31,7 +31,7 @@ const es = {
   },
   preview: {
     banner:
-      "Vista previa: las salas, partidas y jugadores son datos de ejemplo hasta que se publique el programa de partidas. El mapa, el motor del juego y la billetera funcionan de verdad.",
+      "Vista previa: los jugadores, la clasificación y las partidas pasadas son datos de ejemplo por ahora. Las salas, el mapa, el motor del juego y la cartera ya funcionan en devnet.",
   },
   footer: {
     devnetOnly: "Solo devnet. Las cuotas y premios usan SOL de prueba y no tienen valor real.",

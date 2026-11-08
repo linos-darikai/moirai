@@ -32,7 +32,7 @@ export const RuleItem = styled.li<{ $isWarning: boolean }>`
   padding: ${({ theme }) => `${theme.space(3.5)} ${theme.space(4)}`};
   border-radius: ${({ theme }) => theme.radii.xl};
   background: ${({ theme }) => theme.colors.surface};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isWarning }) => ($isWarning ? theme.colors.warningBorder : theme.colors.border)};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isWarning }) => ($isWarning ? theme.colors.highlight : theme.colors.sketchLine)};
 `;
 
 export const Chip = styled.span<{ $tone: "condition" | "action" }>`
@@ -43,11 +43,11 @@ export const Chip = styled.span<{ $tone: "condition" | "action" }>`
   ${({ theme, $tone }) =>
     $tone === "condition"
       ? css`
-          background: ${theme.colors.surfaceRaised};
+          border: ${theme.borderWidths.thin} solid ${theme.colors.border};
           color: ${theme.colors.text};
         `
       : css`
-          background: ${theme.colors.actionBg};
+          border: ${theme.borderWidths.thin} solid ${theme.colors.actionText};
           color: ${theme.colors.actionText};
         `}
 `;
@@ -68,14 +68,12 @@ export const Notice = styled.div<{ $isError: boolean }>`
   ${({ theme, $isError }) =>
     $isError
       ? css`
-          background: ${theme.colors.dangerBg};
           color: ${theme.colors.dangerText};
-          border: ${theme.borderWidths.sketch} solid ${theme.colors.danger};
+          border: ${theme.borderWidths.sketch} dashed ${theme.colors.danger};
         `
       : css`
-          background: ${theme.colors.warningBg};
           color: ${theme.colors.warningText};
-          border: ${theme.borderWidths.sketch} solid ${theme.colors.warningBorder};
+          border: ${theme.borderWidths.sketch} dashed ${theme.colors.highlight};
         `}
 `;
 

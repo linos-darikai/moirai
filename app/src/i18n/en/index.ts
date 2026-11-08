@@ -35,7 +35,7 @@ const en = {
   },
   preview: {
     banner:
-      "Preview: lobbies, matches and players are sample data until the match program ships. The map, game engine and wallet are live.",
+      "Preview: players, rankings and past matches are sample data for now. Lobbies, the map, the game engine and the wallet are live on devnet.",
   },
   footer: {
     devnetOnly: "Devnet only. Entry fees and prizes use test SOL and have no real value.",

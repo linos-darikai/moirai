@@ -8,7 +8,7 @@ export const MatchHeader = styled.header`
   padding: ${({ theme }) => `${theme.space(4)} ${theme.space(5)}`};
   border-radius: ${({ theme }) => theme.radii.card};
   background: ${({ theme }) => theme.colors.surface};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
 `;
 
 export const LiveStatus = styled.span`
@@ -43,11 +43,11 @@ export const Pills = styled.div`
 
   span {
     padding: ${({ theme }) => `${theme.space(1.5)} ${theme.space(3)}`};
-    border-radius: ${({ theme }) => theme.radii.pill};
-    background: ${({ theme }) => theme.colors.surfaceRaised};
-    border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-    font-weight: ${({ theme }) => theme.fontWeights.semibold};
+    border-radius: ${({ theme }) => theme.radii.lg};
+    border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
+    font-family: ${({ theme }) => theme.fonts.hand};
+    font-size: ${({ theme }) => theme.fontSizes.xl};
+    font-weight: ${({ theme }) => theme.fontWeights.bold};
   }
 `;
 

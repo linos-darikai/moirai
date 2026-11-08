@@ -11,15 +11,17 @@ export const Contents = styled.nav`
     display: inline-flex;
     align-items: center;
     padding: 0 ${({ theme }) => theme.space(3)};
-    border-radius: ${({ theme }) => theme.radii.pill};
-    border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.borderStrong};
+    border-radius: ${({ theme }) => theme.radii.lg};
+    border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
     color: ${({ theme }) => theme.colors.text};
-    font-size: ${({ theme }) => theme.fontSizes.md};
+    font-family: ${({ theme }) => theme.fonts.hand};
+    font-size: ${({ theme }) => theme.fontSizes.xl};
+    font-weight: ${({ theme }) => theme.fontWeights.bold};
     text-decoration: none;
   }
 
   a:hover {
-    border-color: ${({ theme }) => theme.colors.accent};
+    border-color: ${({ theme }) => theme.colors.highlight};
   }
 `;
 
@@ -27,9 +29,9 @@ export const Contents = styled.nav`
 export const Section = styled.section`
   scroll-margin-top: ${({ theme }) => theme.space(4)};
   padding: ${({ theme }) => theme.space(6)};
-  border-radius: ${({ theme }) => theme.radii.card};
-  background: ${({ theme }) => theme.colors.surface};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.sketchPanel};
+  background: transparent;
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.sketchLine};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.space(3)};

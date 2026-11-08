@@ -5,7 +5,6 @@ export const Wrapper = styled.div`
 
   select {
     min-height: 40px;
-    border-radius: ${({ theme }) => theme.radii.pill};
-    font-size: ${({ theme }) => theme.fontSizes.sm};
+    border-radius: ${({ theme }) => theme.radii.xl};
   }
 `;

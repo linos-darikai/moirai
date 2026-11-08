@@ -31,7 +31,7 @@ const fr = {
   },
   preview: {
     banner:
-      "Aperçu : les salons, parties et joueurs sont des données d'exemple jusqu'à la sortie du programme de partie. La carte, le moteur de jeu et le portefeuille sont réels.",
+      "Aperçu : les joueurs, le classement et les parties passées sont des données d'exemple pour l'instant. Les salons, la carte, le moteur de jeu et le portefeuille fonctionnent déjà sur devnet.",
   },
   footer: {
     devnetOnly: "Devnet uniquement. Les frais et les prix utilisent des SOL de test sans valeur réelle.",

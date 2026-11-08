@@ -7,7 +7,7 @@ export const Card = styled.article<{ $isYou: boolean }>`
   padding: ${({ theme }) => theme.space(3.5)};
   border-radius: ${({ theme }) => theme.radii.xxl};
   background: ${({ theme }) => theme.colors.surface};
-  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isYou }) => ($isYou ? theme.colors.accent : theme.colors.border)};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme, $isYou }) => ($isYou ? theme.colors.highlight : theme.colors.sketchLine)};
 `;
 
 export const Header = styled.div`

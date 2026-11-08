@@ -5,9 +5,10 @@ import type { ColorToken as SwatchColor } from "../../../types/colors";
 
 export const Track = styled.div<{ $height: "thin" | "regular" }>`
   width: 100%;
-  height: ${({ $height }) => ($height === "thin" ? "6px" : "8px")};
-  border-radius: ${({ theme }) => theme.radii.xs};
-  background: ${({ theme }) => theme.colors.border};
+  height: ${({ $height }) => ($height === "thin" ? "8px" : "10px")};
+  border-radius: ${({ theme }) => theme.radii.tile};
+  border: ${({ theme }) => theme.borderWidths.thin} solid ${({ theme }) => theme.colors.border};
+  background: transparent;
   overflow: hidden;
 `;
 

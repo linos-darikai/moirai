@@ -1,17 +1,23 @@
 // Design tokens: every colour, size and font the app uses. Values come from the "Moirai sketchbook
 // kit" artboard (claude.ai design canvas "Moirai: app UI designs", hand-drawn version): pure black
-// paper, chalk-white lines, Caveat handwriting for titles and slightly uneven "sketched" corners.
-// Components read these through `props.theme`; they never hard-code colours or pixel values.
+// paper, chalk-white lines, Caveat handwriting for titles, names and numbers, and slightly uneven
+// "sketched" corners. Every page shares this look, not only the home page: panels are outlines on
+// the paper rather than grey boxes. Components read these through `props.theme`; they never
+// hard-code colours or pixel values.
 
 /** Base palette. Names say what a colour is for, not what it looks like. */
 export const colors = {
   bg: "#000000",
-  surface: "#0B0B0B",
-  surfaceRaised: "#161616",
-  inset: "#070707",
-  border: "#3A3A3A",
-  borderStrong: "#5A5A5A",
-  navBorder: "#2E2E2E",
+  /** Panels are drawn straight on the black paper, so their fill is the paper itself. */
+  surface: "#000000",
+  /** A faint chalk smudge: hovered buttons and the highlighted table row. */
+  surfaceRaised: "#141414",
+  inset: "#000000",
+  /** Pencil-grey line: dividers, quiet outlines, empty progress bars. */
+  border: "#6E6E68",
+  /** Chalk-white line: inputs, buttons and other things you can touch. */
+  borderStrong: "#E8E8E2",
+  navBorder: "#6E6E68",
   text: "#F4F4F0",
   textSoft: "#D8D8D8",
   textFeed: "#D8D8D8",
@@ -104,7 +110,8 @@ export const medalColors = ["#F2C14E", "#D8D8D8", "#E0A070"] as const;
  *  body = text, mono = hashes, addresses, code. */
 export const fonts = {
   hand: "'Caveat', 'Comic Sans MS', cursive",
-  display: "'Space Grotesk', Inter, system-ui, sans-serif",
+  /** Names and big numbers are handwritten too (Text with `isDisplay` scales them up to match). */
+  display: "'Caveat', 'Comic Sans MS', cursive",
   body: "Inter, system-ui, sans-serif",
   mono: "'JetBrains Mono', ui-monospace, monospace",
 } as const;
@@ -133,6 +140,12 @@ export const fontSizes = {
   handWin: "70px",
   handHero: "104px",
 } as const;
+
+/**
+ * Caveat looks about a third smaller than Inter at the same px size, so handwritten text set
+ * with a body size token (Text `isDisplay`, buttons) is multiplied by this to look the same size.
+ */
+export const handScale = 1.35;
 
 export const fontWeights = {
   regular: 400,
@@ -173,7 +186,8 @@ export const radii = {
 /** Line widths. Sketched panels use a slightly heavier pen than plain dividers. */
 export const borderWidths = {
   thin: "1px",
-  sketch: "1.5px",
+  /** The everyday pen: panel, input and button outlines. */
+  sketch: "2px",
   pen: "2px",
   marker: "3px",
 } as const;

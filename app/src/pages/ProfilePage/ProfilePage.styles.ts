@@ -46,7 +46,7 @@ export const PolicyCard = styled.div`
   gap: ${({ theme }) => theme.space(1.5)};
   padding: ${({ theme }) => theme.space(3)};
   border-radius: ${({ theme }) => theme.radii.xl};
-  background: ${({ theme }) => theme.colors.surfaceRaised};
+  border: ${({ theme }) => theme.borderWidths.sketch} solid ${({ theme }) => theme.colors.border};
 `;
 
 export const PolicyTop = styled.div`
