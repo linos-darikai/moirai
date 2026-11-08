@@ -48,11 +48,17 @@ pub enum Value {
     WeakestNeighborArmy,
     StrongestNeighborArmy,
     Turn,
+    NearestEnemyArmy,
+    NearestEnemyDistance,
+    RichestEnemyArmy,
+    MyMarching,
+    MyWealth,
 }
 
 impl Value {
     /// Every value, in byte order: a value's byte is its position here + 1 (0 means "none").
-    pub const ALL: [Value; 22] = [
+    /// New values go at the end so compiled policies keep their meaning.
+    pub const ALL: [Value; 27] = [
         Value::Food,
         Value::Ore,
         Value::Gold,
@@ -75,6 +81,11 @@ impl Value {
         Value::WeakestNeighborArmy,
         Value::StrongestNeighborArmy,
         Value::Turn,
+        Value::NearestEnemyArmy,
+        Value::NearestEnemyDistance,
+        Value::RichestEnemyArmy,
+        Value::MyMarching,
+        Value::MyWealth,
     ];
 
     /// The name a policy writes for this value.
@@ -102,6 +113,11 @@ impl Value {
             Value::WeakestNeighborArmy => "weakest_neighbor.army",
             Value::StrongestNeighborArmy => "strongest_neighbor.army",
             Value::Turn => "turn",
+            Value::NearestEnemyArmy => "nearest_enemy.army",
+            Value::NearestEnemyDistance => "nearest_enemy.distance",
+            Value::RichestEnemyArmy => "richest_enemy.army",
+            Value::MyMarching => "my.marching",
+            Value::MyWealth => "my.wealth",
         }
     }
 }
@@ -179,13 +195,75 @@ pub enum TileTarget {
     NearestFree,
 }
 
-/// Which other civ `attack` goes after.
+/// Which other civ `attack` goes after (docs/decisions/0010). Always a civ still in the game;
+/// ties go to the lower civ index.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum CivTarget {
-    /// The living civ with the fewest fighting units.
+    /// The fewest fighting units.
     WeakestNeighbor,
-    /// The living civ with the most fighting units.
+    /// The most fighting units.
     StrongestNeighbor,
+    /// Land closest to your capital.
+    NearestEnemy,
+    /// The most wealth (coins + resources at market prices).
+    RichestEnemy,
+    /// The most tiles.
+    LargestEnemy,
+    /// The best Score (tiles × 3 + wealth ÷ 10 + army strength).
+    Leader,
+}
+
+impl CivTarget {
+    /// Every civ target, in byte order (byte = position + 1).
+    pub const ALL: [CivTarget; 6] = [
+        CivTarget::WeakestNeighbor,
+        CivTarget::StrongestNeighbor,
+        CivTarget::NearestEnemy,
+        CivTarget::RichestEnemy,
+        CivTarget::LargestEnemy,
+        CivTarget::Leader,
+    ];
+
+    /// The name a policy writes.
+    pub fn name(self) -> &'static str {
+        match self {
+            CivTarget::WeakestNeighbor => "weakest_neighbor",
+            CivTarget::StrongestNeighbor => "strongest_neighbor",
+            CivTarget::NearestEnemy => "nearest_enemy",
+            CivTarget::RichestEnemy => "richest_enemy",
+            CivTarget::LargestEnemy => "largest_enemy",
+            CivTarget::Leader => "leader",
+        }
+    }
+}
+
+/// What an attack marches on, in the chosen civ's land.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum AttackObjective {
+    /// Their tile nearest your capital (the default).
+    Border,
+    /// Their city nearest your capital.
+    City,
+    /// Their capital.
+    Capital,
+}
+
+impl AttackObjective {
+    /// Every objective, in byte order (0, 1, 2: stored as `2 × objective` in the action's number).
+    pub const ALL: [AttackObjective; 3] = [
+        AttackObjective::Border,
+        AttackObjective::City,
+        AttackObjective::Capital,
+    ];
+
+    /// The name a policy writes.
+    pub fn name(self) -> &'static str {
+        match self {
+            AttackObjective::Border => "border",
+            AttackObjective::City => "city",
+            AttackObjective::Capital => "capital",
+        }
+    }
 }
 
 /// What a rule does when its conditions hold. The interpreter turns it into a concrete `Action`
@@ -202,6 +280,7 @@ pub enum PolicyAction {
     Buy(Resource, u32),
     Attack {
         target: CivTarget,
+        objective: AttackObjective,
         choice: CityFallChoice,
     },
 }

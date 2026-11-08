@@ -85,7 +85,7 @@ pub fn win_metric_from_byte(byte: u8) -> Option<WinMetric> {
     }
 }
 
-/// One match, as plain bytes (3,616 bytes after the discriminator).
+/// One match, as plain bytes (3,696 bytes after the discriminator).
 ///
 /// `#[account(zero_copy)]`: Anchor never copies this into a Rust value; instructions read and
 /// write the account's bytes in place through `AccountLoader`. Field order keeps every number on
@@ -212,4 +212,17 @@ fn is_flag_set(flags: u8, seat: usize) -> bool {
     flags
         .checked_shr(shift)
         .is_some_and(|shifted| shifted & 1 == 1)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_status_byte_is_where_the_app_looks_for_it() {
+        // app/src/lib/solana/matchAccounts.ts filters open lobbies on this offset (plus the 8-byte
+        // discriminator). If this changes, change STATUS_OFFSET there too.
+        assert_eq!(core::mem::offset_of!(Match, status), 3_686);
+        assert_eq!(core::mem::size_of::<Match>(), 3_696);
+    }
 }

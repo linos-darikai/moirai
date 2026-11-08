@@ -2,8 +2,8 @@
 // settled. Covers settling too early, both payouts, Profiles, the Top 10, wrong accounts and
 // settling twice (PLAN.md section 5). Needs a local-testing build: run with `pnpm test:program`.
 //
-// In the sample match (seed 42) the final tiles are turtle 53, raider 62, trader 48, expander 89,
-// so under Territory the expander (seat 3) wins, the raider is second and the turtle third.
+// In the sample match (seed 42) the final tiles are turtle 57, raider 74, trader 58, expander 44,
+// so under Territory the raider (seat 1) wins, the trader is second and the turtle third.
 
 import * as anchor from "@anchor-lang/core";
 import { expect } from "chai";
@@ -79,25 +79,25 @@ describe("settle match", () => {
     await settle(lobby.match, lobby.players);
 
     const after = await balances(lobby.players);
-    // The expander (seat 3) wins Territory on seed 42.
+    // The raider (seat 1) wins Territory on seed 42.
     expect(after.map((balance, seat) => balance - before[seat])).to.deep.equal([
       0,
-      0,
-      0,
       pot,
+      0,
+      0,
     ]);
+    const raider = await program.account.profile.fetch(
+      profileAddress(lobby.players[1].publicKey)
+    );
     const expander = await program.account.profile.fetch(
       profileAddress(lobby.players[3].publicKey)
     );
-    const trader = await program.account.profile.fetch(
-      profileAddress(lobby.players[2].publicKey)
-    );
-    expect(expander.matchesPlayed).to.equal(1);
-    expect(expander.wins).to.equal(1);
-    expect(expander.winningsLamports.toNumber()).to.equal(pot);
-    expect(expander.elo).to.be.greaterThan(1_200);
-    expect(trader.wins).to.equal(0);
-    expect(trader.elo).to.be.lessThan(expander.elo);
+    expect(raider.matchesPlayed).to.equal(1);
+    expect(raider.wins).to.equal(1);
+    expect(raider.winningsLamports.toNumber()).to.equal(pot);
+    expect(raider.elo).to.be.greaterThan(1_200);
+    expect(expander.wins).to.equal(0);
+    expect(expander.elo).to.be.lessThan(raider.elo);
 
     const [topTenAddress] = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("top10")],
@@ -110,7 +110,7 @@ describe("settle match", () => {
     expect(elos).to.deep.equal([...elos].sort((a, b) => b - a));
     expect(
       topTen.entries.some((entry) =>
-        entry.wallet.equals(lobby.players[3].publicKey)
+        entry.wallet.equals(lobby.players[1].publicKey)
       )
     ).to.equal(true);
 
@@ -134,11 +134,11 @@ describe("settle match", () => {
     const gained = (await balances(lobby.players)).map(
       (balance, seat) => balance - before[seat]
     );
-    // Seats: turtle (3rd), raider (2nd), trader (4th), expander (1st). Rounding dust goes to 1st.
+    // Seats: turtle (3rd), raider (1st), trader (2nd), expander (4th). Rounding dust goes to 1st.
     const second = Math.floor((pot * 3_000) / 10_000);
     const third = Math.floor((pot * 1_000) / 10_000);
     const first = pot - second - third;
-    expect(gained).to.deep.equal([third, second, 0, first]);
+    expect(gained).to.deep.equal([third, first, second, 0]);
     expect(gained.reduce((sum, amount) => sum + amount, 0)).to.equal(pot);
   });
 

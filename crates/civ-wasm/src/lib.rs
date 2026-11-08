@@ -108,8 +108,9 @@ fn problem_lines(errors: &[civ_core::policy::compiler::CompileError]) -> String 
 }
 
 /// Numbers per civ in `Simulation::civStats`, in this order: alive (0/1), tiles, cities, army,
-/// food, ore, gold, coins, wealth.
-pub const CIV_STAT_COUNT: usize = 9;
+/// food, ore, gold, coins, wealth, units on the march, march x, march y (x and y are -1 when no
+/// army is out).
+pub const CIV_STAT_COUNT: usize = 12;
 
 /// A simulated match (civ-core `simulate_match`), kept in WASM memory; JavaScript reads one turn
 /// at a time. `#[wasm_bindgen]` on a struct makes it a JavaScript class.
@@ -156,6 +157,9 @@ impl Simulation {
                 f64::from(civ.resources.gold),
                 f64::from(civ.coins),
                 civ.wealth as f64, // only for display; exact up to 2^53
+                f64::from(civ.marching),
+                civ.army_position.map_or(-1.0, |tile| f64::from(tile.x())),
+                civ.army_position.map_or(-1.0, |tile| f64::from(tile.y())),
             ]);
         }
         stats

@@ -9,8 +9,8 @@
 //! policy always has exactly one byte form (and one commitment).
 
 use super::{
-    byte_of, item_of, CivTarget, Comparison, Condition, Operand, PolicyAction, Rule, TileTarget,
-    Value, MAX_CONDITIONS_PER_RULE,
+    byte_of, item_of, AttackObjective, CivTarget, Comparison, Condition, Operand, PolicyAction,
+    Rule, TileTarget, Value, MAX_CONDITIONS_PER_RULE,
 };
 use crate::conquest::CityFallChoice;
 use crate::resources::Resource;
@@ -155,10 +155,17 @@ fn decode_action(bytes: &[u8]) -> Option<PolicyAction> {
         5 => PolicyAction::AssignWorkers(worker_focus_from_byte(argument)?),
         6 => PolicyAction::Sell(Resource::from_byte(argument)?, number),
         7 => PolicyAction::Buy(Resource::from_byte(argument)?, number),
-        8 => PolicyAction::Attack {
-            target: civ_target_from_byte(argument)?,
-            choice: fall_choice_from_number(number)?,
-        },
+        8 => {
+            // The number packs both choices: raze + 2 × objective (docs/decisions/0010).
+            let objective = AttackObjective::ALL
+                .get(usize::try_from(number / 2).ok()?)
+                .copied()?;
+            PolicyAction::Attack {
+                target: item_of(argument, &CivTarget::ALL)?,
+                objective,
+                choice: fall_choice_from_number(number % 2)?,
+            }
+        }
         _ => return None,
     };
     // Only actions that use the number may have one; only some use the argument byte.
@@ -183,14 +190,6 @@ fn tile_target_from_byte(byte: u8) -> Option<TileTarget> {
     match byte {
         1 => Some(TileTarget::NearestDeposit),
         2 => Some(TileTarget::NearestFree),
-        _ => None,
-    }
-}
-
-fn civ_target_from_byte(byte: u8) -> Option<CivTarget> {
-    match byte {
-        1 => Some(CivTarget::WeakestNeighbor),
-        2 => Some(CivTarget::StrongestNeighbor),
         _ => None,
     }
 }
@@ -271,16 +270,22 @@ fn encode_action(action: &PolicyAction) -> [u8; ACTION_BYTES] {
         PolicyAction::AssignWorkers(focus) => (5, focus.map_or(0, Resource::to_byte), 0),
         PolicyAction::Sell(resource, amount) => (6, resource.to_byte(), amount),
         PolicyAction::Buy(resource, amount) => (7, resource.to_byte(), amount),
-        PolicyAction::Attack { target, choice } => {
-            let target_byte = match target {
-                CivTarget::WeakestNeighbor => 1,
-                CivTarget::StrongestNeighbor => 2,
-            };
-            let choice_number = match choice {
+        PolicyAction::Attack {
+            target,
+            objective,
+            choice,
+        } => {
+            let raze = match choice {
                 CityFallChoice::Capture => 0,
                 CityFallChoice::Raze => 1,
             };
-            (8, target_byte, choice_number)
+            let objective_number =
+                u32::from(byte_of(objective, &AttackObjective::ALL)).saturating_sub(1);
+            (
+                8,
+                byte_of(target, &CivTarget::ALL),
+                raze + 2 * objective_number,
+            )
         }
     };
     let number_bytes = number.to_le_bytes();

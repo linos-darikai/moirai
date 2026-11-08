@@ -165,6 +165,7 @@ pub fn eliminate_civs_without_cities(map: &mut Map, civs: &mut [Civ]) {
         }
         civ.set_alive(false);
         civ.units = UnitCounts::NONE;
+        civ.expedition = crate::expedition::Expedition::NONE;
         release_all_land(map, civ.id());
     }
 }

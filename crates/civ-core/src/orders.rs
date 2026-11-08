@@ -5,14 +5,13 @@
 //! phase, civs act in rotating order (docs/decisions/0007, "Turn order", step 5).
 
 use crate::actions::{claim_tile, found_city, ActionError};
-use crate::attack::{attack, AttackReport};
 use crate::builds::{rush_build, start_build};
 use crate::civ::CivId;
 use crate::conquest::CityFallChoice;
 use crate::map::TileCoordinate;
+use crate::march::dispatch_expedition;
 use crate::market::{buy, sell};
 use crate::match_state::MatchState;
-use crate::randomness::MatchRandom;
 use crate::resources::Resource;
 use crate::rules::MAX_ACTIVE_RULES_PER_TURN;
 use crate::units::UnitKind;
@@ -35,7 +34,8 @@ pub enum Action {
     Sell(Resource, u32),
     /// Buy this much of a resource with coins (market.rs).
     Buy(Resource, u32),
-    /// Attack this enemy tile; capture or raze a city that falls (attack.rs).
+    /// Send the army to this enemy tile, where it fights on arrival; capture or raze a city that
+    /// falls (march.rs, docs/decisions/0010).
     Attack {
         target: TileCoordinate,
         choice: CityFallChoice,
@@ -112,14 +112,13 @@ pub enum ActionEffect {
     BuildStarted { city_slot: usize },
     /// Coins changed hands: paid for a rush or a purchase, or earned by a sale.
     Coins(u32),
-    /// The result of an attack.
-    Attacked(AttackReport),
+    /// The army set out; it arrives in this many turns (the fight is in the turn report then).
+    Dispatched { turns_to_arrive: u8 },
 }
 
 /// Applies one action for the civ at `civ_index` on the current turn.
 pub fn apply_action(
     state: &mut MatchState,
-    random: &MatchRandom,
     civ_index: usize,
     action: Action,
 ) -> Result<ActionEffect, ActionError> {
@@ -134,8 +133,10 @@ pub fn apply_action(
 
     if let Action::Attack { target, choice } = action {
         let attacker = CivId(u8::try_from(civ_index).map_err(|_| ActionError::CivIsOut)?);
-        let report = attack(map, civs, random, attacker, target, choice, turn)?;
-        return Ok(ActionEffect::Attacked(report));
+        let dispatch = dispatch_expedition(map, civs, attacker, target, choice)?;
+        return Ok(ActionEffect::Dispatched {
+            turns_to_arrive: dispatch.turns_to_arrive,
+        });
     }
 
     let civ = civs.get_mut(civ_index).ok_or(ActionError::CivIsOut)?;

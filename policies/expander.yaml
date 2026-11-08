@@ -1,15 +1,20 @@
-# wide-expander: settles every city site it can reach and buys land in between.
+# wide-expander: settles every city site it can reach and buys land in between; once its army is
+# clearly stronger it takes the weakest neighbour's cities.
 name: wide-expander
 rules:
   - if: my.settlers > 0
     do: found_city(nearest_site)
   - if: food < 25
     do: assign_workers(food)
+  - if: my.army >= 12 and my.army > 150% weakest_neighbor.army
+    do: attack(weakest_neighbor, city)
   - if: food >= 30 and ore >= 10 and my.cities < 5
     do: build(settler)
   - if: my.workers < 4 and food >= 20
     do: build(worker)
   - if: food >= 35 and gold >= 10
     do: claim_tile(nearest_free)
-  - if: my.guards < 3
+  - if: my.guards < 4 and ore >= 15
     do: build(guard)
+  - if: my.army < 14 and food >= 15
+    do: build(infantry)

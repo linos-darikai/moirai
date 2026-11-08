@@ -28,6 +28,10 @@ pub struct CivSnapshot {
     pub coins: u32,
     /// Coins plus resources at that moment's market prices (the Wealth metric).
     pub wealth: u64,
+    /// Where the civ's army is marching, if it is out (docs/decisions/0010).
+    pub army_position: Option<crate::map::TileCoordinate>,
+    /// Fighting units on the march (0 if none).
+    pub marching: u32,
 }
 
 /// The match at one moment: the map and every civ.
@@ -113,6 +117,8 @@ fn snapshot(state: &MatchState) -> TurnSnapshot {
             resources: civ.resources,
             coins: civ.coins,
             wealth: wealth(civ, &state.market),
+            army_position: civ.expedition.position(),
+            marching: civ.expedition.units.total(),
         };
     }
     TurnSnapshot {

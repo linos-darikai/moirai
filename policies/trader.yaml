@@ -1,17 +1,19 @@
-# silk-trader: a big worker economy that turns every surplus into coins, keeping its wealth in
-# coins (their value doesn't fall when the market floods).
+# silk-trader: a big worker economy that turns surplus into coins, then hires an army and razes the
+# richest rival's cities to keep the lead in wealth.
 name: silk-trader
 rules:
   - if: food < 30
     do: assign_workers(food)
   - if: my.workers < 8 and food >= 25
     do: build(worker)
+  - if: my.army >= 10 and my.army > 150% richest_enemy.army
+    do: attack(richest_enemy, city, raze)
   - if: ore > 40
     do: sell(ore, 20)
   - if: gold > 40
     do: sell(gold, 20)
-  - if: food > 80
-    do: sell(food, 20)
+  - if: coins > 150 and food >= 10
+    do: build(infantry)
   - if: my.guards < 3 and ore >= 15
     do: build(guard)
   - if: food >= 40 and gold >= 10

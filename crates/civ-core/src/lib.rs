@@ -16,9 +16,11 @@
 //! - `builds`: one build per city, paid up front; rushing with coins; turn step 3 finishes builds
 //! - `city`: one city of a civ (size, growth, capital flag)
 //! - `civ`: one player's civilisation, with up to 8 cities
+//! - `expedition`: an army on the march (position, target, speed)
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
 //! - `market`: the shared market; prices from supply, sell and buy for coins
+//! - `march`: `attack` sends an expedition; each turn expeditions march and fight on arrival
 //! - `match_state`: the whole match in one plain-bytes struct (seed, turn, market, civs, map)
 //! - `match_start`: turn 0 of a match, the map and every civ with its capital
 //! - `borders`: the tiles within a city's reach; claiming the free ones
@@ -42,9 +44,11 @@ pub mod builds;
 pub mod city;
 pub mod civ;
 pub mod conquest;
+pub mod expedition;
 pub mod growth;
 pub mod map;
 pub mod map_generation;
+pub mod march;
 pub mod market;
 pub mod match_start;
 pub mod match_state;
@@ -55,6 +59,9 @@ pub mod randomness;
 pub mod resources;
 pub mod rules;
 pub mod scoring;
+// The simulator (browser and CLI) only: it keeps a snapshot of every turn and needs more than the
+// 4 KB stack a Solana program gets, so on-chain builds leave it out.
+#[cfg(not(target_os = "solana"))]
 pub mod simulation;
 pub mod turn;
 pub mod units;

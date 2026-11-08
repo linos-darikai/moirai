@@ -9,7 +9,6 @@
 
 use civ_core::aggregates::aggregate_map;
 use civ_core::match_state::MatchState;
-use civ_core::orders::ActionEffect;
 use civ_core::policy::compiler::compile_policy;
 use civ_core::policy::interpreter::{play_turn, play_until_finished};
 use civ_core::randomness::{MatchSeed, MATCH_SEED_LENGTH};
@@ -26,7 +25,7 @@ const SAMPLE_BOTS: [&str; 4] = [
 /// The final fingerprint of the sample match with every seed byte 42. Locks the whole game: if a
 /// rule, a bot or the turn order changes, this changes. Update it on purpose only, and the WASM
 /// check in app/src/lib/engine expects the same number.
-const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 12_561_166_484_484_629_597;
+const KNOWN_FINGERPRINT_FOR_SEED_42: u64 = 16_939_628_229_789_221_347;
 
 fn compiled_bots() -> Vec<Vec<u8>> {
     SAMPLE_BOTS
@@ -81,11 +80,7 @@ fn the_bots_really_play_attacks_happen_and_cities_are_founded() {
     let mut attacks = 0;
 
     while let Ok(report) = play_turn(&mut state, &policies) {
-        for result in report.action_results.iter().flatten().flatten() {
-            if let Ok(ActionEffect::Attacked(_)) = result {
-                attacks += 1;
-            }
-        }
+        attacks += report.battles.iter().flatten().count();
     }
 
     let aggregates = aggregate_map(&state.map);

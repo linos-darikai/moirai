@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::policy::format::{read_rule, validate_policy};
+use crate::policy::AttackObjective;
 
 /// The four sample bots from `policies/` (also the bots civ-cli plays).
 const SAMPLE_POLICIES: [&str; 4] = [
@@ -76,6 +77,7 @@ fn always_rules_and_attacks_with_raze_compile() {
         rule.action,
         PolicyAction::Attack {
             target: CivTarget::StrongestNeighbor,
+            objective: AttackObjective::Border,
             choice: CityFallChoice::Raze
         }
     );
@@ -166,4 +168,38 @@ fn each_problem_names_the_word_it_is_about() {
 
     assert!(details.contains(&("unknownValue", "mana".to_string())));
     assert!(details.contains(&("unknownAction", "cast".to_string())));
+}
+
+#[test]
+fn attacks_can_name_any_target_and_an_objective_in_either_order() {
+    let yaml = "name: t\nrules:\n  - if: always\n    do: attack(richest_enemy, raze, capital)\n  - if: always\n    do: attack(nearest_enemy, city)\n";
+
+    let compiled = compile_policy(yaml).expect("valid policy");
+
+    assert_eq!(
+        read_rule(&compiled.bytes, 0).map(|rule| rule.action),
+        Some(PolicyAction::Attack {
+            target: CivTarget::RichestEnemy,
+            objective: AttackObjective::Capital,
+            choice: CityFallChoice::Raze
+        })
+    );
+    assert_eq!(
+        read_rule(&compiled.bytes, 1).map(|rule| rule.action),
+        Some(PolicyAction::Attack {
+            target: CivTarget::NearestEnemy,
+            objective: AttackObjective::City,
+            choice: CityFallChoice::Capture
+        })
+    );
+}
+
+#[test]
+fn an_attack_with_two_objectives_or_an_unknown_target_is_refused() {
+    let yaml = "name: t\nrules:\n  - if: always\n    do: attack(leader, city, capital)\n  - if: always\n    do: attack(the_moon)\n";
+
+    let found = problems(yaml);
+
+    assert!(found.contains(&(4, "badArguments")));
+    assert!(found.contains(&(6, "badArguments")));
 }

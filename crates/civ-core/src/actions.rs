@@ -49,6 +49,8 @@ pub enum ActionError {
     NotAnEnemyTile,
     /// `attack` needs at least one fighting unit (Settlers and Workers don't fight).
     NoArmy,
+    /// `attack` while the civ's army is already out on an expedition (one at a time).
+    AlreadyMarching,
 }
 
 /// Uses one Settler to found a size 1 city on `site`, which then claims its border.

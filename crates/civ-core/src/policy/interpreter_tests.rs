@@ -168,7 +168,7 @@ fn claim_tile_picks_the_free_deposit_next_to_the_land_nearest_the_capital() {
 }
 
 #[test]
-fn attack_goes_for_the_weakest_neighbors_city_next_to_the_land() {
+fn attack_city_goes_for_the_weakest_neighbors_city_nearest_the_capital() {
     let mut state = new_match();
     state.map = Map::empty();
     state
@@ -191,12 +191,13 @@ fn attack_goes_for_the_weakest_neighbors_city_next_to_the_land() {
     state.civs[0].units.add(UnitKind::Infantry, 5);
     let attack = PolicyAction::Attack {
         target: CivTarget::WeakestNeighbor,
+        objective: crate::policy::AttackObjective::City,
         choice: CityFallChoice::Capture,
     };
 
     let orders = orders_for_civ_zero(&state, &[rule(&[], attack)]);
 
-    // Both (4,3) and the city (5,3) touch civ 0's land; the city wins.
+    // (4,3) is nearer, but the objective is a city: (5,3).
     assert_eq!(
         orders.actions[0],
         Some(Action::Attack {
@@ -218,4 +219,50 @@ fn bad_bytes_or_a_knocked_out_civ_give_no_orders() {
 
     assert_eq!(from_junk, CivOrders::NONE);
     assert_eq!(from_knocked_out, CivOrders::NONE);
+}
+
+#[test]
+fn attack_capital_marches_on_the_enemy_capital_however_far_it_is() {
+    let mut state = new_match();
+    state.civs[0].units.add(UnitKind::Infantry, 5);
+    let attack = PolicyAction::Attack {
+        target: CivTarget::NearestEnemy,
+        objective: crate::policy::AttackObjective::Capital,
+        choice: CityFallChoice::Raze,
+    };
+
+    let orders = orders_for_civ_zero(&state, &[rule(&[], attack)]);
+
+    // Civ 1's capital in a 2-civ match is the far corner, (12,12).
+    assert_eq!(
+        orders.actions[0],
+        Some(Action::Attack {
+            target: coordinate(12, 12),
+            choice: CityFallChoice::Raze
+        })
+    );
+}
+
+#[test]
+fn no_attack_while_the_army_is_already_marching() {
+    let mut state = new_match();
+    state.civs[0].units.add(UnitKind::Infantry, 5);
+    state.civs[0].expedition = crate::expedition::Expedition::new(
+        crate::units::UnitCounts {
+            infantry: 3,
+            ..crate::units::UnitCounts::NONE
+        },
+        coordinate(5, 5),
+        coordinate(12, 12),
+        CityFallChoice::Capture,
+    );
+    let attack = PolicyAction::Attack {
+        target: CivTarget::NearestEnemy,
+        objective: crate::policy::AttackObjective::Capital,
+        choice: CityFallChoice::Capture,
+    };
+
+    let orders = orders_for_civ_zero(&state, &[rule(&[], attack)]);
+
+    assert_eq!(orders.actions[0], None);
 }

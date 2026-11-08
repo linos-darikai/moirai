@@ -1,11 +1,12 @@
 //! Civs: one player's civilisation inside a match. See the glossary in CLAUDE.md section 3.
 //!
-//! Storage layout: `Civ` is 112 plain bytes (`#[repr(C)]`, `Pod`) so the program can use it as
+//! Storage layout: `Civ` is 132 plain bytes (`#[repr(C)]`, `Pod`) so the program can use it as
 //! zero-copy account data, like the map (docs/decisions/0004). Read it through the methods.
 
 use bytemuck::{Pod, Zeroable};
 
 use crate::city::City;
+use crate::expedition::Expedition;
 use crate::map::TileCoordinate;
 use crate::resources::{Resource, ResourceStock};
 use crate::rules::MAX_CITIES_PER_CIV;
@@ -51,11 +52,12 @@ pub fn rotating_civ_order(turn: u16, civ_count: usize) -> [usize; MAX_CIVS] {
     order
 }
 
-/// One civ's state, as 112 plain bytes.
+/// One civ's state, as 132 plain bytes.
 ///
 /// Field order matters for `#[repr(C)]`: 2 single bytes + 12 bytes of unit counts + 2 more single
 /// bytes end exactly at byte 16, where the 4-byte-aligned resource stock and coins can start,
-/// followed by the cities. `Pod` forbids hidden padding, and this order needs none.
+/// followed by the cities and the expedition (both 2-byte aligned). `Pod` forbids hidden padding,
+/// and this order needs none.
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Pod, Zeroable)]
 pub struct Civ {
@@ -77,6 +79,8 @@ pub struct Civ {
     /// Up to MAX_CITIES_PER_CIV cities. Slots not in use are `City::EMPTY`. The capital is
     /// whichever city has the capital flag, not always slot 0 (it moves when the capital falls).
     cities: [City; MAX_CITIES_PER_CIV],
+    /// The army on the march, if any (docs/decisions/0010).
+    pub expedition: Expedition,
 }
 
 impl Civ {
@@ -93,6 +97,7 @@ impl Civ {
             resources: ResourceStock::EMPTY,
             coins: 0,
             cities,
+            expedition: Expedition::NONE,
         }
     }
 
@@ -257,10 +262,10 @@ mod tests {
     }
 
     #[test]
-    fn a_civ_is_112_plain_bytes() {
+    fn a_civ_is_132_plain_bytes() {
         // The on-chain Civ account's size depends on this; rethink the layout before changing it.
         // 2 (id, flags) + 12 (units) + 2 (worker focus, reserved) + 12 (resources) + 4 (coins)
-        // + 8 cities x 10 bytes.
-        assert_eq!(std::mem::size_of::<Civ>(), 112);
+        // + 8 cities x 10 bytes + 20 (expedition).
+        assert_eq!(std::mem::size_of::<Civ>(), 132);
     }
 }

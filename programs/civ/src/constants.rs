@@ -28,7 +28,7 @@ pub const VAULT_SEED: &[u8] = b"vault";
 
 /// Bytes of one `civ_core::match_state::MatchState`. A literal (not `size_of`) because the IDL
 /// needs a plain number; the check below fails the build if civ-core's layout changes size.
-pub const MATCH_STATE_BYTES: usize = 1_264;
+pub const MATCH_STATE_BYTES: usize = 1_344;
 
 /// Bytes kept for each compiled policy (the largest a policy can be).
 pub const POLICY_SLOT_BYTES: usize = 499;

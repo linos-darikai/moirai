@@ -11,8 +11,8 @@ pub use super::compile_errors::{
 };
 use super::format::encode_policy;
 use super::{
-    CivTarget, Comparison, Condition, Operand, PolicyAction, Rule, TileTarget, Value,
-    MAX_CONDITIONS_PER_RULE,
+    AttackObjective, CivTarget, Comparison, Condition, Operand, PolicyAction, Rule, TileTarget,
+    Value, MAX_CONDITIONS_PER_RULE,
 };
 use crate::conquest::CityFallChoice;
 use crate::resources::Resource;
@@ -284,8 +284,9 @@ fn compile_action(text: &str) -> Result<PolicyAction, CompileProblem> {
             resource_from_name(resource).ok_or_else(bad_arguments)?,
             parse_number(amount)?,
         ),
-        ("attack", [target]) => compile_attack(target, "capture").ok_or_else(bad_arguments)?,
-        ("attack", [target, choice]) => compile_attack(target, choice).ok_or_else(bad_arguments)?,
+        ("attack", [target, options @ ..]) => {
+            compile_attack(target, options).ok_or_else(bad_arguments)?
+        }
         (
             "build" | "rush" | "found_city" | "claim_tile" | "assign_workers" | "sell" | "buy"
             | "attack",
@@ -300,19 +301,39 @@ fn compile_action(text: &str) -> Result<PolicyAction, CompileProblem> {
     Ok(action)
 }
 
-/// `attack(weakest_neighbor)` or `attack(strongest_neighbor, raze)`.
-fn compile_attack(target: &str, choice: &str) -> Option<PolicyAction> {
-    let target = match target {
-        "weakest_neighbor" => CivTarget::WeakestNeighbor,
-        "strongest_neighbor" => CivTarget::StrongestNeighbor,
-        _ => return None,
-    };
-    let choice = match choice {
-        "capture" => CityFallChoice::Capture,
-        "raze" => CityFallChoice::Raze,
-        _ => return None,
-    };
-    Some(PolicyAction::Attack { target, choice })
+/// `attack(target[, objective][, raze])`, for example `attack(richest_enemy, capital, raze)`.
+/// The objective (`border`, `city`, `capital`; default `border`) and `capture`/`raze` (default
+/// `capture`) may come in either order, at most once each.
+fn compile_attack(target: &str, options: &[&str]) -> Option<PolicyAction> {
+    let target = CivTarget::ALL
+        .into_iter()
+        .find(|candidate| candidate.name() == target)?;
+    let mut objective: Option<AttackObjective> = None;
+    let mut choice: Option<CityFallChoice> = None;
+    for option in options {
+        if let Some(found) = AttackObjective::ALL
+            .into_iter()
+            .find(|candidate| candidate.name() == *option)
+        {
+            if objective.replace(found).is_some() {
+                return None; // two objectives
+            }
+            continue;
+        }
+        let found = match *option {
+            "capture" => CityFallChoice::Capture,
+            "raze" => CityFallChoice::Raze,
+            _ => return None,
+        };
+        if choice.replace(found).is_some() {
+            return None; // both capture and raze
+        }
+    }
+    Some(PolicyAction::Attack {
+        target,
+        objective: objective.unwrap_or(AttackObjective::Border),
+        choice: choice.unwrap_or(CityFallChoice::Capture),
+    })
 }
 
 /// `sell(gold, 20)` to `("sell", ["gold", "20"])`; `rush` and `rush()` to `("rush", [])`.

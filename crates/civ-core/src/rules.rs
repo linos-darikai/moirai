@@ -93,6 +93,9 @@ pub struct UnitStats {
     pub build_turns: u8,
     /// Food it eats every turn.
     pub upkeep_food: u32,
+    /// Tiles it marches per turn on an expedition (docs/decisions/0010). An expedition moves at
+    /// its slowest unit's speed.
+    pub speed: u8,
 }
 
 /// The stats of each unit kind. A `match` with one arm per kind, so adding a kind to `UnitKind`
@@ -106,6 +109,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 5,
             build_turns: 1,
             upkeep_food: 1,
+            speed: 2,
         },
         UnitKind::Guard => UnitStats {
             attack: 2,
@@ -114,6 +118,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 10,
             build_turns: 2,
             upkeep_food: 1,
+            speed: 1,
         },
         UnitKind::Siege => UnitStats {
             attack: 6,
@@ -122,6 +127,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 15,
             build_turns: 3,
             upkeep_food: 1,
+            speed: 1,
         },
         UnitKind::Elite => UnitStats {
             attack: 8,
@@ -130,6 +136,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 40,
             build_turns: 4,
             upkeep_food: 2,
+            speed: 2,
         },
         UnitKind::Settler => UnitStats {
             attack: 0,
@@ -138,6 +145,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 20,
             build_turns: 3,
             upkeep_food: 1,
+            speed: 1,
         },
         UnitKind::Worker => UnitStats {
             attack: 0,
@@ -146,6 +154,7 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
             coin_cost: 5,
             build_turns: 2,
             upkeep_food: 1,
+            speed: 1,
         },
     }
 }

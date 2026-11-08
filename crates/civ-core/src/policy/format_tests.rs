@@ -1,6 +1,7 @@
 //! Tests for format.rs: every rule survives encode then decode, and bad bytes are refused.
 
 use super::*;
+use crate::policy::AttackObjective;
 
 fn rule(conditions: &[Condition], action: PolicyAction) -> Rule {
     let mut slots = [None; MAX_CONDITIONS_PER_RULE];
@@ -44,7 +45,8 @@ fn every_kind_of_rule() -> Vec<Rule> {
         rule(
             &[food_below(5), food_below(6), food_below(7)],
             PolicyAction::Attack {
-                target: CivTarget::WeakestNeighbor,
+                target: CivTarget::RichestEnemy,
+                objective: AttackObjective::Capital,
                 choice: CityFallChoice::Raze,
             },
         ),

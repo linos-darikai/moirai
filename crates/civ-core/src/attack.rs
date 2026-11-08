@@ -1,8 +1,8 @@
-//! The `attack` action (docs/decisions/0006, section 5): a civ sends its whole army (every unit
-//! except Settlers and Workers) at one enemy tile or city next to its territory.
+//! Fighting at a tile (docs/decisions/0006 section 5, 0010): an army arrives at an enemy tile or
+//! city and fights the defenders there. Armies get there by marching (march.rs); this file picks
+//! the defenders, runs the battle and applies the result.
 //!
-//! The battle maths is in battle.rs and what happens to a fallen city is in conquest.rs; this
-//! file checks the action, picks the defenders, runs the battle and applies the result.
+//! The battle maths is in battle.rs and what happens to a fallen city is in conquest.rs.
 
 use crate::actions::ActionError;
 use crate::battle::{resolve_battle, BattleOutcome, BattleRolls, DefendingCity};
@@ -23,23 +23,33 @@ pub struct AttackReport {
     pub city_fall: Option<CityFall>,
 }
 
-/// `attacker` attacks the enemy tile `target`. `choice` says whether to keep or destroy a city
-/// that falls.
+/// What a fight left: the report, and the attacking army's survivors (who go home).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct FightResult {
+    pub report: AttackReport,
+    pub survivors: UnitCounts,
+}
+
+/// `army` (belonging to `attacker`) fights at the enemy tile `target`. `choice` says whether to
+/// keep or destroy a city that falls. The army is not part of the attacker's units at home; the
+/// caller sends the survivors home.
 ///
 /// Checks: attacker is in the game; the target is owned by another civ that is still in the game;
-/// it shares an edge with the attacker's land; the attacker has at least one fighting unit.
+/// the army has at least one fighting unit.
 /// Effects: the battle (rolls from the match seed, turn and tile), losses on both sides, and if the
-/// attacker wins: the tile changes owner, or the city on it is captured or razed.
-pub fn attack(
+/// army wins: the tile changes owner, or the city on it is captured or razed.
+#[allow(clippy::too_many_arguments)] // each is a different thing the fight needs; a struct would only hide them
+pub fn fight_at(
     map: &mut Map,
     civs: &mut [Civ],
     random: &MatchRandom,
     attacker_id: CivId,
+    army: UnitCounts,
     target: TileCoordinate,
     choice: CityFallChoice,
     turn: u16,
-) -> Result<AttackReport, ActionError> {
-    // Step 1: checks. We work on copies of the two civs (a Civ is 88 plain bytes, so copying is
+) -> Result<FightResult, ActionError> {
+    // Step 1: checks. We work on copies of the two civs (a Civ is 132 plain bytes, so copying is
     // cheap) and write them back at the end. That avoids borrowing two items of `civs` at once.
     let mut attacker = living_civ(civs, attacker_id).ok_or(ActionError::CivIsOut)?;
     let defender_id = map
@@ -50,10 +60,7 @@ pub fn attack(
         return Err(ActionError::NotAnEnemyTile);
     }
     let mut defender = living_civ(civs, defender_id).ok_or(ActionError::NotAnEnemyTile)?;
-    if !borders_attacker_land(map, attacker_id, target) {
-        return Err(ActionError::NotNextToTerritory);
-    }
-    let army = fighting_units(&attacker.units);
+    let army = fighting_units(&army);
     if army.total() == 0 {
         return Err(ActionError::NoArmy);
     }
@@ -65,7 +72,8 @@ pub fn attack(
     // Step 3: the battle, and both sides' losses.
     let rolls = BattleRolls::for_battle(random, turn, target.index());
     let outcome = resolve_battle(&army, &defenders, city, rolls);
-    remove_losses(&mut attacker.units, &outcome.attacker_losses);
+    let mut survivors = army;
+    remove_losses(&mut survivors, &outcome.attacker_losses);
     remove_losses(&mut defender.units, &outcome.defender_losses);
 
     // Step 4: a win takes the tile, or the city on it.
@@ -81,10 +89,13 @@ pub fn attack(
     // Step 5: write the changed civs back.
     write_back(civs, attacker);
     write_back(civs, defender);
-    Ok(AttackReport {
-        defender: defender_id,
-        outcome,
-        city_fall,
+    Ok(FightResult {
+        report: AttackReport {
+            defender: defender_id,
+            outcome,
+            city_fall,
+        },
+        survivors,
     })
 }
 
@@ -103,16 +114,6 @@ fn write_back(civs: &mut [Civ], civ: Civ) {
     if let Some(slot) = civs.get_mut(civ.id().index()) {
         *slot = civ;
     }
-}
-
-/// True if `target` shares an edge with a tile the attacker owns.
-fn borders_attacker_land(map: &Map, attacker: CivId, target: TileCoordinate) -> bool {
-    for neighbor in target.neighbors().into_iter().flatten() {
-        if map.tile(neighbor).owner() == Some(attacker) {
-            return true;
-        }
-    }
-    false
 }
 
 /// The units that fight: every kind where `UnitKind::is_fighter` is true (not Settlers or Workers).

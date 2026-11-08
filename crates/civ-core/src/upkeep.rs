@@ -27,19 +27,32 @@ pub fn pay_upkeep(civs: &mut [Civ]) {
     }
 }
 
-/// Makes one civ pay its food upkeep, disbanding units first if it can't. Returns the units that
-/// were disbanded (all zero if none), so the turn feed can report them later.
+/// Makes one civ pay its food upkeep, disbanding units first if it can't. Units on an expedition
+/// eat too (docs/decisions/0010); units at home are disbanded first, then units on the march.
+/// Returns the units that were disbanded (all zero if none), so the turn feed can report them.
 pub fn pay_civ_upkeep(civ: &mut Civ) -> UnitCounts {
-    let disbanded = disband_until_fed(civ);
-    let upkeep = food_upkeep(&civ.units);
+    let food = civ.resources.food;
+    let away_upkeep = food_upkeep(&civ.expedition.units);
+
+    // Step 1: home units go first, until home + away upkeep fits in the food.
+    let food_for_home = food.saturating_sub(away_upkeep);
+    let mut disbanded = disband_until_fed(&mut civ.units, food_for_home);
+
+    // Step 2: if the army away still can't be fed, it loses units too.
+    let food_for_away = food.saturating_sub(food_upkeep(&civ.units));
+    let disbanded_away = disband_until_fed(&mut civ.expedition.units, food_for_away);
+    for kind in UnitKind::ALL {
+        disbanded.add(kind, disbanded_away.count(kind));
+    }
+
+    let upkeep = food_upkeep(&civ.units).saturating_add(food_upkeep(&civ.expedition.units));
     civ.resources.food = civ.resources.food.saturating_sub(upkeep);
     disbanded
 }
 
-/// Disbands units, most valuable kind first, until the civ's food covers its upkeep.
-fn disband_until_fed(civ: &mut Civ) -> UnitCounts {
-    let food = civ.resources.food;
-    let mut upkeep = food_upkeep(&civ.units);
+/// Disbands `units`, most valuable kind first, until their upkeep fits in `food`.
+fn disband_until_fed(units: &mut UnitCounts, food: u32) -> UnitCounts {
+    let mut upkeep = food_upkeep(units);
     let mut disbanded = UnitCounts::NONE;
 
     for kind in DISBAND_ORDER {
@@ -55,7 +68,7 @@ fn disband_until_fed(civ: &mut Civ) -> UnitCounts {
         let shortfall = upkeep.saturating_sub(food);
         let units_needed = shortfall.div_ceil(per_unit);
         let to_remove = u16::try_from(units_needed).unwrap_or(u16::MAX);
-        let removed = civ.units.remove(kind, to_remove);
+        let removed = units.remove(kind, to_remove);
         disbanded.add(kind, removed);
         upkeep = upkeep.saturating_sub(u32::from(removed).saturating_mul(per_unit));
     }
@@ -156,5 +169,35 @@ mod tests {
         pay_upkeep(&mut civs);
 
         assert_eq!(civs[0].resources.food, 5);
+    }
+
+    #[test]
+    fn units_on_the_march_eat_too_and_starve_after_the_units_at_home() {
+        use crate::conquest::CityFallChoice;
+        use crate::expedition::Expedition;
+        let mut civ = civ_with(
+            3,
+            UnitCounts {
+                guard: 2,
+                ..UnitCounts::NONE
+            },
+        );
+        let tile = TileCoordinate::new(5, 5).expect("on the map");
+        civ.expedition = Expedition::new(
+            UnitCounts {
+                infantry: 2,
+                ..UnitCounts::NONE
+            },
+            tile,
+            tile,
+            CityFallChoice::Capture,
+        );
+
+        let disbanded = pay_civ_upkeep(&mut civ);
+
+        // 4 mouths, 3 food: one home Guard goes; the marching Infantry are fed.
+        assert_eq!(disbanded.count(UnitKind::Guard), 1);
+        assert_eq!(civ.expedition.units.count(UnitKind::Infantry), 2);
+        assert_eq!(civ.resources.food, 0);
     }
 }

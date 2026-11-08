@@ -8,7 +8,7 @@
 
 use super::format::{read_rule, validate_policy};
 use super::targets::{
-    attack_target, choose_neighbor, nearest_claimable_tile, nearest_free_city_site,
+    attack_target, choose_neighbor, land_distance, nearest_claimable_tile, nearest_free_city_site,
 };
 use super::{CivTarget, Condition, Operand, PolicyAction, Rule, Value};
 use crate::aggregates::{aggregate_map, MapAggregates};
@@ -18,6 +18,7 @@ use crate::match_state::MatchState;
 use crate::orders::{Action, CivOrders};
 use crate::resources::Resource;
 use crate::rules::{MARKET_BASE_PRICE, MAX_ACTIVE_RULES_PER_TURN};
+use crate::scoring::wealth;
 use crate::turn::{run_turn, TurnError, TurnReport};
 use crate::units::UnitKind;
 
@@ -104,7 +105,7 @@ pub fn decide_with_rules(
         if !rule_matches(state, aggregates, civ_index, &rule) {
             continue;
         }
-        if let Some(action) = resolve_action(state, civ_index, &rule.action) {
+        if let Some(action) = resolve_action(state, aggregates, civ_index, &rule.action) {
             decision.orders.actions[filled] = Some(action);
             // At most 16 rules, so the index always fits in a byte.
             decision.rules[filled] = u8::try_from(index).ok();
@@ -176,11 +177,28 @@ fn value_of(state: &MatchState, aggregates: &MapAggregates, civ_index: usize, va
         Value::MyElites => units(UnitKind::Elite),
         Value::MySettlers => units(UnitKind::Settler),
         Value::MyWorkers => units(UnitKind::Worker),
-        Value::WeakestNeighborArmy => neighbor_army(state, civ_index, CivTarget::WeakestNeighbor),
+        Value::WeakestNeighborArmy => {
+            neighbor_army(state, aggregates, civ_index, CivTarget::WeakestNeighbor)
+        }
         Value::StrongestNeighborArmy => {
-            neighbor_army(state, civ_index, CivTarget::StrongestNeighbor)
+            neighbor_army(state, aggregates, civ_index, CivTarget::StrongestNeighbor)
         }
         Value::Turn => u64::from(state.turn),
+        Value::NearestEnemyArmy => {
+            neighbor_army(state, aggregates, civ_index, CivTarget::NearestEnemy)
+        }
+        Value::NearestEnemyDistance => {
+            choose_neighbor(state, aggregates, civ_index, CivTarget::NearestEnemy)
+                .and_then(|index| state.active_civs().get(index))
+                .map_or(u64::from(u8::MAX), |enemy| {
+                    u64::from(land_distance(&state.map, civ, enemy.id()))
+                })
+        }
+        Value::RichestEnemyArmy => {
+            neighbor_army(state, aggregates, civ_index, CivTarget::RichestEnemy)
+        }
+        Value::MyMarching => u64::from(civ.expedition.is_marching()),
+        Value::MyWealth => wealth(civ, &state.market),
     }
 }
 
@@ -199,16 +217,26 @@ pub fn army_size(civ: &Civ) -> u64 {
     u64::from(fighting_units(&civ.units).total())
 }
 
-/// The army size of the weakest or strongest other living civ, or 0 if there is none.
-fn neighbor_army(state: &MatchState, civ_index: usize, target: CivTarget) -> u64 {
-    choose_neighbor(state, civ_index, target)
+/// The army size of the civ `target` picks, or 0 if there is none.
+fn neighbor_army(
+    state: &MatchState,
+    aggregates: &MapAggregates,
+    civ_index: usize,
+    target: CivTarget,
+) -> u64 {
+    choose_neighbor(state, aggregates, civ_index, target)
         .and_then(|index| state.active_civs().get(index))
         .map_or(0, army_size)
 }
 
 /// Turns a rule's action into a concrete `Action` with its target picked from the state, or
 /// `None` if it has no possible target this turn (then the rule counts as not matching).
-fn resolve_action(state: &MatchState, civ_index: usize, action: &PolicyAction) -> Option<Action> {
+fn resolve_action(
+    state: &MatchState,
+    aggregates: &MapAggregates,
+    civ_index: usize,
+    action: &PolicyAction,
+) -> Option<Action> {
     let civ = state.active_civs().get(civ_index)?;
     match *action {
         PolicyAction::Build(kind) => Some(Action::StartBuild(kind)),
@@ -233,12 +261,17 @@ fn resolve_action(state: &MatchState, civ_index: usize, action: &PolicyAction) -
         PolicyAction::AssignWorkers(focus) => Some(Action::AssignWorkers(focus)),
         PolicyAction::Sell(resource, amount) => Some(Action::Sell(resource, amount)),
         PolicyAction::Buy(resource, amount) => Some(Action::Buy(resource, amount)),
-        PolicyAction::Attack { target, choice } => {
-            if army_size(civ) == 0 {
+        PolicyAction::Attack {
+            target,
+            objective,
+            choice,
+        } => {
+            // Only one expedition at a time, and it needs someone to send.
+            if army_size(civ) == 0 || civ.expedition.is_marching() {
                 return None;
             }
-            let enemy = choose_neighbor(state, civ_index, target)?;
-            let tile = attack_target(state, civ, enemy)?;
+            let enemy = choose_neighbor(state, aggregates, civ_index, target)?;
+            let tile = attack_target(state, civ, enemy, objective)?;
             Some(Action::Attack {
                 target: tile,
                 choice,

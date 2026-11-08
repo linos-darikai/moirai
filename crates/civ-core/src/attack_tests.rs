@@ -1,4 +1,5 @@
-//! Tests for attack.rs. Armies are lopsided on purpose so the ±10% roll can't change the result.
+//! Tests for attack.rs (fighting at a tile). Armies are lopsided on purpose so the ±10% roll can't
+//! change the result.
 
 use super::*;
 use crate::borders::claim_unowned_tiles_within;
@@ -38,13 +39,29 @@ fn border_war() -> (Map, [Civ; 2]) {
     (map, [attacker, defender])
 }
 
+/// Civ 0's whole army fights at `target` (as if its expedition just arrived), then the survivors
+/// go home, as march.rs does.
 fn attack_from_civ_zero(
     map: &mut Map,
     civs: &mut [Civ; 2],
     target: TileCoordinate,
     choice: CityFallChoice,
 ) -> Result<AttackReport, ActionError> {
-    attack(map, civs, &random(), CivId(0), target, choice, 15)
+    let army = civs[0].units;
+    civs[0].units = UnitCounts {
+        settler: army.settler,
+        worker: army.worker,
+        ..UnitCounts::NONE
+    };
+    let result = fight_at(map, civs, &random(), CivId(0), army, target, choice, 15);
+    let survivors = match &result {
+        Ok(fight) => fight.survivors,
+        Err(_) => fighting_units(&army),
+    };
+    for kind in UnitKind::ALL {
+        civs[0].units.add(kind, survivors.count(kind));
+    }
+    result.map(|fight| fight.report)
 }
 
 #[test]
@@ -130,18 +147,20 @@ fn attacking_your_own_or_unowned_land_is_refused() {
 }
 
 #[test]
-fn an_enemy_tile_far_from_the_attackers_land_is_refused() {
+fn an_army_that_marched_there_can_fight_deep_in_enemy_land() {
+    // No border needed any more: the expedition walked to (12,12), civ 1's second city.
     let (mut map, mut civs) = border_war();
-    civs[0].units.add(UnitKind::Infantry, 5);
+    civs[0].units.add(UnitKind::Siege, 10);
 
     let result = attack_from_civ_zero(
         &mut map,
         &mut civs,
         coordinate(12, 12),
-        CityFallChoice::Capture,
+        CityFallChoice::Raze,
     );
 
-    assert_eq!(result, Err(ActionError::NotNextToTerritory));
+    let report = result.expect("the fight happens");
+    assert_eq!(report.city_fall, Some(CityFall::Razed));
 }
 
 #[test]

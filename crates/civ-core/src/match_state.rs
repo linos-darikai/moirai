@@ -1,7 +1,7 @@
 //! MatchState: everything one match needs from turn to turn, in one plain-bytes struct: the seed,
 //! the turn number, the market, every civ and the map.
 //!
-//! Plain bytes (`#[repr(C)]`, `Pod`, 1,264 bytes) so the program can keep the whole match in one
+//! Plain bytes (`#[repr(C)]`, `Pod`, 1,344 bytes) so the program can keep the whole match in one
 //! zero-copy account and hand `run_turn` a reference to it, without copying 1 KB onto the 4 KB SBF
 //! stack (docs/decisions/0004). Natively and in WASM it is an ordinary value.
 
@@ -185,9 +185,9 @@ mod tests {
     }
 
     #[test]
-    fn a_match_state_is_1264_plain_bytes() {
+    fn a_match_state_is_1344_plain_bytes() {
         // The on-chain match account's size depends on this.
-        // 4 header + 32 seed + 12 market + 4 civs x 112 + 768 map.
-        assert_eq!(std::mem::size_of::<MatchState>(), 1_264);
+        // 4 header + 32 seed + 12 market + 4 civs x 132 + 768 map.
+        assert_eq!(std::mem::size_of::<MatchState>(), 1_344);
     }
 }
