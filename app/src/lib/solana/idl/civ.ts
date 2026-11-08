@@ -1711,7 +1711,7 @@ export type Civ = {
     {
       "name": "match",
       "docs": [
-        "One match, as plain bytes (3,616 bytes after the discriminator).",
+        "One match, as plain bytes (3,696 bytes after the discriminator).",
         "",
         "`#[account(zero_copy)]`: Anchor never copies this into a Rust value; instructions read and",
         "write the account's bytes in place through `AccountLoader`. Field order keeps every number on",
@@ -1811,7 +1811,7 @@ export type Civ = {
             "type": {
               "array": [
                 "u8",
-                1264
+                1344
               ]
             }
           },
