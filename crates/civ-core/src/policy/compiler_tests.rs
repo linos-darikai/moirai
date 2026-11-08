@@ -153,3 +153,17 @@ fn error_messages_read_as_plain_english() {
 
     assert_eq!(message, "line 3: unknown value `mana`");
 }
+
+#[test]
+fn each_problem_names_the_word_it_is_about() {
+    let errors = compile_policy("name: t\nrules:\n  - if: mana > 3\n    do: cast(fire)\n")
+        .expect_err("two problems");
+
+    let details: Vec<(&str, String)> = errors
+        .iter()
+        .map(|error| (error.problem.code(), error.problem.detail()))
+        .collect();
+
+    assert!(details.contains(&("unknownValue", "mana".to_string())));
+    assert!(details.contains(&("unknownAction", "cast".to_string())));
+}

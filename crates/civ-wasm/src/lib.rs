@@ -55,6 +55,27 @@ pub fn compile_policy(yaml: &str) -> Result<Vec<u8>, JsError> {
         .map_err(|errors| JsError::new(&problem_lines(&errors)))
 }
 
+/// Every problem in a YAML policy, one string each: `line<TAB>code<TAB>detail` (line 0 = the whole
+/// policy; `code` is a stable name like `unknownValue`; `detail` is the word it is about, or
+/// empty). An empty list means the policy compiles. The editor turns these into translated text.
+#[wasm_bindgen(js_name = policyProblems)]
+pub fn policy_problems(yaml: &str) -> Vec<String> {
+    let Err(errors) = civ_core::policy::compiler::compile_policy(yaml) else {
+        return Vec::new();
+    };
+    errors
+        .iter()
+        .map(|error| {
+            format!(
+                "{}\t{}\t{}",
+                error.line,
+                error.problem.code(),
+                error.problem.detail()
+            )
+        })
+        .collect()
+}
+
 /// Plays a whole match between YAML bots (in join order) from a 32-byte seed and returns the
 /// final state's fingerprint as a decimal string. Used to check the WASM build plays exactly like
 /// native Rust (see crates/civ-core/tests/sample_bots_match.rs).

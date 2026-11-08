@@ -64,6 +64,21 @@ impl CompileProblem {
             CompileProblem::BadArguments { .. } => "badArguments",
         }
     }
+
+    /// The word, key or text the problem is about (empty if none), for the app's message.
+    pub fn detail(&self) -> String {
+        match self {
+            CompileProblem::TooManyRules { count } => count.to_string(),
+            CompileProblem::UnknownKey { key } => key.clone(),
+            CompileProblem::MissingComparison { text } | CompileProblem::BadNumber { text } => {
+                text.clone()
+            }
+            CompileProblem::UnknownValue { word } => word.clone(),
+            CompileProblem::UnknownAction { name } => name.clone(),
+            CompileProblem::BadArguments { action } => action.clone(),
+            _ => String::new(),
+        }
+    }
 }
 
 // `impl fmt::Display` lets `format!("{error}")` print a plain-English message (used by civ-cli
