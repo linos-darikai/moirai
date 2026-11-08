@@ -1,0 +1,13 @@
+# iron-turtle: builds a strong economy and a wall of Guards, never attacks.
+name: iron-turtle
+rules:
+  - if: my.workers < 5
+    do: build(worker)
+  - if: my.guards < 6 and ore >= 15
+    do: build(guard)
+  - if: food < 20 and coins >= 30
+    do: buy(food, 20)
+  - if: gold > 40
+    do: sell(gold, 20)
+  - if: always
+    do: claim_tile(nearest_deposit)

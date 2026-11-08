@@ -1,0 +1,13 @@
+# wide-expander: settles every city site it can reach and buys land in between.
+name: wide-expander
+rules:
+  - if: my.settlers > 0
+    do: found_city(nearest_site)
+  - if: my.workers < 4
+    do: build(worker)
+  - if: food >= 30 and ore >= 10 and my.cities < 4
+    do: build(settler)
+  - if: always
+    do: claim_tile(nearest_free)
+  - if: my.guards < 2
+    do: build(guard)

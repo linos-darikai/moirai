@@ -1,0 +1,13 @@
+# red-raider: a small economy, then Infantry and Siege, and attacks the weakest neighbour.
+name: red-raider
+rules:
+  - if: my.workers < 3
+    do: build(worker)
+  - if: my.army >= 6 and my.army > 130% weakest_neighbor.army
+    do: attack(weakest_neighbor)
+  - if: ore >= 10 and gold >= 10 and my.siege < 3
+    do: build(siege)
+  - if: food >= 10
+    do: build(infantry)
+  - if: gold > 30
+    do: sell(gold, 15)

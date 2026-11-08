@@ -1,0 +1,15 @@
+# silk-trader: works its gold, sells it when the price is high and buys ore when it is cheap.
+name: silk-trader
+rules:
+  - if: my.workers < 6
+    do: build(worker)
+  - if: turn == 0
+    do: assign_workers(gold)
+  - if: gold_price > 120% base_gold_price and gold >= 20
+    do: sell(gold, 20)
+  - if: ore_price < 80% base_ore_price and coins >= 40
+    do: buy(ore, 20)
+  - if: ore >= 15 and my.guards < 4
+    do: build(guard)
+  - if: always
+    do: claim_tile(nearest_deposit)
