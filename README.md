@@ -9,7 +9,7 @@ holds the prize pool in a vault, pays the winners and keeps the leaderboard.
 > Here, players spin their strategy, the chain measures every turn, and nobody can cut in.
 
 <!-- Screenshot of the app's home page: save it as assets/home.png (or change this path). -->
-![Moirai home page](assets/home.png)
+![Moirai home page](./home.png)
 
 **Devnet program:** [`GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc`](https://explorer.solana.com/address/GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc?cluster=devnet)
 
