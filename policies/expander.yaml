@@ -3,11 +3,13 @@ name: wide-expander
 rules:
   - if: my.settlers > 0
     do: found_city(nearest_site)
-  - if: my.workers < 4
-    do: build(worker)
-  - if: food >= 30 and ore >= 10 and my.cities < 4
+  - if: food < 25
+    do: assign_workers(food)
+  - if: food >= 30 and ore >= 10 and my.cities < 5
     do: build(settler)
-  - if: always
+  - if: my.workers < 4 and food >= 20
+    do: build(worker)
+  - if: food >= 50 and gold >= 10
     do: claim_tile(nearest_free)
   - if: my.guards < 2
     do: build(guard)
