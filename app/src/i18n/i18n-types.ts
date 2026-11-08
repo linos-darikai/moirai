@@ -668,10 +668,26 @@ export type NamespaceLobbiesTranslation = {
 		 */
 		moneyBody: string
 		/**
-		 * C​r​e​a​t​e​ ​l​o​b​b​y​ ​a​n​d​ ​p​a​y​ ​{​a​m​o​u​n​t​}
-		 * @param {string} amount
+		 * C​r​e​a​t​e​ ​l​o​b​b​y
 		 */
-		submit: RequiredParams<'amount'>
+		submit: string
+		/**
+		 * C​r​e​a​t​i​n​g​ ​t​h​e​ ​l​o​b​b​y​…
+		 */
+		submitting: string
+		/**
+		 * C​o​n​n​e​c​t​ ​a​ ​w​a​l​l​e​t​ ​t​o​ ​c​r​e​a​t​e​ ​a​ ​l​o​b​b​y​.​ ​Y​o​u​ ​p​a​y​ ​o​n​l​y​ ​t​h​e​ ​a​c​c​o​u​n​t​s​'​ ​r​e​n​t​,​ ​w​h​i​c​h​ ​c​o​m​e​s​ ​b​a​c​k​ ​w​h​e​n​ ​t​h​e​ ​m​a​t​c​h​ ​c​l​o​s​e​s​.
+		 */
+		needWallet: string
+		/**
+		 * E​v​e​r​y​ ​m​a​t​c​h​ ​i​s​ ​6​0​ ​t​u​r​n​s​ ​i​n​ ​t​h​i​s​ ​v​e​r​s​i​o​n​.
+		 */
+		turnsFixed: string
+		/**
+		 * T​h​e​ ​l​o​b​b​y​ ​w​a​s​n​'​t​ ​c​r​e​a​t​e​d​:​ ​{​m​e​s​s​a​g​e​}
+		 * @param {string} message
+		 */
+		failed: RequiredParams<'message'>
 		/**
 		 * N​e​t​w​o​r​k​ ​f​e​e​ ​a​b​o​u​t​ ​0​.​0​0​0​0​1​ ​S​O​L​ ​·​ ​r​e​n​t​ ​r​e​f​u​n​d​e​d​ ​a​t​ ​s​e​t​t​l​e​m​e​n​t
 		 */
@@ -707,6 +723,18 @@ export type NamespaceLobbiesTranslation = {
 			 * S​t​a​r​t​i​n​g
 			 */
 			starting: string
+			/**
+			 * D​r​a​w​i​n​g​ ​t​h​e​ ​m​a​p​ ​s​e​e​d
+			 */
+			seed: string
+			/**
+			 * I​n​ ​p​l​a​y
+			 */
+			playing: string
+			/**
+			 * F​i​n​i​s​h​e​d
+			 */
+			finished: string
 		}
 		/**
 		 * J​o​i​n​ ​c​l​o​s​e​s​ ​i​n
@@ -716,6 +744,46 @@ export type NamespaceLobbiesTranslation = {
 		 * R​e​v​e​a​l​ ​c​l​o​s​e​s​ ​i​n
 		 */
 		revealClosesIn: string
+		/**
+		 * C​o​m​m​i​t​ ​c​l​o​s​e​s​ ​i​n
+		 */
+		commitClosesIn: string
+		/**
+		 * T​u​r​n
+		 */
+		turn: string
+		/**
+		 * {​t​u​r​n​}​ ​/​ ​{​t​o​t​a​l​}
+		 * @param {number} total
+		 * @param {number} turn
+		 */
+		turnValue: RequiredParams<'total' | 'turn'>
+		/**
+		 * M​a​t​c​h​ ​a​c​c​o​u​n​t​ ​o​n​ ​S​o​l​a​n​a​ ​E​x​p​l​o​r​e​r
+		 */
+		explorer: string
+		/**
+		 * Y​o​u​ ​c​o​m​m​i​t​t​e​d​ ​“​{​n​a​m​e​}​”​ ​f​r​o​m​ ​t​h​i​s​ ​b​r​o​w​s​e​r​.
+		 * @param {string} name
+		 */
+		committedPolicy: RequiredParams<'name'>
+		/**
+		 * W​r​i​t​e​ ​a​ ​p​o​l​i​c​y​ ​i​n​ ​t​h​e​ ​e​d​i​t​o​r​ ​f​i​r​s​t​:​ ​y​o​u​ ​c​o​m​m​i​t​ ​o​n​e​ ​o​f​ ​y​o​u​r​ ​s​a​v​e​d​ ​d​r​a​f​t​s​.
+		 */
+		noDrafts: string
+		/**
+		 * T​h​i​s​ ​m​a​t​c​h​ ​i​s​ ​o​v​e​r​:​ ​i​t​ ​h​a​s​ ​b​e​e​n​ ​s​e​t​t​l​e​d​ ​o​r​ ​c​a​n​c​e​l​l​e​d​,​ ​a​n​d​ ​i​t​s​ ​a​c​c​o​u​n​t​s​ ​a​r​e​ ​c​l​o​s​e​d​.
+		 */
+		closed: string
+		/**
+		 * W​a​i​t​i​n​g​ ​f​o​r​ ​y​o​u​r​ ​w​a​l​l​e​t​ ​a​n​d​ ​t​h​e​ ​n​e​t​w​o​r​k​…
+		 */
+		working: string
+		/**
+		 * T​h​a​t​ ​d​i​d​n​'​t​ ​g​o​ ​t​h​r​o​u​g​h​:​ ​{​m​e​s​s​a​g​e​}
+		 * @param {string} message
+		 */
+		failed: RequiredParams<'message'>
 		/**
 		 * V​a​u​l​t
 		 */
@@ -897,6 +965,76 @@ export type NamespaceLobbiesTranslation = {
 			 * R​e​v​e​a​l​ ​p​o​l​i​c​y
 			 */
 			reveal: string
+			/**
+			 * C​o​n​n​e​c​t​ ​a​ ​w​a​l​l​e​t
+			 */
+			connect: string
+			/**
+			 * S​t​a​r​t​ ​t​h​e​ ​m​a​t​c​h
+			 */
+			start: string
+			/**
+			 * A​s​k​ ​f​o​r​ ​t​h​e​ ​s​e​e​d​ ​a​g​a​i​n
+			 */
+			retrySeed: string
+			/**
+			 * P​l​a​y​ ​t​h​e​ ​t​u​r​n​s​ ​(​{​t​u​r​n​}​ ​/​ ​{​t​o​t​a​l​}​)
+			 * @param {number} total
+			 * @param {number} turn
+			 */
+			play: RequiredParams<'total' | 'turn'>
+			/**
+			 * S​e​t​t​l​e​ ​a​n​d​ ​p​a​y​ ​o​u​t
+			 */
+			settle: string
+			/**
+			 * C​a​n​c​e​l​ ​a​n​d​ ​r​e​f​u​n​d​ ​e​v​e​r​y​o​n​e
+			 */
+			cancel: string
+		}
+		wait: {
+			/**
+			 * W​a​i​t​i​n​g​ ​f​o​r​ ​m​o​r​e​ ​p​l​a​y​e​r​s​ ​t​o​ ​j​o​i​n​.
+			 */
+			waitForPlayers: string
+			/**
+			 * W​a​i​t​i​n​g​ ​f​o​r​ ​e​v​e​r​y​ ​p​l​a​y​e​r​ ​t​o​ ​c​o​m​m​i​t​.
+			 */
+			waitForCommits: string
+			/**
+			 * W​a​i​t​i​n​g​ ​f​o​r​ ​e​v​e​r​y​ ​p​l​a​y​e​r​ ​t​o​ ​r​e​v​e​a​l​,​ ​o​r​ ​f​o​r​ ​t​h​e​ ​r​e​v​e​a​l​ ​d​e​a​d​l​i​n​e​.
+			 */
+			waitForReveals: string
+			/**
+			 * T​h​e​ ​V​R​F​ ​o​r​a​c​l​e​ ​i​s​ ​d​r​a​w​i​n​g​ ​t​h​e​ ​m​a​p​ ​s​e​e​d​.​ ​T​h​i​s​ ​t​a​k​e​s​ ​a​ ​f​e​w​ ​s​e​c​o​n​d​s​.
+			 */
+			waitForSeed: string
+			/**
+			 * T​h​i​s​ ​l​o​b​b​y​ ​i​s​ ​f​u​l​l​.​ ​Y​o​u​ ​c​a​n​ ​f​o​l​l​o​w​ ​t​h​e​ ​m​a​t​c​h​ ​h​e​r​e​.
+			 */
+			watch: string
+		}
+		helperAnyone: {
+			/**
+			 * E​v​e​r​y​o​n​e​ ​i​s​ ​r​e​a​d​y​.​ ​A​n​y​o​n​e​ ​c​a​n​ ​s​t​a​r​t​ ​t​h​e​ ​m​a​t​c​h​:​ ​i​t​ ​a​s​k​s​ ​t​h​e​ ​V​R​F​ ​o​r​a​c​l​e​ ​f​o​r​ ​t​h​e​ ​m​a​p​ ​s​e​e​d​.
+			 */
+			start: string
+			/**
+			 * T​h​e​ ​o​r​a​c​l​e​ ​h​a​s​n​'​t​ ​a​n​s​w​e​r​e​d​ ​i​n​ ​t​w​o​ ​m​i​n​u​t​e​s​.​ ​A​n​y​o​n​e​ ​c​a​n​ ​a​s​k​ ​a​g​a​i​n​.
+			 */
+			retrySeed: string
+			/**
+			 * A​n​y​o​n​e​ ​c​a​n​ ​p​l​a​y​ ​t​h​e​ ​t​u​r​n​s​,​ ​o​n​e​ ​t​r​a​n​s​a​c​t​i​o​n​ ​e​a​c​h​,​ ​a​n​d​ ​e​a​r​n​s​ ​a​ ​s​m​a​l​l​ ​c​r​a​n​k​ ​r​e​w​a​r​d​ ​p​e​r​ ​t​u​r​n​.
+			 */
+			play: string
+			/**
+			 * T​h​e​ ​l​a​s​t​ ​t​u​r​n​ ​h​a​s​ ​b​e​e​n​ ​p​l​a​y​e​d​.​ ​A​n​y​o​n​e​ ​c​a​n​ ​s​e​t​t​l​e​:​ ​t​h​e​ ​p​o​t​ ​i​s​ ​p​a​i​d​ ​a​n​d​ ​p​r​o​f​i​l​e​s​ ​u​p​d​a​t​e​d​.
+			 */
+			settle: string
+			/**
+			 * T​h​e​ ​l​o​b​b​y​ ​d​i​d​n​'​t​ ​f​i​l​l​ ​b​e​f​o​r​e​ ​i​t​s​ ​j​o​i​n​ ​d​e​a​d​l​i​n​e​.​ ​A​n​y​o​n​e​ ​c​a​n​ ​c​a​n​c​e​l​ ​i​t​:​ ​e​v​e​r​y​ ​p​l​a​y​e​r​ ​g​e​t​s​ ​t​h​e​i​r​ ​f​e​e​ ​b​a​c​k​.
+			 */
+			cancel: string
 		}
 		/**
 		 * M​a​t​c​h​ ​s​t​a​r​t​e​d​ ​·​ ​w​a​t​c​h​ ​l​i​v​e
@@ -3094,9 +3232,25 @@ export type TranslationFunctions = {
 			 */
 			moneyBody: () => LocalizedString
 			/**
-			 * Create lobby and pay {amount}
+			 * Create lobby
 			 */
-			submit: (arg: { amount: string }) => LocalizedString
+			submit: () => LocalizedString
+			/**
+			 * Creating the lobby…
+			 */
+			submitting: () => LocalizedString
+			/**
+			 * Connect a wallet to create a lobby. You pay only the accounts' rent, which comes back when the match closes.
+			 */
+			needWallet: () => LocalizedString
+			/**
+			 * Every match is 60 turns in this version.
+			 */
+			turnsFixed: () => LocalizedString
+			/**
+			 * The lobby wasn't created: {message}
+			 */
+			failed: (arg: { message: string }) => LocalizedString
 			/**
 			 * Network fee about 0.00001 SOL · rent refunded at settlement
 			 */
@@ -3128,6 +3282,18 @@ export type TranslationFunctions = {
 				 * Starting
 				 */
 				starting: () => LocalizedString
+				/**
+				 * Drawing the map seed
+				 */
+				seed: () => LocalizedString
+				/**
+				 * In play
+				 */
+				playing: () => LocalizedString
+				/**
+				 * Finished
+				 */
+				finished: () => LocalizedString
 			}
 			/**
 			 * Join closes in
@@ -3137,6 +3303,42 @@ export type TranslationFunctions = {
 			 * Reveal closes in
 			 */
 			revealClosesIn: () => LocalizedString
+			/**
+			 * Commit closes in
+			 */
+			commitClosesIn: () => LocalizedString
+			/**
+			 * Turn
+			 */
+			turn: () => LocalizedString
+			/**
+			 * {turn} / {total}
+			 */
+			turnValue: (arg: { total: number, turn: number }) => LocalizedString
+			/**
+			 * Match account on Solana Explorer
+			 */
+			explorer: () => LocalizedString
+			/**
+			 * You committed “{name}” from this browser.
+			 */
+			committedPolicy: (arg: { name: string }) => LocalizedString
+			/**
+			 * Write a policy in the editor first: you commit one of your saved drafts.
+			 */
+			noDrafts: () => LocalizedString
+			/**
+			 * This match is over: it has been settled or cancelled, and its accounts are closed.
+			 */
+			closed: () => LocalizedString
+			/**
+			 * Waiting for your wallet and the network…
+			 */
+			working: () => LocalizedString
+			/**
+			 * That didn't go through: {message}
+			 */
+			failed: (arg: { message: string }) => LocalizedString
 			/**
 			 * Vault
 			 */
@@ -3304,6 +3506,74 @@ export type TranslationFunctions = {
 				 * Reveal policy
 				 */
 				reveal: () => LocalizedString
+				/**
+				 * Connect a wallet
+				 */
+				connect: () => LocalizedString
+				/**
+				 * Start the match
+				 */
+				start: () => LocalizedString
+				/**
+				 * Ask for the seed again
+				 */
+				retrySeed: () => LocalizedString
+				/**
+				 * Play the turns ({turn} / {total})
+				 */
+				play: (arg: { total: number, turn: number }) => LocalizedString
+				/**
+				 * Settle and pay out
+				 */
+				settle: () => LocalizedString
+				/**
+				 * Cancel and refund everyone
+				 */
+				cancel: () => LocalizedString
+			}
+			wait: {
+				/**
+				 * Waiting for more players to join.
+				 */
+				waitForPlayers: () => LocalizedString
+				/**
+				 * Waiting for every player to commit.
+				 */
+				waitForCommits: () => LocalizedString
+				/**
+				 * Waiting for every player to reveal, or for the reveal deadline.
+				 */
+				waitForReveals: () => LocalizedString
+				/**
+				 * The VRF oracle is drawing the map seed. This takes a few seconds.
+				 */
+				waitForSeed: () => LocalizedString
+				/**
+				 * This lobby is full. You can follow the match here.
+				 */
+				watch: () => LocalizedString
+			}
+			helperAnyone: {
+				/**
+				 * Everyone is ready. Anyone can start the match: it asks the VRF oracle for the map seed.
+				 */
+				start: () => LocalizedString
+				/**
+				 * The oracle hasn't answered in two minutes. Anyone can ask again.
+				 */
+				retrySeed: () => LocalizedString
+				/**
+				 * Anyone can play the turns, one transaction each, and earns a small crank reward per turn.
+				 */
+				play: () => LocalizedString
+				/**
+				 * The last turn has been played. Anyone can settle: the pot is paid and profiles updated.
+				 */
+				settle: () => LocalizedString
+				/**
+				 * The lobby didn't fill before its join deadline. Anyone can cancel it: every player gets their fee back.
+				 */
+				cancel: () => LocalizedString
 			}
 			/**
 			 * Match started · watch live

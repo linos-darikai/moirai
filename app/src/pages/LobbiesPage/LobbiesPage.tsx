@@ -32,7 +32,7 @@ function lobbyCardText(lobby: LobbySummary, LL: TranslationFunctions) {
     seatsText: LL.lobbies.card.seatsTaken({ joined: lobby.joinedCount, total: lobby.seatCount }),
     closesLabel: LL.lobbies.card.joinCloses(),
     closesText: LL.lobbies.create.inDuration({ minutes: lobby.closesInMinutes }),
-    viewLabel: LL.lobbies.card.viewLobby({ id: lobby.id }),
+    viewLabel: LL.lobbies.card.viewLobby({ id: lobby.label }),
   };
 }
 
@@ -119,7 +119,7 @@ export function LobbiesPage(): ReactElement {
           {lobbies.data?.map((lobby) => (
             <LobbyCard
               key={lobby.id}
-              id={lobby.id}
+              id={lobby.label}
               metric={lobby.metric}
               turns={lobby.turns}
               joinedCount={lobby.joinedCount}

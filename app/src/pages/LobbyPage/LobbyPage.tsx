@@ -1,7 +1,7 @@
-// Lobby page ("/lobby/:lobbyId"): the seats, the locked rules, on-chain activity and the player's
-// join → commit → reveal steps. Design artboard "Lobby: join, commit, reveal".
-// SAMPLE: the step button advances locally; Phase 2 sends join_match + commit_policy (one
-// transaction, see docs/decisions/0002) and reveal_policy.
+// Lobby page ("/lobby/:lobbyId"): one match on chain, by its Match address. Shows the seats and
+// deadlines, and offers the connected wallet the next step: join, commit, reveal, or the steps
+// anyone may take (start, play the turns, settle, cancel). Design artboard "Lobby: join, commit,
+// reveal". Refreshes from the chain every few seconds.
 
 import { useState } from "react";
 import type { ReactElement } from "react";
@@ -9,33 +9,20 @@ import { Link, useParams } from "react-router";
 import { Button, Heading, MetricBadge, Select, StatusChip, Surface, Text } from "../../components/atoms";
 import { Breadcrumb, Field, PanelHeader, QueryStatus, SeatCard, StatCard, StepList } from "../../components/molecules";
 import type { SeatChip } from "../../components/molecules";
-import { DataTable } from "../../components/organisms";
 import { Columns, PageContainer } from "../../components/templates";
-import { useLobby } from "../../hooks";
+import { useLobby, useLobbyAction, useNowSeconds, useOpenWalletPicker, usePolicyDrafts, useSavedCommitment, useWalletStatus } from "../../hooks";
 import { useI18nContext } from "../../i18n";
 import type { TranslationFunctions } from "../../i18n";
-import { SAMPLE_DRAFTS } from "../../data/policies";
-import { SAMPLE_LIVE_MATCH_ID, idFromUrl, matchPath, paths } from "../../routes/paths";
-import type { EntryStep, LobbyActivity, LobbySeat } from "../../types/game";
-import { ENTRY_STEPS } from "../../types/game";
+import { explorerUrl } from "../../lib/solana/config";
+import { countdown, lobbyLabel, lobbySeatsFromMatch, MATCH_TURNS, nextLobbyStep } from "../../model/lobbyFromMatch";
+import { shortenAddress } from "../../model/format";
+import { paths } from "../../routes/paths";
+import type { MatchAccountView } from "../../types/chain";
+import type { LobbySeat } from "../../types/game";
 import { HeaderRow, SeatGrid, Stats } from "./LobbyPage.styles";
+import { entrySteps, lobbyPhase, stepButton, stepHelper } from "./lobbyPageText";
 
-const YOUR_BOT = "iron-turtle";
-const YOUR_WALLET = "7xKq…3fPa";
-const YOUR_HASH = "9f3c…e1a7";
-
-/** The player's seat once they have done `stepsDone` steps (0 = not joined yet). */
-function yourSeat(seat: LobbySeat, stepsDone: number): LobbySeat {
-  return {
-    ...seat,
-    bot: stepsDone >= 1 ? YOUR_BOT : null,
-    wallet: stepsDone >= 1 ? YOUR_WALLET : null,
-    hasJoined: stepsDone >= 1,
-    hasCommitted: stepsDone >= 2,
-    hasRevealed: stepsDone >= 3,
-    policyHash: stepsDone >= 2 ? YOUR_HASH : null,
-  };
-}
+const LAMPORTS_PER_SOL = 1_000_000_000;
 
 /** Status chips for a seat. */
 function seatChips(seat: LobbySeat, LL: TranslationFunctions): SeatChip[] {
@@ -47,89 +34,74 @@ function seatChips(seat: LobbySeat, LL: TranslationFunctions): SeatChip[] {
   ];
 }
 
-/** One activity row as text. */
-function activityText(entry: LobbyActivity, fee: string, LL: TranslationFunctions): string {
-  const bot = entry.bot ?? "";
-  switch (entry.kind) {
-    case "created":
-      return LL.lobbies.lobby.activity.created({ wallet: entry.wallet ?? "", fee });
-    case "joinedCommitted":
-      return LL.lobbies.lobby.activity.joinedCommitted({ bot });
-    case "youJoined":
-      return LL.lobbies.lobby.activity.youJoined({ bot, fee });
-    case "youCommitted":
-      return LL.lobbies.lobby.activity.youCommitted({ bot });
-    case "allRevealed":
-      return LL.lobbies.lobby.activity.allRevealed();
-  }
+/** The deadline that matters now, with its label. */
+function currentDeadline(match: MatchAccountView, LL: TranslationFunctions): { label: string; seconds: number } {
+  const lobby = LL.lobbies.lobby;
+  if (match.players.length < match.maxPlayers) return { label: lobby.joinClosesIn(), seconds: match.joinDeadline };
+  if (!match.committed.every(Boolean)) return { label: lobby.commitClosesIn(), seconds: match.commitDeadline };
+  return { label: lobby.revealClosesIn(), seconds: match.revealDeadline };
 }
 
 /** Route screen for "/lobby/:lobbyId". */
 export function LobbyPage(): ReactElement {
   const { LL } = useI18nContext();
-  const { lobbyId } = useParams();
-  const lobby = useLobby(idFromUrl(lobbyId));
-  const [stepsDone, setStepsDone] = useState(0);
-  const [policyId, setPolicyId] = useState(SAMPLE_DRAFTS[0]?.id ?? "");
+  const address = useParams().lobbyId ?? "";
+  const lobby = useLobby(address);
+  const action = useLobbyAction(lobby.data ?? null);
+  const wallet = useWalletStatus();
+  const openWalletPicker = useOpenWalletPicker();
+  const { drafts } = usePolicyDrafts();
+  const [policyId, setPolicyId] = useState("");
+  const now = useNowSeconds();
+  const committedPolicy = useSavedCommitment(address, wallet.address);
 
   if (lobby.isPending) return <PageContainer><QueryStatus kind="loading" text={LL.states.loading()} /></PageContainer>;
   if (lobby.isError) return <PageContainer><QueryStatus kind="error" text={LL.states.error({ message: lobby.error.message })} /></PageContainer>;
+  const match = lobby.data;
+  if (match === null) return <PageContainer><QueryStatus kind="empty" text={LL.lobbies.lobby.closed()} /></PageContainer>;
 
-  const detail = lobby.data;
-  const fee = LL.sol({ amount: detail.entryFeeSol });
-  const phaseKey = (["waiting", "commit", "reveal", "starting"] as const)[stepsDone] ?? "starting";
-  const currentStep: EntryStep = ENTRY_STEPS[stepsDone] ?? "play";
-  const seats = detail.seats.map((seat) => (seat.isYou ? yourSeat(seat, stepsDone) : { ...seat, hasRevealed: stepsDone >= 3 }));
-  const vaultSol = detail.poolSol + (stepsDone >= 1 ? detail.entryFeeSol : 0);
+  // Step 1: what the page shows.
+  const label = lobbyLabel(match.address);
+  const fee = LL.sol({ amount: match.entryFeeLamports / LAMPORTS_PER_SOL });
+  const step = nextLobbyStep(match, wallet.address, now);
+  const button = stepButton(step, match, fee, LL);
+  const deadline = currentDeadline(match, LL);
+  const seats = lobbySeatsFromMatch(match, wallet.address);
+  const selectedPolicy = drafts.find((draft) => draft.id === policyId) ?? drafts[0];
 
-  const activity: LobbyActivity[] = [...detail.activity];
-  if (stepsDone >= 1) activity.push({ time: "12:14", kind: "youJoined", bot: YOUR_BOT, wallet: null, transaction: "4Kp8…zA1e" });
-  if (stepsDone >= 2) activity.push({ time: "12:15", kind: "youCommitted", bot: YOUR_BOT, wallet: null, transaction: "6Nd2…Vr4m" });
-  if (stepsDone >= 3) activity.push({ time: "12:22", kind: "allRevealed", bot: null, wallet: null, transaction: "9Lw3…Hc5b" });
-
-  const steps = ENTRY_STEPS.map((step, index) => {
-    const title = LL.lobbies.lobby.steps[step].title();
-    return {
-      id: step,
-      title,
-      body:
-        step === "join"
-          ? LL.lobbies.lobby.steps.join.body({ fee })
-          : step === "play"
-            ? LL.lobbies.lobby.steps.play.body({ turns: detail.turns })
-            : LL.lobbies.lobby.steps[step].body(),
-      state: index < stepsDone ? ("done" as const) : index === stepsDone ? ("current" as const) : ("upcoming" as const),
-      doneLabel: LL.lobbies.lobby.stepDone({ step: title }),
-    };
-  });
-  const helper = {
-    join: LL.lobbies.lobby.helper.join(),
-    commit: LL.lobbies.lobby.helper.commit(),
-    reveal: LL.lobbies.lobby.helper.reveal({ count: detail.seatCount }),
-    play: LL.lobbies.lobby.helper.starting(),
-  }[currentStep];
-  const actionLabel =
-    currentStep === "join" ? LL.lobbies.lobby.action.join({ fee }) : currentStep === "commit" ? LL.lobbies.lobby.action.commit() : LL.lobbies.lobby.action.reveal();
+  // Step 2: what the button does.
+  const onAction = (): void => {
+    if (button === null) return;
+    if (button.request === "connect") return openWalletPicker();
+    if (button.request === "commit") {
+      if (selectedPolicy === undefined) return;
+      action.mutate({ kind: "commit", policyName: selectedPolicy.name, policyYaml: selectedPolicy.yaml });
+      return;
+    }
+    action.mutate({ kind: button.request });
+  };
 
   return (
     <PageContainer>
-      <Breadcrumb label={LL.breadcrumb()} items={[{ label: LL.nav.lobbies(), to: paths.home }, { label: detail.id }]} />
+      <Breadcrumb label={LL.breadcrumb()} items={[{ label: LL.nav.lobbies(), to: paths.home }, { label }]} />
       <HeaderRow>
         <div>
-          <MetricBadge metric={detail.metric} label={LL.metric[detail.metric]()} />{" "}
-          <StatusChip tone="pending">{LL.lobbies.lobby.phase[phaseKey]()}</StatusChip>
-          <Heading level={1}>{LL.lobbies.lobby.title({ id: detail.id })}</Heading>
+          <MetricBadge metric={match.winMetric} label={LL.metric[match.winMetric]()} />{" "}
+          <StatusChip tone="pending">{LL.lobbies.lobby.phase[lobbyPhase(match)]()}</StatusChip>
+          <Heading level={1}>{LL.lobbies.lobby.title({ id: label })}</Heading>
           <Text tone="muted">
-            {LL.lobbies.lobby.subtitle({ turns: detail.turns, fee, payout: LL.payout[detail.payout]() })}{" "}
-            <Text as="span" isMono>{detail.creatorWallet}</Text>
+            {LL.lobbies.lobby.subtitle({ turns: MATCH_TURNS, fee, payout: LL.payout[match.payout]() })}{" "}
+            <Text as="span" isMono>{shortenAddress(match.creator)}</Text>
           </Text>
+          <a href={explorerUrl("address", match.address)} target="_blank" rel="noreferrer">{LL.lobbies.lobby.explorer()}</a>
         </div>
         <Stats>
-          <StatCard
-            label={stepsDone < 2 ? LL.lobbies.lobby.joinClosesIn() : LL.lobbies.lobby.revealClosesIn()}
-            value={stepsDone < 2 ? detail.joinDeadline : detail.revealDeadline}
-          />
-          <StatCard label={LL.lobbies.lobby.vault()} value={LL.sol({ amount: vaultSol })} />
+          {match.status === "running" ? (
+            <StatCard label={LL.lobbies.lobby.turn()} value={LL.lobbies.lobby.turnValue({ turn: match.turn, total: MATCH_TURNS })} />
+          ) : (
+            <StatCard label={deadline.label} value={countdown(deadline.seconds, now)} />
+          )}
+          <StatCard label={LL.lobbies.lobby.vault()} value={LL.sol({ amount: match.vaultLamports / LAMPORTS_PER_SOL })} />
         </Stats>
       </HeaderRow>
 
@@ -140,11 +112,11 @@ export function LobbyPage(): ReactElement {
             <Surface as="section" labelledBy="seats">
               <PanelHeader title={LL.lobbies.lobby.players()} id="seats" />
               <SeatGrid>
-                {seats.map((seat) => (
+                {seats.map((seat, index) => (
                   <SeatCard
-                    key={seat.civIndex}
+                    key={index}
                     name={seat.bot === null ? LL.lobbies.lobby.openSeat() : seat.isYou ? LL.you({ name: seat.bot }) : seat.bot}
-                    subtitle={seat.wallet ?? LL.lobbies.lobby.waitingForPlayer()}
+                    subtitle={seat.wallet === null ? LL.lobbies.lobby.waitingForPlayer() : shortenAddress(seat.wallet)}
                     color={seat.bot === null ? { token: "empty" } : { civ: seat.civIndex }}
                     chips={seatChips(seat, LL)}
                     hashText={seat.policyHash === null ? (seat.hasJoined ? LL.lobbies.lobby.noHash() : "") : LL.lobbies.lobby.hash({ hash: seat.policyHash })}
@@ -156,66 +128,46 @@ export function LobbyPage(): ReactElement {
             <Surface as="section" labelledBy="rules">
               <PanelHeader title={LL.lobbies.lobby.rulesTitle()} id="rules" />
               <ul>
-                <li><Text tone="soft">{LL.lobbies.lobby.rules.winner({ turns: detail.turns })}</Text></li>
+                <li><Text tone="soft">{LL.metricDescription[match.winMetric]()}</Text></li>
                 <li><Text tone="soft">{LL.lobbies.lobby.rules.refund()}</Text></li>
                 <li><Text tone="soft">{LL.lobbies.lobby.rules.forfeit()}</Text></li>
                 <li><Text tone="soft">{LL.lobbies.lobby.rules.seed()}</Text></li>
               </ul>
-            </Surface>
-            <Surface as="section" labelledBy="activity">
-              <PanelHeader title={LL.lobbies.lobby.activityTitle()} id="activity" />
-              <DataTable<LobbyActivity>
-                rows={[...activity].reverse()}
-                rowKey={(row) => row.transaction}
-                columns={[
-                  { key: "time", header: LL.lobbies.lobby.activityTime(), render: (row) => <Text as="span" tone="muted">{row.time}</Text> },
-                  { key: "event", header: LL.lobbies.lobby.activityEvent(), render: (row) => activityText(row, fee, LL) },
-                  {
-                    key: "tx",
-                    header: LL.lobbies.lobby.activityTx(),
-                    render: (row) => (
-                      <a href="https://explorer.solana.com/?cluster=devnet" target="_blank" rel="noreferrer">
-                        <Text as="span" isMono size="md">{row.transaction}</Text>
-                      </a>
-                    ),
-                  },
-                ]}
-              />
             </Surface>
           </>
         }
         end={
           <Surface as="aside" tone="highlight" labelledBy="your-entry">
             <Heading level={2} id="your-entry">{LL.lobbies.lobby.entryTitle()}</Heading>
-            <StepList look="progress" steps={steps} />
-            <Field label={LL.lobbies.lobby.policy()} htmlFor="entry-policy">
-              <Select
-                id="entry-policy"
-                value={policyId}
-                onChange={setPolicyId}
-                options={SAMPLE_DRAFTS.map((draft) => ({ value: draft.id, label: draft.name }))}
-              />
-            </Field>
+            <StepList look="progress" steps={entrySteps(match, wallet.address, fee, LL)} />
+            {step === "commit" && drafts.length > 0 && (
+              <Field label={LL.lobbies.lobby.policy()} htmlFor="entry-policy">
+                <Select
+                  id="entry-policy"
+                  value={selectedPolicy?.id ?? ""}
+                  onChange={setPolicyId}
+                  options={drafts.map((draft) => ({ value: draft.id, label: draft.name }))}
+                />
+              </Field>
+            )}
+            {step === "commit" && drafts.length === 0 && <Text tone="muted">{LL.lobbies.lobby.noDrafts()}</Text>}
             <Link to={paths.editor}>{LL.lobbies.lobby.editPolicy()}</Link>
-            {stepsDone >= 2 && (
+            {committedPolicy !== null && (
               <Surface tone="inset" padding="md">
                 <Text size="sm" tone="muted">{LL.lobbies.lobby.commitment()}</Text>
-                <Text size="sm" isMono>sha256 {YOUR_HASH}</Text>
+                <Text size="sm">{LL.lobbies.lobby.committedPolicy({ name: committedPolicy })}</Text>
                 <Text size="sm" tone="muted">{LL.lobbies.lobby.commitmentHint()}</Text>
               </Surface>
             )}
-            {stepsDone < 3 ? (
-              <Button size="lg" isFullWidth onClick={() => setStepsDone(stepsDone + 1)}>
-                {actionLabel}
-              </Button>
-            ) : (
-              <Button to={matchPath(SAMPLE_LIVE_MATCH_ID)} variant="success" size="lg" isFullWidth>
-                {LL.lobbies.lobby.started()}
+            {button !== null && (
+              <Button size="lg" isFullWidth onClick={onAction} isDisabled={action.isPending}>
+                {button.label}
               </Button>
             )}
             <Text size="sm" tone="muted" as="p">
-              {helper}
+              {action.isPending ? LL.lobbies.lobby.working() : stepHelper(step, match, LL)}
             </Text>
+            {action.isError && <QueryStatus kind="error" text={LL.lobbies.lobby.failed({ message: action.error.message })} />}
           </Surface>
         }
       />

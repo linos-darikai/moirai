@@ -1,21 +1,25 @@
 // Create lobby page ("/lobby/new"): pick the win metric, stakes, payout, length and deadlines,
 // with a live summary. Design artboard "Create lobby".
-// SAMPLE: submitting goes to the sample lobby; Phase 2 sends `create_match` instead.
+// Submitting sends `create_match` to the civ program on devnet, then opens the new lobby.
+// Entry fees are in SOL and every match is 60 turns in this version.
 
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import type { ReactElement } from "react";
-import { Button, Heading, Input, Select, Slider, Surface, Text } from "../../components/atoms";
-import { Breadcrumb, ChoiceCard, Field, KeyValueList, SegmentedControl } from "../../components/molecules";
+import { Button, Heading, Input, Select, Surface, Text } from "../../components/atoms";
+import { Breadcrumb, ChoiceCard, Field, KeyValueList, QueryStatus } from "../../components/molecules";
 import { Columns, PageContainer } from "../../components/templates";
+import { useCreateLobby, useOpenWalletPicker, useWalletStatus } from "../../hooks";
 import { useI18nContext } from "../../i18n";
-import { SAMPLE_LOBBIES } from "../../data/lobbies";
+import { MATCH_TURNS } from "../../model/lobbyFromMatch";
 import { lobbyPath, paths } from "../../routes/paths";
 import type { PayoutKind, WinMetric } from "../../types/game";
 import { WIN_METRICS } from "../../types/game";
 import { ChoiceGrid, FieldRow, Fieldset, Legend } from "./CreateLobbyPage.styles";
 
-type Token = "SOL" | "USDC";
 const CRANK_REWARD_FRACTION = 0.015;
+const LAMPORTS_PER_SOL = 1_000_000_000;
+const SECONDS_PER_MINUTE = 60;
 const PLAYER_COUNTS = [4, 3, 2] as const;
 const JOIN_DEADLINE_MINUTES = [30, 60, 360] as const;
 const REVEAL_WINDOW_MINUTES = [10, 30] as const;
@@ -24,17 +28,39 @@ const REVEAL_WINDOW_MINUTES = [10, 30] as const;
 export function CreateLobbyPage(): ReactElement {
   const { LL } = useI18nContext();
   const [metric, setMetric] = useState<WinMetric>("territory");
-  const [token, setToken] = useState<Token>("SOL");
-  const [feeText, setFeeText] = useState("0.5");
-  const [payout, setPayout] = useState<PayoutKind>("winnerTakesAll");
-  const [turns, setTurns] = useState(60);
+  const [feeText, setFeeText] = useState("0.01");
+  const [payout, setPayout] = useState<Exclude<PayoutKind, "practice">>("winnerTakesAll");
   const [players, setPlayers] = useState("4");
   const [joinDeadline, setJoinDeadline] = useState("30");
   const [revealWindow, setRevealWindow] = useState("10");
 
   const fee = Number.parseFloat(feeText.replace(",", "."));
   const feeAmount = Number.isFinite(fee) && fee >= 0 ? fee : 0;
-  const amountText = (amount: number): string => (token === "SOL" ? LL.sol({ amount }) : `${amount} USDC`);
+  const amountText = (amount: number): string => LL.sol({ amount });
+  const createLobby = useCreateLobby();
+  const wallet = useWalletStatus();
+  const openWalletPicker = useOpenWalletPicker();
+  const navigate = useNavigate();
+
+  /** Sends create_match. Joining stays open for the chosen time; commits and reveals each get the
+   * chosen window after that. */
+  const submit = (): void => {
+    if (!wallet.isConnected) return openWalletPicker();
+    const joinAt = Math.floor(Date.now() / 1000) + Number(joinDeadline) * SECONDS_PER_MINUTE;
+    const windowSeconds = Number(revealWindow) * SECONDS_PER_MINUTE;
+    createLobby.mutate(
+      {
+        entryFeeLamports: Math.round(feeAmount * LAMPORTS_PER_SOL),
+        maxPlayers: Number(players),
+        winMetric: metric,
+        payout,
+        joinDeadline: joinAt,
+        commitDeadline: joinAt + windowSeconds,
+        revealDeadline: joinAt + 2 * windowSeconds,
+      },
+      { onSuccess: (address) => navigate(lobbyPath(address)) },
+    );
+  };
   const payoutName = payout === "topThree" ? LL.lobbies.create.payoutTop.name() : LL.lobbies.create.payoutAll.name();
 
   return (
@@ -68,19 +94,6 @@ export function CreateLobbyPage(): ReactElement {
             <Fieldset>
               <Legend>{LL.lobbies.create.stakes()}</Legend>
               <FieldRow>
-                <div>
-                  <Text weight="medium">{LL.lobbies.create.token()}</Text>
-                  <SegmentedControl
-                    label={LL.lobbies.create.token()}
-                    isFullWidth
-                    options={[
-                      { value: "SOL" as const, label: "SOL" },
-                      { value: "USDC" as const, label: "USDC" },
-                    ]}
-                    value={token}
-                    onChange={setToken}
-                  />
-                </div>
                 <Field label={LL.lobbies.create.entryFee()} htmlFor="entry-fee">
                   <Input id="entry-fee" value={feeText} onChange={setFeeText} inputMode="decimal" />
                 </Field>
@@ -104,14 +117,10 @@ export function CreateLobbyPage(): ReactElement {
 
             <Fieldset>
               <Legend>{LL.lobbies.create.timing()}</Legend>
-              <Field
-                label={LL.lobbies.create.turns()}
-                htmlFor="turns"
-                hint={LL.lobbies.create.turnsHint()}
-                labelAside={<Text as="span" isMono>{turns}</Text>}
-              >
-                <Slider id="turns" value={turns} min={20} max={100} step={10} onChange={setTurns} />
-              </Field>
+              <div>
+                <Text weight="medium">{LL.lobbies.create.turns()}: {MATCH_TURNS}</Text>
+                <Text size="sm" tone="muted">{LL.lobbies.create.turnsFixed()}</Text>
+              </div>
               <FieldRow>
                 <Field label={LL.lobbies.create.players()} htmlFor="players">
                   <Select
@@ -157,7 +166,7 @@ export function CreateLobbyPage(): ReactElement {
                 { key: "pool", label: LL.lobbies.create.summaryPool(), value: amountText(feeAmount * Number(players)) },
                 { key: "payout", label: LL.lobbies.create.summaryPayout(), value: payoutName },
                 { key: "crank", label: LL.lobbies.create.summaryCrank(), value: LL.lobbies.create.summaryCrankValue({ percent: CRANK_REWARD_FRACTION }) },
-                { key: "turns", label: LL.lobbies.create.summaryTurns(), value: turns },
+                { key: "turns", label: LL.lobbies.create.summaryTurns(), value: MATCH_TURNS },
               ]}
             />
             <Surface tone="inset" padding="md">
@@ -166,9 +175,13 @@ export function CreateLobbyPage(): ReactElement {
                 {LL.lobbies.create.moneyBody()}
               </Text>
             </Surface>
-            <Button to={lobbyPath(SAMPLE_LOBBIES[0]?.id ?? "#A41F")} size="lg" isFullWidth>
-              {LL.lobbies.create.submit({ amount: amountText(feeAmount) })}
+            <Button size="lg" isFullWidth onClick={submit} isDisabled={createLobby.isPending}>
+              {createLobby.isPending ? LL.lobbies.create.submitting() : LL.lobbies.create.submit()}
             </Button>
+            {!wallet.isConnected && <Text size="sm" tone="muted">{LL.lobbies.create.needWallet()}</Text>}
+            {createLobby.isError && (
+              <QueryStatus kind="error" text={LL.lobbies.create.failed({ message: createLobby.error.message })} />
+            )}
             <Text size="sm" tone="muted">
               {LL.lobbies.create.networkFee()}
             </Text>

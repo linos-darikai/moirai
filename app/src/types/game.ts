@@ -28,7 +28,10 @@ export type UnitCounts = Record<UnitKind, number>;
 
 /** One open lobby, as listed on the home page. */
 export type LobbySummary = {
+  /** The lobby's id in URLs: its Match account address on chain. */
   id: string;
+  /** What players see, e.g. "#9xQe". */
+  label: string;
   metric: WinMetric;
   /** Entry fee in SOL (0 = free practice lobby). */
   entryFeeSol: number;
