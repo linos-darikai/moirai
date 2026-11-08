@@ -1,23 +1,14 @@
 //! Production: step 1 of every turn (PLAN.md section 2, "Turn order": produce resources first).
 //!
 //! Each owned deposit tile produces 1 unit of its resource per turn, and each city tile a civ owns
-//! adds a small base income. Production reads the per-civ aggregates (one map scan per turn)
+//! adds its base income (rules.rs). City sizes arrive with the cities module; until then every
+//! city counts as size 1. Production reads the per-civ aggregates (one map scan per turn)
 //! rather than scanning the map again.
 
 use crate::aggregates::{deposits_of, MapAggregates};
 use crate::civ::Civ;
 use crate::resources::{Resource, ResourceStock};
-
-/// Units an owned deposit tile produces each turn (PLAN.md section 2, "Resources").
-pub const DEPOSIT_YIELD_PER_TURN: u32 = 1;
-
-/// What every owned city adds each turn. PLAN.md only says "a small base income"; these are
-/// starting values until balancing (Phase 1, "sample bots" playtests).
-pub const CITY_BASE_INCOME: ResourceStock = ResourceStock {
-    food: 2,
-    ore: 1,
-    gold: 1,
-};
+use crate::rules::{CITY_INCOME_PER_SIZE, DEPOSIT_YIELD_PER_TURN};
 
 /// What `civ` gains this turn from the land it owns, given this turn's aggregates.
 pub fn turn_income(aggregates: &MapAggregates, civ: &Civ) -> ResourceStock {
@@ -27,7 +18,7 @@ pub fn turn_income(aggregates: &MapAggregates, civ: &Civ) -> ResourceStock {
     let mut income = ResourceStock::EMPTY;
     for resource in Resource::ALL {
         let from_deposits = deposits_of(&owned, resource).saturating_mul(DEPOSIT_YIELD_PER_TURN);
-        let from_cities = CITY_BASE_INCOME.amount(resource).saturating_mul(cities);
+        let from_cities = CITY_INCOME_PER_SIZE.amount(resource).saturating_mul(cities);
         income.add(resource, from_deposits.saturating_add(from_cities));
     }
     income
@@ -147,7 +138,7 @@ mod tests {
         produce_resources(&aggregates, &mut civs);
 
         for civ in &civs {
-            assert_eq!(civ.resources, CITY_BASE_INCOME);
+            assert_eq!(civ.resources, CITY_INCOME_PER_SIZE);
         }
     }
 }

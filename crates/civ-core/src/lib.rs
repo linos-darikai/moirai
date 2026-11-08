@@ -14,6 +14,7 @@
 //! - `map_generation`: builds a fair starting map from the seed
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 //! - `production`: turn step 1, resources from owned deposits and cities
+//! - `rules`: every rule number of the game (docs/decisions/0006)
 
 pub mod aggregates;
 pub mod civ;
@@ -22,6 +23,7 @@ pub mod map_generation;
 pub mod production;
 pub mod randomness;
 pub mod resources;
+pub mod rules;
 pub mod units;
 
 /// The version of the game rules, taken from this crate's Cargo.toml. Shown in the app and CLI so
