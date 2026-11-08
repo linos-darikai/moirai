@@ -10,6 +10,8 @@
 //
 // Run from the repo root (after deploying the program to devnet):
 //   pnpm devnet:match
+// Resume a match that stopped partway (anyone may advance and settle a match):
+//   MATCH=<match address> pnpm devnet:match
 
 import * as anchor from "@anchor-lang/core";
 import { Program } from "@anchor-lang/core";
@@ -45,6 +47,10 @@ const RUNNING = 1;
 const SEED_RETRY_AFTER_MS = 130_000;
 const SEED_GIVE_UP_AFTER_MS = 300_000;
 const ROOT = `${__dirname}/../..`;
+/** How many times one turn is sent before giving up. */
+const MAX_SEND_ATTEMPTS = 5;
+/** A small priority fee so turns land on a busy devnet (same as the deploy command). */
+const PRIORITY_FEE_MICRO_LAMPORTS = 10_000;
 
 function compiledBot(name: string): Buffer {
   const hex = execFileSync(
@@ -80,8 +86,11 @@ describe("devnet: a whole match with the real VRF oracle", () => {
   const players: KeypairType[] = BOTS.map(() => Keypair.generate());
   const policies = BOTS.map(compiledBot);
   const salts = BOTS.map(() => randomBytes(32));
+  /** Set MATCH=<address> to resume an existing match instead of starting a new one. */
+  const resumedMatch = process.env.MATCH;
+  const setupStep = resumedMatch === undefined ? it : it.skip;
   const matchId = new anchor.BN(Date.now());
-  const [match] = PublicKey.findProgramAddressSync(
+  const [newMatch] = PublicKey.findProgramAddressSync(
     [
       Buffer.from("match"),
       wallet.publicKey.toBuffer(),
@@ -89,6 +98,8 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     ],
     program.programId
   );
+  const match =
+    resumedMatch === undefined ? newMatch : new PublicKey(resumedMatch);
   const explorer = (signature: string) =>
     `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
   const unitsPerTurn: number[] = [];
@@ -101,7 +112,7 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     return transaction?.meta?.computeUnitsConsumed ?? -1;
   }
 
-  it("funds two fresh player wallets", async () => {
+  setupStep("funds two fresh player wallets", async () => {
     const funding = new Transaction();
     for (const player of players) {
       funding.add(
@@ -120,7 +131,7 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     );
   });
 
-  it("opens a lobby, both players join, commit and reveal", async () => {
+  setupStep("opens a lobby, both players join, commit and reveal", async () => {
     const start = Date.now();
     const now = Math.floor(Date.now() / 1000);
     const create = await program.methods
@@ -167,7 +178,7 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     expect(stored.revealedFlags).to.equal(0b11);
   });
 
-  it("starts the match with a seed from the VRF oracle", async () => {
+  setupStep("starts the match with a seed from the VRF oracle", async () => {
     const start = Date.now();
     const request = await program.methods
       .startMatch()
@@ -204,25 +215,64 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     );
   });
 
-  it("plays 60 turns with advance_turn", async () => {
-    const start = Date.now();
-    for (let turn = 0; turn < TOTAL_TURNS; turn++) {
-      const signature = await program.methods
-        .advanceTurn()
-        .accounts({ matchAccount: match })
-        .preInstructions([
-          ComputeBudgetProgram.setComputeUnitLimit({ units: 400_000 }),
-        ])
-        .rpc();
-      unitsPerTurn.push(await unitsOf(signature));
+  /** The turn the match is on (MatchState starts at byte 8 + 336 of the account; turn is its
+   * first u16). */
+  async function turnOnChain(): Promise<number> {
+    const info = await connection.getAccountInfo(match, "confirmed");
+    return info!.data.readUInt16LE(8 + 336);
+  }
+
+  /**
+   * Plays exactly one turn. Under load devnet can drop a transaction; resending blindly could play
+   * two turns if the first did land after all, so after a failure we re-read the turn and only send
+   * again if it didn't move. Returns the compute units used (-1 if unknown).
+   */
+  async function advanceOneTurn(): Promise<number> {
+    const turnBefore = await turnOnChain();
+    for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt++) {
+      try {
+        const signature = await program.methods
+          .advanceTurn()
+          .accounts({ matchAccount: match })
+          .preInstructions([
+            ComputeBudgetProgram.setComputeUnitLimit({ units: 400_000 }),
+            ComputeBudgetProgram.setComputeUnitPrice({
+              microLamports: PRIORITY_FEE_MICRO_LAMPORTS,
+            }),
+          ])
+          .rpc();
+        return await unitsOf(signature);
+      } catch (error) {
+        if ((await turnOnChain()) > turnBefore) return -1; // it landed after all
+        console.log(
+          `      turn ${turnBefore}: attempt ${attempt} failed (${String(
+            error
+          ).slice(0, 80)}), resending`
+        );
+      }
     }
+    throw new Error(`turn ${turnBefore} failed ${MAX_SEND_ATTEMPTS} times`);
+  }
+
+  it("plays every remaining turn with advance_turn", async () => {
+    const start = Date.now();
+    const firstTurn = await turnOnChain();
+    while ((await turnOnChain()) < TOTAL_TURNS)
+      unitsPerTurn.push(await advanceOneTurn());
+
+    const measured = unitsPerTurn.filter((units) => units > 0);
     const average = Math.round(
-      unitsPerTurn.reduce((sum, units) => sum + units, 0) / unitsPerTurn.length
+      measured.reduce((sum, units) => sum + units, 0) /
+        Math.max(measured.length, 1)
     );
     console.log(
-      `      60 turns in ${secondsSince(start)}; CU first ${
-        unitsPerTurn[0]
-      }, average ${average}, most ${Math.max(...unitsPerTurn)}`
+      `      turns ${firstTurn}-${TOTAL_TURNS} in ${secondsSince(start)} (${(
+        (Date.now() - start) /
+        1000 /
+        Math.max(unitsPerTurn.length, 1)
+      ).toFixed(2)} s a turn); CU average ${average}, most ${Math.max(
+        ...measured
+      )}`
     );
   });
 
@@ -264,18 +314,21 @@ describe("devnet: a whole match with the real VRF oracle", () => {
   });
 
   it("settles: pays the winner and updates Profiles", async () => {
+    // The players' wallets come from the match itself, so this works when resuming too.
+    const stored = await program.account.match.fetch(match);
+    const wallets = stored.players.slice(0, stored.playerCount);
     const before = await Promise.all(
-      players.map((player) => connection.getBalance(player.publicKey))
+      wallets.map((wallet) => connection.getBalance(wallet))
     );
     const signature = await program.methods
       .settleMatch()
       .accounts({ matchAccount: match })
       .remainingAccounts(
-        players.flatMap((player) => [
-          { pubkey: player.publicKey, isSigner: false, isWritable: true },
+        wallets.flatMap((wallet) => [
+          { pubkey: wallet, isSigner: false, isWritable: true },
           {
             pubkey: PublicKey.findProgramAddressSync(
-              [Buffer.from("profile"), player.publicKey.toBuffer()],
+              [Buffer.from("profile"), wallet.toBuffer()],
               program.programId
             )[0],
             isSigner: false,
@@ -291,12 +344,12 @@ describe("devnet: a whole match with the real VRF oracle", () => {
     );
 
     const after = await Promise.all(
-      players.map((player) => connection.getBalance(player.publicKey))
+      wallets.map((wallet) => connection.getBalance(wallet))
     );
-    for (const [seat, player] of players.entries()) {
+    for (const [seat, wallet] of wallets.entries()) {
       const profile = await program.account.profile.fetch(
         PublicKey.findProgramAddressSync(
-          [Buffer.from("profile"), player.publicKey.toBuffer()],
+          [Buffer.from("profile"), wallet.toBuffer()],
           program.programId
         )[0]
       );
