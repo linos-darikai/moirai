@@ -43,6 +43,15 @@ pub fn play_turn(state: &mut MatchState, policies: &[&[u8]]) -> Result<TurnRepor
     run_turn(state, &orders)
 }
 
+/// Plays turns until the match is finished. Returns how many turns were played.
+pub fn play_until_finished(state: &mut MatchState, policies: &[&[u8]]) -> u16 {
+    let mut turns_played: u16 = 0;
+    while play_turn(state, policies).is_ok() {
+        turns_played = turns_played.saturating_add(1);
+    }
+    turns_played
+}
+
 /// One civ's orders: its first MAX_ACTIVE_RULES_PER_TURN rules whose conditions hold and whose
 /// action finds a target this turn.
 pub fn decide(
