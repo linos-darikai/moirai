@@ -7,7 +7,9 @@
 //! - MagicBlock VRF spike: `create_random_seed`, `request_random_seed`, `fulfill_random_seed`
 //!
 //! Phase 2 match lobby (docs/decisions/0009): `create_match`, `join_match`, `cancel_match`,
-//! `commit_policy`, `reveal_policy`.
+//! `commit_policy`, `reveal_policy`, `start_match` (asks the VRF oracle for the map seed),
+//! `fulfill_match_seed` (the oracle's callback; builds turn 0) and `start_match_local_test`
+//! (local validator only).
 //!
 //! Phase 2 measuring spike (docs/decisions/0009): `bench_create`, `bench_set_policy`,
 //! `bench_turn` run civ-core's turn on chain so tests can measure compute units and stack use.
@@ -19,6 +21,7 @@
 pub mod commitment;
 pub mod constants;
 pub mod errors;
+pub mod game_start;
 pub mod instructions;
 pub mod state;
 
@@ -110,6 +113,27 @@ pub mod civ {
         salt: [u8; 32],
     ) -> Result<()> {
         handle_reveal_policy(context, policy, salt)
+    }
+
+    /// Ask the VRF oracle for the map seed of a full, revealed lobby. Send to the base layer.
+    pub fn start_match(context: Context<StartMatch>) -> Result<()> {
+        handle_start_match(context)
+    }
+
+    /// VRF oracle callback: builds turn 0 of the game from the seed. Only the VRF program can call it.
+    pub fn fulfill_match_seed(
+        context: Context<FulfillMatchSeed>,
+        randomness: [u8; 32],
+    ) -> Result<()> {
+        handle_fulfill_match_seed(context, randomness)
+    }
+
+    /// Start a match with a chosen seed. Local test validator only (`local-testing` feature).
+    pub fn start_match_local_test(
+        context: Context<StartMatchLocalTest>,
+        seed: [u8; 32],
+    ) -> Result<()> {
+        handle_start_match_local_test(context, seed)
     }
 
     /// Create the caller's TurnBench and start a match in it (measuring spike).

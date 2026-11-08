@@ -65,4 +65,10 @@ pub enum ErrorCode {
     WrongPolicyHash,
     #[msg("Those bytes are not a valid compiled policy")]
     InvalidPolicy,
+    #[msg("Players can still reveal: start once everyone has revealed or the reveal deadline has passed")]
+    RevealsStillOpen,
+    #[msg("The match data in this account is not laid out as expected")]
+    MisalignedMatchState,
+    #[msg("start_match_local_test only works in a build with the local-testing feature")]
+    LocalTestingDisabled,
 }

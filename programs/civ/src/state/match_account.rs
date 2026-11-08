@@ -26,6 +26,8 @@ pub enum MatchStatus {
     Settled,
     /// The lobby didn't fill in time; everyone was refunded.
     Cancelled,
+    /// `start_match` asked the VRF oracle for the map seed; waiting for its callback.
+    SeedRequested,
 }
 
 impl MatchStatus {
@@ -36,6 +38,7 @@ impl MatchStatus {
             MatchStatus::Running => 1,
             MatchStatus::Settled => 2,
             MatchStatus::Cancelled => 3,
+            MatchStatus::SeedRequested => 4,
         }
     }
 
@@ -46,6 +49,7 @@ impl MatchStatus {
             1 => Some(MatchStatus::Running),
             2 => Some(MatchStatus::Settled),
             3 => Some(MatchStatus::Cancelled),
+            4 => Some(MatchStatus::SeedRequested),
             _ => None,
         }
     }
@@ -171,6 +175,12 @@ impl Match {
     /// True if the player in `seat` has revealed.
     pub fn has_revealed(&self, seat: usize) -> bool {
         is_flag_set(self.revealed_flags, seat)
+    }
+
+    /// True once every joined player has revealed.
+    pub fn has_everyone_revealed(&self) -> bool {
+        let seats = usize::from(self.player_count).min(MAX_PLAYERS);
+        (0..seats).all(|seat| self.has_revealed(seat))
     }
 
     /// True once every joined player has committed.

@@ -18,6 +18,9 @@ idl-build = ["anchor-lang/idl-build"]
 anchor-debug = []
 custom-heap = []
 custom-panic = []
+# Turns on `start_match_local_test` (a seed chosen by the test instead of the VRF oracle, which
+# the local validator doesn't have). Only for `anchor test`; never deploy a build with it.
+local-testing = []
 
 
 [dependencies]
