@@ -27,6 +27,11 @@ anchor-lang = "=1.0.2"
 # MagicBlock Ephemeral Rollups + VRF. 0.16.2 is the version every MagicBlock Anchor 1.0.2 example
 # pins; "anchor" = Anchor 1.x support, "vrf" = verifiable randomness. See 0001-toolchain.md.
 ephemeral-rollups-sdk = { version = "=0.16.2", features = ["anchor", "vrf"] }
+# All game rules. Default features only: the YAML compiler is never built into the program.
+civ-core = { path = "../../crates/civ-core" }
+# Views account bytes as civ-core types in place. Already in Cargo.lock (Anchor and civ-core use
+# the same 1.25), so this adds no new crate.
+bytemuck = { version = "1.25", default-features = false, features = ["derive", "min_const_generics"] }
 
 
 [lints.rust]

@@ -2,6 +2,8 @@
 
 pub mod counter;
 pub mod random_seed;
+pub mod turn_bench;
 
 pub use counter::*;
 pub use random_seed::*;
+pub use turn_bench::*;

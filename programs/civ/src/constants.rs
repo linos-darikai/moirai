@@ -15,3 +15,7 @@ pub const COUNTER_SEED: &[u8] = b"counter";
 /// Seed for the Phase 0 VRF spike RandomSeed PDA: `["random_seed", authority]`.
 #[constant]
 pub const RANDOM_SEED_SEED: &[u8] = b"random_seed";
+
+/// Seed for the Phase 2 measuring spike TurnBench PDA: `["turn_bench", authority]`.
+#[constant]
+pub const TURN_BENCH_SEED: &[u8] = b"turn_bench";

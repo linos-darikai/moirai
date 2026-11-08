@@ -13,4 +13,14 @@ pub enum ErrorCode {
     SeedAlreadyRequested,
     #[msg("This seed is not waiting for randomness (it was never requested, or already filled)")]
     SeedNotRequested,
+    #[msg("A match needs between 1 and 4 civs")]
+    BenchInvalidCivCount,
+    #[msg("Those bytes are not a valid compiled policy")]
+    BenchBadPolicy,
+    #[msg("There is no civ with that number in this match")]
+    BenchBadCivIndex,
+    #[msg("This match is over: no more turns can be played")]
+    BenchMatchOver,
+    #[msg("The match data in this account is not laid out as expected")]
+    BenchMisalignedState,
 }
