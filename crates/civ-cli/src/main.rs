@@ -9,8 +9,8 @@
 //! - `cargo run -p civ-cli -- compile bot.yaml`: prints the compiled policy bytes as hex (what a
 //!   player commits to and reveals), or every problem with its line.
 //!
-//! The seed byte fills all 32 seed bytes (default 42); real matches get their seed from the VRF
-//! oracle. The game rules all live in civ-core; this file only reads arguments and prints.
+//! The seed is either one byte that fills all 32 seed bytes (default 42) or the full seed as 64 hex
+//! characters (to replay a real match, whose seed came from the VRF oracle). The game rules all live in civ-core; this file only reads arguments and prints.
 
 mod render;
 
@@ -42,7 +42,7 @@ fn main() {
         Some("map") => print_starting_map(&arguments[1..]),
         Some("play") => play_match(&arguments[1..]),
         Some("compile") => compile_file(&arguments[1..]),
-        _ => Err("usage: civ play [seed-byte] [--quiet] [bot.yaml ...] | civ map [seed-byte] [civ-count] | civ compile bot.yaml".to_string()),
+        _ => Err("usage: civ play [seed-byte | 64-hex-seed] [--quiet] [bot.yaml ...] | civ map [seed-byte] [civ-count] | civ compile bot.yaml".to_string()),
     };
     // `if let Err(message)` runs only when something went wrong.
     if let Err(message) = result {
@@ -88,7 +88,7 @@ fn print_starting_map(arguments: &[String]) -> Result<(), String> {
 fn play_match(arguments: &[String]) -> Result<(), String> {
     println!("{}", civ_core::describe_engine());
     // Step 1: read the arguments.
-    let seed_byte: u8 = parse_argument(arguments, 0).unwrap_or(42);
+    let seed = seed_argument(arguments.first());
     let is_quiet = arguments.iter().any(|argument| argument == "--quiet");
     let bot_files: Vec<&String> = arguments
         .iter()
@@ -111,9 +111,9 @@ fn play_match(arguments: &[String]) -> Result<(), String> {
 
     // Step 3: play every turn, printing as we go.
     let civ_count = u8::try_from(policies.len()).map_err(|_| "too many bots".to_string())?;
-    let mut state = MatchState::new(&seed_from(seed_byte), civ_count)
+    let mut state = MatchState::new(&seed, civ_count)
         .map_err(|error| format!("could not start the match: {error:?}"))?;
-    println!("seed byte {seed_byte}: {}", names.join(" vs "));
+    println!("seed {}: {}", hex(&seed.0), names.join(" vs "));
     while let Ok(report) = play_turn(&mut state, &policies) {
         if !is_quiet {
             println!("\nturn {}", report.turn);
@@ -170,6 +170,34 @@ fn print_result(state: &MatchState, names: &[String]) {
             winners.join(" + ")
         );
     }
+}
+
+/// The seed from the first argument: 64 hex characters, or one byte that fills all 32 (default 42).
+fn seed_argument(argument: Option<&String>) -> MatchSeed {
+    if let Some(text) = argument {
+        if let Some(bytes) = parse_hex_seed(text) {
+            return MatchSeed(bytes);
+        }
+    }
+    let seed_byte: u8 = argument.and_then(|text| text.parse().ok()).unwrap_or(42);
+    seed_from(seed_byte)
+}
+
+/// 64 hex characters to 32 bytes, or `None` if the text isn't exactly that.
+fn parse_hex_seed(text: &str) -> Option<[u8; MATCH_SEED_LENGTH]> {
+    if text.len() != MATCH_SEED_LENGTH * 2 {
+        return None;
+    }
+    let mut bytes = [0u8; MATCH_SEED_LENGTH];
+    for (index, byte) in bytes.iter_mut().enumerate() {
+        let pair = text.get(index * 2..index * 2 + 2)?;
+        *byte = u8::from_str_radix(pair, 16).ok()?;
+    }
+    Some(bytes)
+}
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
 fn seed_from(seed_byte: u8) -> MatchSeed {
