@@ -2,15 +2,29 @@
 //! policies, turns, scoring). The Solana program, the browser (through civ-wasm) and civ-cli all
 //! call this crate, so they can never disagree about a result.
 //!
-//! Phase 0: only a placeholder so the other crates have something to call. Game rules start in
-//! Phase 1 (see PLAN.md section 9). Determinism rules: CLAUDE.md section 6.
+//! Determinism rules every change must follow are in CLAUDE.md section 6: no floats, no
+//! HashMap iteration, no system time or OS randomness, checked/saturating arithmetic.
+//!
+//! Modules (one topic each):
+//! - `randomness`: deterministic random numbers from the match seed
+//! - `resources`: Food / Ore / Gold and a civ's stock
+//! - `units`: the four unit kinds and unit counts
+//! - `civ`: one player's civilisation
+//! - `map`: the 16 x 16 grid, tiles and coordinates
+//! - `map_generation`: builds a fair starting map from the seed
+
+pub mod civ;
+pub mod map;
+pub mod map_generation;
+pub mod randomness;
+pub mod resources;
+pub mod units;
 
 /// The version of the game rules, taken from this crate's Cargo.toml. Shown in the app and CLI so
 /// you can tell which rules a build is running.
 pub const ENGINE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// Placeholder that proves civ-core can be called from WASM and the CLI.
-/// Returns a short greeting that includes the engine version.
+/// Short description of the engine, shown by the app's connection check and the CLI.
 pub fn describe_engine() -> String {
     // `format!` builds a String, like a TypeScript template literal.
     format!("civ-core {ENGINE_VERSION}: game rules ready")

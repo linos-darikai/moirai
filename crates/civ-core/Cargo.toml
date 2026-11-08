@@ -12,3 +12,6 @@ default = []
 compiler = []
 
 [dependencies]
+# Marks plain-bytes types (Pod) so the program can use civ-core's Map directly as zero-copy account
+# data. Same crate and version Anchor uses for #[account(zero_copy)]; pure Rust, no Solana code.
+bytemuck = { version = "1.25", default-features = false, features = ["derive", "min_const_generics"] }

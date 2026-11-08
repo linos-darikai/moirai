@@ -543,6 +543,9 @@ dependencies = [
 [[package]]
 name = "civ-core"
 version = "0.1.0"
+dependencies = [
+ "bytemuck",
+]
 
 [[package]]
 name = "civ-wasm"
