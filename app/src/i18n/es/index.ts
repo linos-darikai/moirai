@@ -13,6 +13,7 @@ const es = {
     simulator: "Simulador",
     matches: "Partidas",
     leaderboard: "Clasificación",
+    rules: "Reglas",
     ranks: "Ranking",
     back: "Atrás",
   },

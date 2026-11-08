@@ -13,6 +13,7 @@ const fr = {
     simulator: "Simulateur",
     matches: "Parties",
     leaderboard: "Classement",
+    rules: "Règles",
     ranks: "Rangs",
     back: "Retour",
   },

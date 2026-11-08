@@ -16,19 +16,22 @@ const localeNamespaceLoaders = {
 		lobbies: () => import('./en/lobbies/index.js'),
 		matches: () => import('./en/matches/index.js'),
 		players: () => import('./en/players/index.js'),
-		policies: () => import('./en/policies/index.js')
+		policies: () => import('./en/policies/index.js'),
+		rules: () => import('./en/rules/index.js')
 	},
 	es: {
 		lobbies: () => import('./es/lobbies/index.js'),
 		matches: () => import('./es/matches/index.js'),
 		players: () => import('./es/players/index.js'),
-		policies: () => import('./es/policies/index.js')
+		policies: () => import('./es/policies/index.js'),
+		rules: () => import('./es/rules/index.js')
 	},
 	fr: {
 		lobbies: () => import('./fr/lobbies/index.js'),
 		matches: () => import('./fr/matches/index.js'),
 		players: () => import('./fr/players/index.js'),
-		policies: () => import('./fr/policies/index.js')
+		policies: () => import('./fr/policies/index.js'),
+		rules: () => import('./fr/rules/index.js')
 	}
 }
 

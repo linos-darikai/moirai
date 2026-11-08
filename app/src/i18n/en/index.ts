@@ -17,6 +17,7 @@ const en = {
     simulator: "Simulator",
     matches: "Matches",
     leaderboard: "Leaderboard",
+    rules: "Rules",
     ranks: "Ranks",
     back: "Back",
   },

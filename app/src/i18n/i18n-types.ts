@@ -17,7 +17,8 @@ export type Translations = RootTranslation &
 	lobbies: NamespaceLobbiesTranslation,
 	matches: NamespaceMatchesTranslation,
 	players: NamespacePlayersTranslation,
-	policies: NamespacePoliciesTranslation
+	policies: NamespacePoliciesTranslation,
+	rules: NamespaceRulesTranslation
 }
 
 type RootTranslation = {
@@ -54,6 +55,10 @@ type RootTranslation = {
 		 * L​e​a​d​e​r​b​o​a​r​d
 		 */
 		leaderboard: string
+		/**
+		 * R​u​l​e​s
+		 */
+		rules: string
 		/**
 		 * R​a​n​k​s
 		 */
@@ -2002,11 +2007,335 @@ export type NamespacePoliciesTranslation = {
 	}
 }
 
+export type NamespaceRulesTranslation = {
+	/**
+	 * H​o​w​ ​t​o​ ​p​l​a​y
+	 */
+	title: string
+	/**
+	 * M​o​i​r​a​i​ ​i​s​ ​a​ ​b​o​t​ ​a​r​e​n​a​.​ ​Y​o​u​ ​d​o​n​'​t​ ​m​o​v​e​ ​p​i​e​c​e​s​:​ ​y​o​u​ ​w​r​i​t​e​ ​a​ ​p​o​l​i​c​y​,​ ​a​n​d​ ​t​h​e​ ​S​o​l​a​n​a​ ​p​r​o​g​r​a​m​ ​p​l​a​y​s​ ​i​t​ ​f​o​r​ ​y​o​u​,​ ​e​v​e​r​y​ ​t​u​r​n​,​ ​b​y​ ​t​h​e​ ​s​a​m​e​ ​r​u​l​e​s​ ​f​o​r​ ​e​v​e​r​y​o​n​e​.​ ​T​h​e​s​e​ ​a​r​e​ ​t​h​o​s​e​ ​r​u​l​e​s​.
+	 */
+	intro: string
+	/**
+	 * O​n​ ​t​h​i​s​ ​p​a​g​e
+	 */
+	contents: string
+	goal: {
+		/**
+		 * T​h​e​ ​g​o​a​l
+		 */
+		title: string
+		/**
+		 * {​m​i​n​}​ ​t​o​ ​{​m​a​x​}​ ​c​i​v​i​l​i​s​a​t​i​o​n​s​ ​s​h​a​r​e​ ​a​ ​{​s​i​z​e​}​ ​×​ ​{​s​i​z​e​}​ ​m​a​p​ ​f​o​r​ ​{​t​u​r​n​s​}​ ​t​u​r​n​s​.​ ​T​h​e​ ​l​o​b​b​y​ ​p​i​c​k​s​ ​h​o​w​ ​t​h​e​ ​w​i​n​n​e​r​ ​i​s​ ​d​e​c​i​d​e​d​:​ ​m​o​s​t​ ​l​a​n​d​,​ ​m​o​s​t​ ​w​e​a​l​t​h​,​ ​l​a​s​t​ ​c​i​v​ ​s​t​a​n​d​i​n​g​,​ ​o​r​ ​a​ ​m​i​x​e​d​ ​s​c​o​r​e​.
+		 * @param {number} max
+		 * @param {number} min
+		 * @param {number} size
+		 * @param {number} turns
+		 */
+		body: RequiredParams<'max' | 'min' | 'size' | 'size' | 'turns'>
+	}
+	map: {
+		/**
+		 * T​h​e​ ​m​a​p
+		 */
+		title: string
+		/**
+		 * T​h​e​ ​m​a​p​ ​c​o​m​e​s​ ​f​r​o​m​ ​a​ ​r​a​n​d​o​m​ ​s​e​e​d​ ​d​r​a​w​n​ ​a​f​t​e​r​ ​e​v​e​r​y​ ​p​o​l​i​c​y​ ​i​s​ ​r​e​v​e​a​l​e​d​.​ ​O​n​e​ ​q​u​a​r​t​e​r​ ​i​s​ ​g​e​n​e​r​a​t​e​d​ ​a​n​d​ ​m​i​r​r​o​r​e​d​ ​i​n​t​o​ ​t​h​e​ ​o​t​h​e​r​ ​t​h​r​e​e​,​ ​s​o​ ​e​v​e​r​y​ ​c​i​v​ ​s​t​a​r​t​s​ ​w​i​t​h​ ​e​x​a​c​t​l​y​ ​t​h​e​ ​s​a​m​e​ ​s​u​r​r​o​u​n​d​i​n​g​s​.
+		 */
+		mirrored: string
+		/**
+		 * A​b​o​u​t​ ​{​p​e​r​c​e​n​t​}​%​ ​o​f​ ​t​i​l​e​s​ ​h​o​l​d​ ​a​ ​d​e​p​o​s​i​t​ ​o​f​ ​F​o​o​d​,​ ​O​r​e​ ​o​r​ ​G​o​l​d​.
+		 * @param {number} percent
+		 */
+		deposits: RequiredParams<'percent'>
+		/**
+		 * C​i​t​y​ ​s​i​t​e​s​ ​a​r​e​ ​t​i​l​e​s​ ​w​h​e​r​e​ ​a​ ​c​i​t​y​ ​c​a​n​ ​b​e​ ​b​u​i​l​t​.​ ​E​a​c​h​ ​q​u​a​r​t​e​r​ ​h​a​s​ ​{​c​o​u​n​t​}​ ​b​e​s​i​d​e​s​ ​t​h​e​ ​c​a​p​i​t​a​l​'​s​,​ ​a​t​ ​l​e​a​s​t​ ​{​d​i​s​t​a​n​c​e​}​ ​t​i​l​e​s​ ​a​p​a​r​t​.​ ​E​v​e​r​y​ ​c​a​p​i​t​a​l​ ​s​t​a​r​t​s​ ​o​n​ ​o​n​e​.
+		 * @param {number} count
+		 * @param {number} distance
+		 */
+		sites: RequiredParams<'count' | 'distance'>
+	}
+	cities: {
+		/**
+		 * C​i​t​i​e​s​ ​a​n​d​ ​b​o​r​d​e​r​s
+		 */
+		title: string
+		/**
+		 * Y​o​u​ ​s​t​a​r​t​ ​w​i​t​h​ ​o​n​e​ ​c​i​t​y​,​ ​y​o​u​r​ ​c​a​p​i​t​a​l​,​ ​a​t​ ​s​i​z​e​ ​1​.​ ​Y​o​u​ ​c​a​n​ ​h​o​l​d​ ​u​p​ ​t​o​ ​{​m​a​x​}​ ​c​i​t​i​e​s​.
+		 * @param {number} max
+		 */
+		capital: RequiredParams<'max'>
+		/**
+		 * A​ ​c​i​t​y​ ​o​w​n​s​ ​e​v​e​r​y​ ​f​r​e​e​ ​t​i​l​e​ ​w​i​t​h​i​n​ ​i​t​s​ ​r​e​a​c​h​:​ ​s​i​z​e​ ​+​ ​1​ ​t​i​l​e​s​ ​a​w​a​y​ ​(​c​o​u​n​t​e​d​ ​i​n​ ​s​t​r​a​i​g​h​t​ ​s​t​e​p​s​,​ ​n​o​ ​d​i​a​g​o​n​a​l​s​)​.​ ​G​r​o​w​i​n​g​ ​n​e​v​e​r​ ​t​a​k​e​s​ ​l​a​n​d​ ​a​n​o​t​h​e​r​ ​c​i​v​ ​a​l​r​e​a​d​y​ ​o​w​n​s​.
+		 */
+		radius: string
+		/**
+		 * E​a​c​h​ ​t​u​r​n​ ​a​ ​c​i​t​y​ ​g​a​i​n​s​ ​g​r​o​w​t​h​ ​p​o​i​n​t​s​:​ ​1​,​ ​p​l​u​s​ ​1​ ​f​o​r​ ​e​v​e​r​y​ ​d​e​p​o​s​i​t​ ​y​o​u​ ​o​w​n​ ​w​i​t​h​i​n​ ​i​t​s​ ​r​e​a​c​h​.​ ​W​h​e​n​ ​i​t​ ​h​a​s​ ​2​0​ ​×​ ​s​i​z​e​²​ ​p​o​i​n​t​s​ ​i​t​ ​g​r​o​w​s​ ​t​o​ ​t​h​e​ ​n​e​x​t​ ​s​i​z​e​ ​(​u​p​ ​t​o​ ​{​m​a​x​}​)​ ​a​n​d​ ​c​l​a​i​m​s​ ​t​h​e​ ​n​e​x​t​ ​r​i​n​g​ ​o​f​ ​l​a​n​d​.
+		 * @param {number} max
+		 */
+		growth: RequiredParams<'max'>
+		/**
+		 * W​h​e​n​ ​a​ ​c​i​t​y​ ​h​a​s​ ​n​o​w​h​e​r​e​ ​l​e​f​t​ ​t​o​ ​g​r​o​w​ ​b​e​c​a​u​s​e​ ​t​h​e​ ​n​e​x​t​ ​r​i​n​g​ ​i​s​ ​a​l​l​ ​t​a​k​e​n​,​ ​i​t​ ​s​t​o​p​s​ ​g​r​o​w​i​n​g​ ​f​o​r​ ​g​o​o​d​.​ ​T​h​a​t​ ​l​i​n​e​ ​i​s​ ​y​o​u​r​ ​b​o​r​d​e​r​.​ ​A​f​t​e​r​ ​t​h​a​t​,​ ​l​a​n​d​ ​o​n​l​y​ ​c​h​a​n​g​e​s​ ​h​a​n​d​s​ ​b​y​ ​w​a​r​,​ ​o​r​ ​b​y​ ​b​u​y​i​n​g​ ​a​ ​t​i​l​e​ ​w​i​t​h​ ​c​l​a​i​m​_​t​i​l​e​.
+		 */
+		lock: string
+		/**
+		 * S​e​t​t​l​e​r​s​ ​f​o​u​n​d​ ​n​e​w​ ​c​i​t​i​e​s​:​ ​f​o​u​n​d​_​c​i​t​y​ ​u​s​e​s​ ​o​n​e​ ​s​e​t​t​l​e​r​ ​t​o​ ​b​u​i​l​d​ ​a​ ​s​i​z​e​-​1​ ​c​i​t​y​ ​o​n​ ​a​ ​f​r​e​e​ ​c​i​t​y​ ​s​i​t​e​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​.
+		 */
+		settlers: string
+		/**
+		 * G​r​o​w​t​h​ ​b​y​ ​s​i​z​e
+		 */
+		growthTable: string
+		/**
+		 * S​i​z​e
+		 */
+		size: string
+		/**
+		 * R​e​a​c​h
+		 */
+		reach: string
+		/**
+		 * P​o​i​n​t​s​ ​t​o​ ​g​r​o​w
+		 */
+		pointsToGrow: string
+		/**
+		 * m​a​x​i​m​u​m
+		 */
+		maxSize: string
+	}
+	economy: {
+		/**
+		 * E​c​o​n​o​m​y
+		 */
+		title: string
+		/**
+		 * E​v​e​r​y​ ​d​e​p​o​s​i​t​ ​y​o​u​ ​o​w​n​ ​p​r​o​d​u​c​e​s​ ​{​a​m​o​u​n​t​}​ ​o​f​ ​i​t​s​ ​r​e​s​o​u​r​c​e​ ​p​e​r​ ​t​u​r​n​.
+		 * @param {number} amount
+		 */
+		deposits: RequiredParams<'amount'>
+		/**
+		 * E​v​e​r​y​ ​c​i​t​y​ ​p​r​o​d​u​c​e​s​ ​{​f​o​o​d​}​ ​F​o​o​d​,​ ​{​o​r​e​}​ ​O​r​e​ ​a​n​d​ ​{​g​o​l​d​}​ ​G​o​l​d​ ​p​e​r​ ​s​i​z​e​,​ ​p​e​r​ ​t​u​r​n​.
+		 * @param {number} food
+		 * @param {number} gold
+		 * @param {number} ore
+		 */
+		cityIncome: RequiredParams<'food' | 'gold' | 'ore'>
+		/**
+		 * U​n​i​t​s​ ​e​a​t​ ​F​o​o​d​ ​e​v​e​r​y​ ​t​u​r​n​.​ ​I​f​ ​y​o​u​ ​c​a​n​'​t​ ​f​e​e​d​ ​t​h​e​m​,​ ​y​o​u​r​ ​m​o​s​t​ ​e​x​p​e​n​s​i​v​e​ ​u​n​i​t​s​ ​a​r​e​ ​d​i​s​b​a​n​d​e​d​ ​u​n​t​i​l​ ​y​o​u​r​ ​F​o​o​d​ ​i​s​ ​b​a​c​k​ ​a​b​o​v​e​ ​z​e​r​o​.
+		 */
+		upkeep: string
+		/**
+		 * c​l​a​i​m​_​t​i​l​e​ ​b​u​y​s​ ​o​n​e​ ​f​r​e​e​ ​t​i​l​e​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​ ​f​o​r​ ​{​f​o​o​d​}​ ​F​o​o​d​ ​a​n​d​ ​{​g​o​l​d​}​ ​G​o​l​d​.
+		 * @param {number} food
+		 * @param {number} gold
+		 */
+		claim: RequiredParams<'food' | 'gold'>
+		/**
+		 * O​n​e​ ​m​a​r​k​e​t​ ​i​s​ ​s​h​a​r​e​d​ ​b​y​ ​e​v​e​r​y​o​n​e​.​ ​A​ ​r​e​s​o​u​r​c​e​'​s​ ​p​r​i​c​e​ ​r​i​s​e​s​ ​a​s​ ​i​t​ ​g​e​t​s​ ​s​c​a​r​c​e​ ​a​n​d​ ​f​a​l​l​s​ ​w​h​e​n​ ​i​t​'​s​ ​p​l​e​n​t​i​f​u​l​,​ ​b​e​t​w​e​e​n​ ​{​m​i​n​}​%​ ​a​n​d​ ​{​m​a​x​}​%​ ​o​f​ ​i​t​s​ ​b​a​s​e​ ​p​r​i​c​e​.​ ​E​v​e​r​y​ ​t​r​a​d​e​ ​l​o​s​e​s​ ​{​s​p​r​e​a​d​}​%​ ​t​o​ ​t​h​e​ ​s​p​r​e​a​d​,​ ​s​o​ ​b​u​y​i​n​g​ ​a​n​d​ ​s​e​l​l​i​n​g​ ​b​a​c​k​ ​a​n​d​ ​f​o​r​t​h​ ​n​e​v​e​r​ ​m​a​k​e​s​ ​m​o​n​e​y​.
+		 * @param {number} max
+		 * @param {number} min
+		 * @param {number} spread
+		 */
+		market: RequiredParams<'max' | 'min' | 'spread'>
+		/**
+		 * B​a​s​e​ ​p​r​i​c​e​s​,​ ​i​n​ ​G​o​l​d​:​ ​F​o​o​d​ ​{​f​o​o​d​}​,​ ​O​r​e​ ​{​o​r​e​}​,​ ​G​o​l​d​ ​{​g​o​l​d​}​.
+		 * @param {string} food
+		 * @param {string} gold
+		 * @param {string} ore
+		 */
+		basePrices: RequiredParams<'food' | 'gold' | 'ore'>
+	}
+	units: {
+		/**
+		 * U​n​i​t​s
+		 */
+		title: string
+		/**
+		 * U​n​i​t​s​ ​a​r​e​ ​c​o​u​n​t​e​d​ ​p​e​r​ ​c​i​v​i​l​i​s​a​t​i​o​n​ ​(​t​h​e​y​ ​d​o​n​'​t​ ​s​t​a​n​d​ ​o​n​ ​t​i​l​e​s​ ​i​n​ ​t​h​i​s​ ​v​e​r​s​i​o​n​)​.​ ​E​a​c​h​ ​i​s​ ​s​t​r​o​n​g​ ​a​g​a​i​n​s​t​ ​o​n​e​ ​o​t​h​e​r​,​ ​l​i​k​e​ ​r​o​c​k​-​p​a​p​e​r​-​s​c​i​s​s​o​r​s​:​ ​a​ ​s​t​r​o​n​g​ ​m​a​t​c​h​u​p​ ​c​o​u​n​t​s​ ​×​{​b​o​n​u​s​}​.
+		 * @param {string} bonus
+		 */
+		intro: RequiredParams<'bonus'>
+		/**
+		 * S​e​t​t​l​e​r
+		 */
+		settler: string
+		/**
+		 * U​n​i​t
+		 */
+		unit: string
+		/**
+		 * A​t​t​a​c​k
+		 */
+		attack: string
+		/**
+		 * D​e​f​e​n​c​e
+		 */
+		defence: string
+		/**
+		 * C​o​s​t
+		 */
+		cost: string
+		/**
+		 * F​o​o​d​ ​p​e​r​ ​t​u​r​n
+		 */
+		upkeep: string
+		/**
+		 * S​t​r​o​n​g​ ​a​g​a​i​n​s​t
+		 */
+		strongAgainst: string
+		/**
+		 * c​i​t​y​ ​w​a​l​l​s
+		 */
+		walls: string
+		/**
+		 * e​v​e​r​y​t​h​i​n​g​ ​(​×​{​b​o​n​u​s​}​)
+		 * @param {string} bonus
+		 */
+		all: RequiredParams<'bonus'>
+		/**
+		 * —
+		 */
+		none: string
+		/**
+		 * Y​o​u​ ​c​a​n​ ​f​i​e​l​d​ ​o​n​e​ ​E​l​i​t​e​ ​p​e​r​ ​c​i​t​y​ ​s​i​z​e​ ​y​o​u​ ​o​w​n​.
+		 */
+		eliteCap: string
+	}
+	warfare: {
+		/**
+		 * W​a​r​f​a​r​e
+		 */
+		title: string
+		/**
+		 * a​t​t​a​c​k​ ​s​e​n​d​s​ ​y​o​u​r​ ​w​h​o​l​e​ ​a​r​m​y​ ​(​e​v​e​r​y​t​h​i​n​g​ ​e​x​c​e​p​t​ ​s​e​t​t​l​e​r​s​)​ ​a​t​ ​o​n​e​ ​e​n​e​m​y​ ​t​i​l​e​ ​o​r​ ​c​i​t​y​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​.
+		 */
+		attack: string
+		/**
+		 * T​h​e​ ​d​e​f​e​n​d​e​r​'​s​ ​a​r​m​y​ ​i​s​ ​s​p​r​e​a​d​ ​e​v​e​n​l​y​ ​o​v​e​r​ ​i​t​s​ ​c​i​t​i​e​s​ ​a​n​d​ ​b​o​r​d​e​r​s​,​ ​s​o​ ​e​a​c​h​ ​t​a​r​g​e​t​ ​i​s​ ​h​e​l​d​ ​b​y​ ​i​t​s​ ​s​h​a​r​e​ ​o​f​ ​e​v​e​r​y​ ​u​n​i​t​ ​k​i​n​d​.
+		 */
+		defenders: string
+		/**
+		 * A​t​t​a​c​k​ ​i​s​ ​y​o​u​r​ ​u​n​i​t​s​'​ ​a​t​t​a​c​k​,​ ​w​i​t​h​ ​m​a​t​c​h​u​p​ ​b​o​n​u​s​e​s​.​ ​D​e​f​e​n​c​e​ ​i​s​ ​t​h​e​ ​d​e​f​e​n​d​e​r​s​'​ ​d​e​f​e​n​c​e​ ​p​l​u​s​ ​c​i​t​y​ ​w​a​l​l​s​:​ ​{​w​a​l​l​s​}​ ​p​e​r​ ​c​i​t​y​ ​s​i​z​e​,​ ​+​{​c​a​p​i​t​a​l​}​%​ ​f​o​r​ ​a​ ​c​a​p​i​t​a​l​.​ ​S​i​e​g​e​ ​c​o​u​n​t​s​ ​×​{​s​i​e​g​e​}​ ​a​g​a​i​n​s​t​ ​w​a​l​l​s​.​ ​E​a​c​h​ ​s​i​d​e​ ​r​o​l​l​s​ ​u​p​ ​t​o​ ​±​{​r​o​l​l​}​%​.
+		 * @param {number} capital
+		 * @param {number} roll
+		 * @param {string} siege
+		 * @param {number} walls
+		 */
+		strength: RequiredParams<'capital' | 'roll' | 'siege' | 'walls'>
+		/**
+		 * I​f​ ​a​t​t​a​c​k​ ​b​e​a​t​s​ ​d​e​f​e​n​c​e​,​ ​e​v​e​r​y​ ​d​e​f​e​n​d​e​r​ ​t​h​e​r​e​ ​i​s​ ​d​e​s​t​r​o​y​e​d​ ​a​n​d​ ​t​h​e​ ​t​a​r​g​e​t​ ​f​a​l​l​s​.​ ​A​ ​t​i​l​e​ ​c​h​a​n​g​e​s​ ​o​w​n​e​r​.​ ​A​ ​c​i​t​y​ ​i​s​ ​c​a​p​t​u​r​e​d​ ​(​i​t​ ​d​r​o​p​s​ ​o​n​e​ ​s​i​z​e​)​,​ ​o​r​ ​r​a​z​e​d​ ​i​f​ ​y​o​u​ ​c​h​o​s​e​ ​a​t​t​a​c​k​(​t​a​r​g​e​t​,​ ​r​a​z​e​)​:​ ​i​t​'​s​ ​d​e​s​t​r​o​y​e​d​ ​a​n​d​ ​i​t​s​ ​l​a​n​d​ ​b​e​c​o​m​e​s​ ​f​r​e​e​.
+		 */
+		win: string
+		/**
+		 * T​a​k​i​n​g​ ​o​r​ ​r​a​z​i​n​g​ ​a​ ​c​i​t​y​ ​a​l​s​o​ ​t​a​k​e​s​ ​a​ ​s​h​a​r​e​ ​o​f​ ​t​h​e​ ​l​o​s​e​r​'​s​ ​s​t​o​c​k​p​i​l​e​:​ ​t​h​e​i​r​ ​s​t​o​c​k​ ​d​i​v​i​d​e​d​ ​b​y​ ​t​h​e​i​r​ ​n​u​m​b​e​r​ ​o​f​ ​c​i​t​i​e​s​.
+		 */
+		plunder: string
+		/**
+		 * I​f​ ​a​t​t​a​c​k​ ​d​o​e​s​n​'​t​ ​b​e​a​t​ ​d​e​f​e​n​c​e​,​ ​b​o​t​h​ ​s​i​d​e​s​ ​l​o​s​e​ ​u​n​i​t​s​ ​i​n​ ​p​r​o​p​o​r​t​i​o​n​ ​t​o​ ​t​h​e​ ​o​t​h​e​r​ ​s​i​d​e​'​s​ ​s​t​r​e​n​g​t​h​.
+		 */
+		lose: string
+		/**
+		 * I​f​ ​a​ ​c​a​p​i​t​a​l​ ​f​a​l​l​s​,​ ​t​h​a​t​ ​c​i​v​'​s​ ​l​a​r​g​e​s​t​ ​r​e​m​a​i​n​i​n​g​ ​c​i​t​y​ ​b​e​c​o​m​e​s​ ​i​t​s​ ​n​e​w​ ​c​a​p​i​t​a​l​.
+		 */
+		capital: string
+		/**
+		 * A​ ​c​i​v​i​l​i​s​a​t​i​o​n​ ​w​i​t​h​ ​n​o​ ​c​i​t​i​e​s​ ​l​e​f​t​ ​i​s​ ​o​u​t​ ​o​f​ ​t​h​e​ ​g​a​m​e​.
+		 */
+		elimination: string
+	}
+	turn: {
+		/**
+		 * A​ ​t​u​r​n​,​ ​s​t​e​p​ ​b​y​ ​s​t​e​p
+		 */
+		title: string
+		steps: {
+			/**
+			 * C​o​u​n​t​ ​w​h​a​t​ ​e​v​e​r​y​o​n​e​ ​o​w​n​s​.
+			 */
+			count: string
+			/**
+			 * D​e​p​o​s​i​t​s​ ​a​n​d​ ​c​i​t​i​e​s​ ​p​r​o​d​u​c​e​ ​r​e​s​o​u​r​c​e​s​.
+			 */
+			produce: string
+			/**
+			 * C​i​t​i​e​s​ ​g​r​o​w​ ​a​n​d​ ​t​h​e​i​r​ ​b​o​r​d​e​r​s​ ​m​o​v​e​.
+			 */
+			grow: string
+			/**
+			 * E​v​e​r​y​ ​p​o​l​i​c​y​ ​d​e​c​i​d​e​s​ ​f​r​o​m​ ​t​h​e​ ​s​a​m​e​ ​s​n​a​p​s​h​o​t​ ​o​f​ ​t​h​e​ ​w​o​r​l​d​.​ ​O​n​l​y​ ​t​h​e​ ​f​i​r​s​t​ ​{​c​o​u​n​t​}​ ​m​a​t​c​h​i​n​g​ ​r​u​l​e​s​ ​a​c​t​.
+			 * @param {number} count
+			 */
+			decide: RequiredParams<'count'>
+			/**
+			 * A​l​l​ ​a​c​t​i​o​n​s​ ​h​a​p​p​e​n​ ​t​o​g​e​t​h​e​r​:​ ​b​u​i​l​d​,​ ​f​o​u​n​d​ ​c​i​t​i​e​s​,​ ​c​l​a​i​m​ ​t​i​l​e​s​,​ ​t​r​a​d​e​,​ ​t​h​e​n​ ​a​t​t​a​c​k​s​.​ ​W​h​o​ ​g​o​e​s​ ​f​i​r​s​t​ ​r​o​t​a​t​e​s​ ​e​v​e​r​y​ ​t​u​r​n​.
+			 */
+			resolve: string
+			/**
+			 * U​n​i​t​s​ ​e​a​t​.​ ​U​n​f​e​d​ ​u​n​i​t​s​ ​a​r​e​ ​d​i​s​b​a​n​d​e​d​.
+			 */
+			upkeep: string
+			/**
+			 * C​i​v​s​ ​w​i​t​h​ ​n​o​ ​c​i​t​i​e​s​ ​a​r​e​ ​r​e​m​o​v​e​d​.
+			 */
+			eliminate: string
+		}
+	}
+	winning: {
+		/**
+		 * W​i​n​n​i​n​g
+		 */
+		title: string
+		/**
+		 * W​i​n​ ​m​e​t​r​i​c
+		 */
+		metric: string
+		/**
+		 * W​i​n​n​e​r
+		 */
+		winner: string
+		/**
+		 * M​o​s​t​ ​t​i​l​e​s​ ​a​f​t​e​r​ ​t​h​e​ ​l​a​s​t​ ​t​u​r​n​.
+		 */
+		territory: string
+		/**
+		 * H​i​g​h​e​s​t​ ​v​a​l​u​e​ ​o​f​ ​a​l​l​ ​r​e​s​o​u​r​c​e​s​ ​a​t​ ​t​h​e​ ​f​i​n​a​l​ ​m​a​r​k​e​t​ ​p​r​i​c​e​s​.
+		 */
+		wealth: string
+		/**
+		 * L​a​s​t​ ​c​i​v​ ​s​t​a​n​d​i​n​g​;​ ​i​f​ ​s​e​v​e​r​a​l​ ​r​e​m​a​i​n​,​ ​m​o​s​t​ ​t​i​l​e​s​.
+		 */
+		conquest: string
+		/**
+		 * T​i​l​e​s​ ​×​ ​{​t​i​l​e​s​}​ ​+​ ​w​e​a​l​t​h​ ​÷​ ​{​w​e​a​l​t​h​}​ ​+​ ​a​r​m​y​ ​s​t​r​e​n​g​t​h​.
+		 * @param {number} tiles
+		 * @param {number} wealth
+		 */
+		score: RequiredParams<'tiles' | 'wealth'>
+	}
+	policy: {
+		/**
+		 * Y​o​u​r​ ​p​o​l​i​c​y
+		 */
+		title: string
+		/**
+		 * A​ ​p​o​l​i​c​y​ ​i​s​ ​a​n​ ​o​r​d​e​r​e​d​ ​l​i​s​t​ ​o​f​ ​u​p​ ​t​o​ ​{​m​a​x​}​ ​i​f​/​t​h​e​n​ ​r​u​l​e​s​.​ ​E​a​c​h​ ​t​u​r​n​,​ ​t​h​e​ ​f​i​r​s​t​ ​{​a​c​t​i​v​e​}​ ​r​u​l​e​s​ ​w​h​o​s​e​ ​c​o​n​d​i​t​i​o​n​ ​i​s​ ​t​r​u​e​ ​a​c​t​.​ ​Y​o​u​ ​c​a​n​ ​t​e​s​t​ ​i​t​ ​f​r​e​e​ ​i​n​ ​t​h​e​ ​s​i​m​u​l​a​t​o​r​ ​b​e​f​o​r​e​ ​y​o​u​ ​s​t​a​k​e​ ​a​n​y​t​h​i​n​g​.
+		 * @param {number} active
+		 * @param {number} max
+		 */
+		body: RequiredParams<'active' | 'max'>
+		/**
+		 * O​p​e​n​ ​t​h​e​ ​p​o​l​i​c​y​ ​e​d​i​t​o​r
+		 */
+		edit: string
+	}
+}
+
 export type Namespaces =
 	| 'lobbies'
 	| 'matches'
 	| 'players'
 	| 'policies'
+	| 'rules'
 
 type DisallowNamespaces = {
 	/**
@@ -2032,6 +2361,12 @@ type DisallowNamespaces = {
 	 * you need to use the `./policies/index.ts` file instead
 	 */
 	policies?: "[typesafe-i18n] reserved for 'policies'-namespace. You need to use the `./policies/index.ts` file instead."
+
+	/**
+	 * reserved for 'rules'-namespace\
+	 * you need to use the `./rules/index.ts` file instead
+	 */
+	rules?: "[typesafe-i18n] reserved for 'rules'-namespace. You need to use the `./rules/index.ts` file instead."
 }
 
 export type TranslationFunctions = {
@@ -2068,6 +2403,10 @@ export type TranslationFunctions = {
 		 * Leaderboard
 		 */
 		leaderboard: () => LocalizedString
+		/**
+		 * Rules
+		 */
+		rules: () => LocalizedString
 		/**
 		 * Ranks
 		 */
@@ -3853,6 +4192,296 @@ export type TranslationFunctions = {
 			 * Back to the editor
 			 */
 			backToEditor: () => LocalizedString
+		}
+	}
+	rules: {
+		/**
+		 * How to play
+		 */
+		title: () => LocalizedString
+		/**
+		 * Moirai is a bot arena. You don't move pieces: you write a policy, and the Solana program plays it for you, every turn, by the same rules for everyone. These are those rules.
+		 */
+		intro: () => LocalizedString
+		/**
+		 * On this page
+		 */
+		contents: () => LocalizedString
+		goal: {
+			/**
+			 * The goal
+			 */
+			title: () => LocalizedString
+			/**
+			 * {min} to {max} civilisations share a {size} × {size} map for {turns} turns. The lobby picks how the winner is decided: most land, most wealth, last civ standing, or a mixed score.
+			 */
+			body: (arg: { max: number, min: number, size: number, turns: number }) => LocalizedString
+		}
+		map: {
+			/**
+			 * The map
+			 */
+			title: () => LocalizedString
+			/**
+			 * The map comes from a random seed drawn after every policy is revealed. One quarter is generated and mirrored into the other three, so every civ starts with exactly the same surroundings.
+			 */
+			mirrored: () => LocalizedString
+			/**
+			 * About {percent}% of tiles hold a deposit of Food, Ore or Gold.
+			 */
+			deposits: (arg: { percent: number }) => LocalizedString
+			/**
+			 * City sites are tiles where a city can be built. Each quarter has {count} besides the capital's, at least {distance} tiles apart. Every capital starts on one.
+			 */
+			sites: (arg: { count: number, distance: number }) => LocalizedString
+		}
+		cities: {
+			/**
+			 * Cities and borders
+			 */
+			title: () => LocalizedString
+			/**
+			 * You start with one city, your capital, at size 1. You can hold up to {max} cities.
+			 */
+			capital: (arg: { max: number }) => LocalizedString
+			/**
+			 * A city owns every free tile within its reach: size + 1 tiles away (counted in straight steps, no diagonals). Growing never takes land another civ already owns.
+			 */
+			radius: () => LocalizedString
+			/**
+			 * Each turn a city gains growth points: 1, plus 1 for every deposit you own within its reach. When it has 20 × size² points it grows to the next size (up to {max}) and claims the next ring of land.
+			 */
+			growth: (arg: { max: number }) => LocalizedString
+			/**
+			 * When a city has nowhere left to grow because the next ring is all taken, it stops growing for good. That line is your border. After that, land only changes hands by war, or by buying a tile with claim_tile.
+			 */
+			lock: () => LocalizedString
+			/**
+			 * Settlers found new cities: found_city uses one settler to build a size-1 city on a free city site next to your land.
+			 */
+			settlers: () => LocalizedString
+			/**
+			 * Growth by size
+			 */
+			growthTable: () => LocalizedString
+			/**
+			 * Size
+			 */
+			size: () => LocalizedString
+			/**
+			 * Reach
+			 */
+			reach: () => LocalizedString
+			/**
+			 * Points to grow
+			 */
+			pointsToGrow: () => LocalizedString
+			/**
+			 * maximum
+			 */
+			maxSize: () => LocalizedString
+		}
+		economy: {
+			/**
+			 * Economy
+			 */
+			title: () => LocalizedString
+			/**
+			 * Every deposit you own produces {amount} of its resource per turn.
+			 */
+			deposits: (arg: { amount: number }) => LocalizedString
+			/**
+			 * Every city produces {food} Food, {ore} Ore and {gold} Gold per size, per turn.
+			 */
+			cityIncome: (arg: { food: number, gold: number, ore: number }) => LocalizedString
+			/**
+			 * Units eat Food every turn. If you can't feed them, your most expensive units are disbanded until your Food is back above zero.
+			 */
+			upkeep: () => LocalizedString
+			/**
+			 * claim_tile buys one free tile next to your land for {food} Food and {gold} Gold.
+			 */
+			claim: (arg: { food: number, gold: number }) => LocalizedString
+			/**
+			 * One market is shared by everyone. A resource's price rises as it gets scarce and falls when it's plentiful, between {min}% and {max}% of its base price. Every trade loses {spread}% to the spread, so buying and selling back and forth never makes money.
+			 */
+			market: (arg: { max: number, min: number, spread: number }) => LocalizedString
+			/**
+			 * Base prices, in Gold: Food {food}, Ore {ore}, Gold {gold}.
+			 */
+			basePrices: (arg: { food: string, gold: string, ore: string }) => LocalizedString
+		}
+		units: {
+			/**
+			 * Units
+			 */
+			title: () => LocalizedString
+			/**
+			 * Units are counted per civilisation (they don't stand on tiles in this version). Each is strong against one other, like rock-paper-scissors: a strong matchup counts ×{bonus}.
+			 */
+			intro: (arg: { bonus: string }) => LocalizedString
+			/**
+			 * Settler
+			 */
+			settler: () => LocalizedString
+			/**
+			 * Unit
+			 */
+			unit: () => LocalizedString
+			/**
+			 * Attack
+			 */
+			attack: () => LocalizedString
+			/**
+			 * Defence
+			 */
+			defence: () => LocalizedString
+			/**
+			 * Cost
+			 */
+			cost: () => LocalizedString
+			/**
+			 * Food per turn
+			 */
+			upkeep: () => LocalizedString
+			/**
+			 * Strong against
+			 */
+			strongAgainst: () => LocalizedString
+			/**
+			 * city walls
+			 */
+			walls: () => LocalizedString
+			/**
+			 * everything (×{bonus})
+			 */
+			all: (arg: { bonus: string }) => LocalizedString
+			/**
+			 * —
+			 */
+			none: () => LocalizedString
+			/**
+			 * You can field one Elite per city size you own.
+			 */
+			eliteCap: () => LocalizedString
+		}
+		warfare: {
+			/**
+			 * Warfare
+			 */
+			title: () => LocalizedString
+			/**
+			 * attack sends your whole army (everything except settlers) at one enemy tile or city next to your land.
+			 */
+			attack: () => LocalizedString
+			/**
+			 * The defender's army is spread evenly over its cities and borders, so each target is held by its share of every unit kind.
+			 */
+			defenders: () => LocalizedString
+			/**
+			 * Attack is your units' attack, with matchup bonuses. Defence is the defenders' defence plus city walls: {walls} per city size, +{capital}% for a capital. Siege counts ×{siege} against walls. Each side rolls up to ±{roll}%.
+			 */
+			strength: (arg: { capital: number, roll: number, siege: string, walls: number }) => LocalizedString
+			/**
+			 * If attack beats defence, every defender there is destroyed and the target falls. A tile changes owner. A city is captured (it drops one size), or razed if you chose attack(target, raze): it's destroyed and its land becomes free.
+			 */
+			win: () => LocalizedString
+			/**
+			 * Taking or razing a city also takes a share of the loser's stockpile: their stock divided by their number of cities.
+			 */
+			plunder: () => LocalizedString
+			/**
+			 * If attack doesn't beat defence, both sides lose units in proportion to the other side's strength.
+			 */
+			lose: () => LocalizedString
+			/**
+			 * If a capital falls, that civ's largest remaining city becomes its new capital.
+			 */
+			capital: () => LocalizedString
+			/**
+			 * A civilisation with no cities left is out of the game.
+			 */
+			elimination: () => LocalizedString
+		}
+		turn: {
+			/**
+			 * A turn, step by step
+			 */
+			title: () => LocalizedString
+			steps: {
+				/**
+				 * Count what everyone owns.
+				 */
+				count: () => LocalizedString
+				/**
+				 * Deposits and cities produce resources.
+				 */
+				produce: () => LocalizedString
+				/**
+				 * Cities grow and their borders move.
+				 */
+				grow: () => LocalizedString
+				/**
+				 * Every policy decides from the same snapshot of the world. Only the first {count} matching rules act.
+				 */
+				decide: (arg: { count: number }) => LocalizedString
+				/**
+				 * All actions happen together: build, found cities, claim tiles, trade, then attacks. Who goes first rotates every turn.
+				 */
+				resolve: () => LocalizedString
+				/**
+				 * Units eat. Unfed units are disbanded.
+				 */
+				upkeep: () => LocalizedString
+				/**
+				 * Civs with no cities are removed.
+				 */
+				eliminate: () => LocalizedString
+			}
+		}
+		winning: {
+			/**
+			 * Winning
+			 */
+			title: () => LocalizedString
+			/**
+			 * Win metric
+			 */
+			metric: () => LocalizedString
+			/**
+			 * Winner
+			 */
+			winner: () => LocalizedString
+			/**
+			 * Most tiles after the last turn.
+			 */
+			territory: () => LocalizedString
+			/**
+			 * Highest value of all resources at the final market prices.
+			 */
+			wealth: () => LocalizedString
+			/**
+			 * Last civ standing; if several remain, most tiles.
+			 */
+			conquest: () => LocalizedString
+			/**
+			 * Tiles × {tiles} + wealth ÷ {wealth} + army strength.
+			 */
+			score: (arg: { tiles: number, wealth: number }) => LocalizedString
+		}
+		policy: {
+			/**
+			 * Your policy
+			 */
+			title: () => LocalizedString
+			/**
+			 * A policy is an ordered list of up to {max} if/then rules. Each turn, the first {active} rules whose condition is true act. You can test it free in the simulator before you stake anything.
+			 */
+			body: (arg: { active: number, max: number }) => LocalizedString
+			/**
+			 * Open the policy editor
+			 */
+			edit: () => LocalizedString
 		}
 	}
 }

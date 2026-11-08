@@ -20,7 +20,8 @@ export const namespaces: Namespaces[] = [
 	'lobbies',
 	'matches',
 	'players',
-	'policies'
+	'policies',
+	'rules'
 ]
 
 export const isLocale = (locale: string): locale is Locales => locales.includes(locale as Locales)

@@ -13,14 +13,17 @@ import en_lobbies from './en/lobbies/index.js'
 import en_matches from './en/matches/index.js'
 import en_players from './en/players/index.js'
 import en_policies from './en/policies/index.js'
+import en_rules from './en/rules/index.js'
 import es_lobbies from './es/lobbies/index.js'
 import es_matches from './es/matches/index.js'
 import es_players from './es/players/index.js'
 import es_policies from './es/policies/index.js'
+import es_rules from './es/rules/index.js'
 import fr_lobbies from './fr/lobbies/index.js'
 import fr_matches from './fr/matches/index.js'
 import fr_players from './fr/players/index.js'
 import fr_policies from './fr/policies/index.js'
+import fr_rules from './fr/rules/index.js'
 
 const localeTranslations = {
 	en: {
@@ -28,21 +31,24 @@ const localeTranslations = {
 		lobbies: en_lobbies,
 		matches: en_matches,
 		players: en_players,
-		policies: en_policies
+		policies: en_policies,
+		rules: en_rules
 	},
 	es: {
 		...es,
 		lobbies: es_lobbies,
 		matches: es_matches,
 		players: es_players,
-		policies: es_policies
+		policies: es_policies,
+		rules: es_rules
 	},
 	fr: {
 		...fr,
 		lobbies: fr_lobbies,
 		matches: fr_matches,
 		players: fr_players,
-		policies: fr_policies
+		policies: fr_policies,
+		rules: fr_rules
 	},
 }
 
