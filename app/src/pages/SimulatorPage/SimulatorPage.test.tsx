@@ -22,7 +22,7 @@ function tilesOwnedBy(counts: number[]): MapTile[] {
   }));
 }
 function civ(tiles: number): SimulatedCiv {
-  return { isAlive: true, tiles, cities: 1, army: 0, food: 0, ore: 0, gold: 0, coins: 0, wealth: 0 };
+  return { isAlive: true, tiles, cities: 1, army: 0, food: 0, ore: 0, gold: 0, coins: 0, wealth: 0, marching: 0, armyAt: null };
 }
 const simulation = vi.hoisted(() => ({ calls: [] as string[][] }));
 vi.mock("../../lib/engine", () => ({

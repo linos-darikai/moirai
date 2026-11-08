@@ -65,6 +65,8 @@ const fr_rules = {
     buildTurns: "Tours de construction",
     upkeep: "Nourriture par tour",
     strongAgainst: "Forte contre",
+    speed: "Vitesse",
+    speedValue: "{tiles} {{tiles:case|cases}} / tour",
     walls: "les remparts",
     all: "tout (×{bonus})",
     none: "—",
@@ -74,7 +76,10 @@ const fr_rules = {
   },
   warfare: {
     title: "La guerre",
-    attack: "attack envoie toute votre armée (tout sauf les Colons et les Ouvriers) contre une case ou une ville ennemie voisine de votre terre.",
+    attack:
+      "attack envoie toute votre armée (tout sauf les Colons et les Ouvriers) en expédition. Elle traverse n'importe quelle terre, même au cœur du territoire ennemi, jusqu'à une case, une ville ou la capitale ennemie, et combat à son arrivée. Les survivants rentrent.",
+    march:
+      "Une armée avance à la vitesse de son unité la plus lente : emmener du Siège la ralentit. Une seule expédition à la fois ; pendant son absence votre armée à la maison est plus petite, et elle mange toujours.",
     defenders: "L'armée du défenseur est répartie également entre ses villes et ses frontières : chaque cible est tenue par sa part de chaque type d'unité.",
     strength:
       "L'attaque est l'attaque de vos unités, bonus de duel compris. La défense est celle des défenseurs plus les remparts : {walls} par taille de ville, +{capital} % pour une capitale. Le siège compte ×{siege} contre les remparts. Chaque camp tire jusqu'à ±{roll} %.",
@@ -108,6 +113,8 @@ const fr_rules = {
   policy: {
     title: "Votre stratégie",
     body: "Une stratégie est une liste ordonnée de {max} règles si/alors au plus. À chaque tour, les {active} premières règles dont la condition est vraie agissent. Testez-la gratuitement dans le simulateur avant de miser quoi que ce soit.",
+    targets:
+      "attack choisit sa cible avec weakest_neighbor, strongest_neighbor, nearest_enemy, richest_enemy, largest_enemy ou leader, et son objectif avec border, city ou capital : attack(richest_enemy, capital).",
     edit: "Ouvrir l'éditeur de stratégies",
   },
 } satisfies NamespaceRulesTranslation;

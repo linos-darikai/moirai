@@ -65,6 +65,8 @@ const es_rules = {
     buildTurns: "Turnos de construcción",
     upkeep: "Comida por turno",
     strongAgainst: "Fuerte contra",
+    speed: "Velocidad",
+    speedValue: "{tiles} {{tiles:casilla|casillas}} / turno",
     walls: "murallas",
     all: "todo (×{bonus})",
     none: "—",
@@ -74,7 +76,10 @@ const es_rules = {
   },
   warfare: {
     title: "Guerra",
-    attack: "attack envía todo tu ejército (todo salvo Colonos y Trabajadores) contra una casilla o ciudad enemiga junto a tu tierra.",
+    attack:
+      "attack envía todo tu ejército (todo salvo Colonos y Trabajadores) en una expedición. Marcha por cualquier tierra, incluso dentro del territorio enemigo, hasta una casilla, una ciudad o la capital enemiga, y lucha al llegar. Los supervivientes vuelven a casa.",
+    march:
+      "Los ejércitos marchan a la velocidad de su unidad más lenta, así que llevar Asedio los frena. Tienes una expedición a la vez; mientras está fuera tu ejército en casa es menor y sigue comiendo.",
     defenders: "El ejército defensor se reparte por igual entre sus ciudades y fronteras, así que cada objetivo lo defiende su parte de cada tipo de unidad.",
     strength:
       "El ataque es el ataque de tus unidades con sus bonificaciones. La defensa es la defensa de los defensores más las murallas: {walls} por tamaño de ciudad, +{capital}% en una capital. El asedio cuenta ×{siege} contra murallas. Cada bando tira hasta ±{roll}%.",
@@ -108,6 +113,8 @@ const es_rules = {
   policy: {
     title: "Tu política",
     body: "Una política es una lista ordenada de hasta {max} reglas si/entonces. Cada turno actúan las {active} primeras reglas cuya condición se cumple. Puedes probarla gratis en el simulador antes de apostar nada.",
+    targets:
+      "attack elige su víctima con weakest_neighbor, strongest_neighbor, nearest_enemy, richest_enemy, largest_enemy o leader, y su objetivo con border, city o capital: attack(richest_enemy, capital).",
     edit: "Abrir el editor de políticas",
   },
 } satisfies NamespaceRulesTranslation;

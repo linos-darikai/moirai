@@ -67,6 +67,8 @@ const en_rules = {
     buildTurns: "Build turns",
     upkeep: "Food per turn",
     strongAgainst: "Strong against",
+    speed: "Speed",
+    speedValue: "{tiles:number} {{tiles:tile|tiles}} / turn",
     walls: "city walls",
     all: "everything (×{bonus:string})",
     none: "—",
@@ -76,7 +78,10 @@ const en_rules = {
   },
   warfare: {
     title: "Warfare",
-    attack: "attack sends your whole army (everything except Settlers and Workers) at one enemy tile or city next to your land.",
+    attack:
+      "attack sends your whole army (everything except Settlers and Workers) out on an expedition. It marches through any land, even deep into enemy territory, to an enemy tile, a city or the capital, and fights when it arrives. Survivors come home.",
+    march:
+      "Armies march at the speed of their slowest unit, so bringing Siege makes them slower. You have one expedition at a time; while it is away your army at home is smaller, and it still eats.",
     defenders: "The defender's army is spread evenly over its cities and borders, so each target is held by its share of every unit kind.",
     strength:
       "Attack is your units' attack, with matchup bonuses. Defence is the defenders' defence plus city walls: {walls:number} per city size, +{capital:number}% for a capital. Siege counts ×{siege:string} against walls. Each side rolls up to ±{roll:number}%.",
@@ -110,6 +115,8 @@ const en_rules = {
   policy: {
     title: "Your policy",
     body: "A policy is an ordered list of up to {max:number} if/then rules. Each turn, the first {active:number} rules whose condition is true act. You can test it free in the simulator before you stake anything.",
+    targets:
+      "attack picks its victim with weakest_neighbor, strongest_neighbor, nearest_enemy, richest_enemy, largest_enemy or leader, and its objective with border, city or capital: attack(richest_enemy, capital).",
     edit: "Open the policy editor",
   },
 } satisfies BaseTranslation;

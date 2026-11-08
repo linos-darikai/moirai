@@ -22,6 +22,8 @@ export const KNOWN_CONDITIONS: readonly string[] = [
   "my.army", "my.tiles", "my.cities",
   "my.infantry", "my.guards", "my.siege", "my.elites", "my.settlers", "my.workers",
   "weakest_neighbor.army", "strongest_neighbor.army",
+  "nearest_enemy.army", "nearest_enemy.distance", "richest_enemy.army",
+  "my.marching", "my.wealth",
   "turn", "always",
 ];
 

@@ -145,7 +145,7 @@ export function RulesPage(): ReactElement {
         <Heading level={2}>{text.units.title()}</Heading>
         <Text>{text.units.intro({ bonus })}</Text>
         <DataTable<RulesUnitKind>
-          minWidth={760}
+          minWidth={860}
           rows={RULES_UNIT_KINDS}
           rowKey={(kind) => kind}
           columns={[
@@ -165,6 +165,7 @@ export function RulesPage(): ReactElement {
             { key: "coins", header: text.units.coins(), render: (kind) => rules.units[kind].coins },
             { key: "buildTurns", header: text.units.buildTurns(), render: (kind) => rules.units[kind].buildTurns },
             { key: "upkeep", header: text.units.upkeep(), render: (kind) => rules.units[kind].upkeep },
+            { key: "speed", header: text.units.speed(), render: (kind) => text.units.speedValue({ tiles: rules.units[kind].speed }) },
             { key: "strong", header: text.units.strongAgainst(), render: (kind) => strongAgainstText(rules.units[kind]) },
           ]}
         />
@@ -175,6 +176,7 @@ export function RulesPage(): ReactElement {
       <Section id="rules-warfare">
         <Heading level={2}>{text.warfare.title()}</Heading>
         <Text>{text.warfare.attack()}</Text>
+        <Text>{text.warfare.march()}</Text>
         <Text>{text.warfare.defenders()}</Text>
         <Text>
           {text.warfare.strength({
@@ -227,6 +229,7 @@ export function RulesPage(): ReactElement {
       <Section id="rules-policy">
         <Heading level={2}>{text.policy.title()}</Heading>
         <Text>{text.policy.body({ max: rules.policy.maxRules, active: rules.policy.maxActiveRules })}</Text>
+        <Text>{text.policy.targets()}</Text>
         <Link to={paths.editor}>{text.policy.edit()}</Link>
       </Section>
     </PageContainer>

@@ -54,9 +54,9 @@ export function MapBoard({ board, isPending, error, turn, civNames }: MapBoardPr
               <SketchMark kind="city" tone={{ civ: tile.owner }} />
             </CitySlot>
           )}
-          {tile.unit !== null && tile.owner !== null && (
+          {tile.unit !== null && tile.unitCiv !== null && (
             <UnitSlot $kind={tile.unit}>
-              <UnitShape kind={tile.unit} civ={tile.owner} />
+              <UnitShape kind={tile.unit} civ={tile.unitCiv} />
             </UnitSlot>
           )}
         </TileCell>

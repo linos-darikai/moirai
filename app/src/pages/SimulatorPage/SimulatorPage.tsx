@@ -66,7 +66,10 @@ export function SimulatorPage(): ReactElement {
   const lastTurn = result === undefined ? TOTAL_TURNS : result.turns.length - 1;
   const shownTurn = Math.min(turn, lastTurn);
   const snapshot = result?.turns[shownTurn];
-  const board = snapshot === undefined ? null : boardFromTiles(snapshot.tiles);
+  const armies = (snapshot?.civs ?? []).flatMap((civ, index) =>
+    civ.armyAt === null ? [] : [{ civ: index as CivIndex, x: civ.armyAt.x, y: civ.armyAt.y }],
+  );
+  const board = snapshot === undefined ? null : boardFromTiles(snapshot.tiles, armies);
   const civNames = Object.fromEntries(seats.map((seat) => [seat.civ, seat.name])) as Record<CivIndex, string>;
 
   return (

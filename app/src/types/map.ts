@@ -18,6 +18,8 @@ export type BoardTile = MapTile & {
   /** Two civs reach this tile at nearly the same time. */
   isContested: boolean;
   unit: UnitKind | null;
+  /** Whose unit it is (an army on the march can stand on another civ's land). */
+  unitCiv: CivIndex | null;
 };
 
 /** A board at one turn, plus how many tiles each civ owns. */
@@ -39,6 +41,10 @@ export type SimulatedCiv = {
   coins: number;
   /** Coins plus resources at that moment's market prices. */
   wealth: number;
+  /** Fighting units on the march (0 if none). */
+  marching: number;
+  /** Where the civ's army is marching, or null (docs/decisions/0010). */
+  armyAt: { x: number; y: number } | null;
 };
 
 /** A whole match simulated in the browser by civ-core (the same rules as the chain). */

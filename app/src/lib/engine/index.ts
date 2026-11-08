@@ -39,12 +39,25 @@ export async function compilePolicyDraft(yaml: string): Promise<CompiledPolicy> 
 }
 
 /** Numbers per civ in the engine's `civStats` (crates/civ-wasm CIV_STAT_COUNT), in order. */
-const CIV_STAT_COUNT = 9;
+const CIV_STAT_COUNT = 12;
 
 /** One civ's numbers from the engine's flat list. */
 function simulatedCiv(stats: Float64Array | number[], civ: number): SimulatedCiv {
   const at = (offset: number): number => stats[civ * CIV_STAT_COUNT + offset] ?? 0;
-  return { isAlive: at(0) === 1, tiles: at(1), cities: at(2), army: at(3), food: at(4), ore: at(5), gold: at(6), coins: at(7), wealth: at(8) };
+  const armyAt = at(10) < 0 ? null : { x: at(10), y: at(11) };
+  return {
+    isAlive: at(0) === 1,
+    tiles: at(1),
+    cities: at(2),
+    army: at(3),
+    food: at(4),
+    ore: at(5),
+    gold: at(6),
+    coins: at(7),
+    wealth: at(8),
+    marching: at(9),
+    armyAt,
+  };
 }
 
 /**

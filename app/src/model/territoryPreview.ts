@@ -44,6 +44,7 @@ export function previewBoardAtTurn(startingTiles: readonly MapTile[], turn: numb
       owner,
       isContested,
       unit: hasUnit ? (UNIT_KINDS[(tile.x + tile.y) % UNIT_KINDS.length] ?? null) : null,
+      unitCiv: hasUnit ? owner : null,
     };
   });
 

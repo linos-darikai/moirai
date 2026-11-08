@@ -7,8 +7,8 @@ describe("checkPolicy", () => {
   it("reads every rule and its action from a template", () => {
     const check = checkPolicy(TEMPLATE_YAML.raider);
 
-    expect(check.rules).toHaveLength(5);
-    expect(check.rules[1]?.action).toBe("attack(weakest_neighbor)");
+    expect(check.rules).toHaveLength(6);
+    expect(check.rules[1]?.action).toBe("attack(nearest_enemy, capital)");
     expect(check.errors).toEqual([]);
   });
 

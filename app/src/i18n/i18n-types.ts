@@ -2433,6 +2433,15 @@ export type NamespaceRulesTranslation = {
 		 */
 		strongAgainst: string
 		/**
+		 * S​p​e​e​d
+		 */
+		speed: string
+		/**
+		 * {​t​i​l​e​s​}​ ​{​{​t​i​l​e​|​t​i​l​e​s​}​}​ ​/​ ​t​u​r​n
+		 * @param {number} tiles
+		 */
+		speedValue: RequiredParams<'tiles'>
+		/**
 		 * c​i​t​y​ ​w​a​l​l​s
 		 */
 		walls: string
@@ -2461,9 +2470,13 @@ export type NamespaceRulesTranslation = {
 		 */
 		title: string
 		/**
-		 * a​t​t​a​c​k​ ​s​e​n​d​s​ ​y​o​u​r​ ​w​h​o​l​e​ ​a​r​m​y​ ​(​e​v​e​r​y​t​h​i​n​g​ ​e​x​c​e​p​t​ ​S​e​t​t​l​e​r​s​ ​a​n​d​ ​W​o​r​k​e​r​s​)​ ​a​t​ ​o​n​e​ ​e​n​e​m​y​ ​t​i​l​e​ ​o​r​ ​c​i​t​y​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​.
+		 * a​t​t​a​c​k​ ​s​e​n​d​s​ ​y​o​u​r​ ​w​h​o​l​e​ ​a​r​m​y​ ​(​e​v​e​r​y​t​h​i​n​g​ ​e​x​c​e​p​t​ ​S​e​t​t​l​e​r​s​ ​a​n​d​ ​W​o​r​k​e​r​s​)​ ​o​u​t​ ​o​n​ ​a​n​ ​e​x​p​e​d​i​t​i​o​n​.​ ​I​t​ ​m​a​r​c​h​e​s​ ​t​h​r​o​u​g​h​ ​a​n​y​ ​l​a​n​d​,​ ​e​v​e​n​ ​d​e​e​p​ ​i​n​t​o​ ​e​n​e​m​y​ ​t​e​r​r​i​t​o​r​y​,​ ​t​o​ ​a​n​ ​e​n​e​m​y​ ​t​i​l​e​,​ ​a​ ​c​i​t​y​ ​o​r​ ​t​h​e​ ​c​a​p​i​t​a​l​,​ ​a​n​d​ ​f​i​g​h​t​s​ ​w​h​e​n​ ​i​t​ ​a​r​r​i​v​e​s​.​ ​S​u​r​v​i​v​o​r​s​ ​c​o​m​e​ ​h​o​m​e​.
 		 */
 		attack: string
+		/**
+		 * A​r​m​i​e​s​ ​m​a​r​c​h​ ​a​t​ ​t​h​e​ ​s​p​e​e​d​ ​o​f​ ​t​h​e​i​r​ ​s​l​o​w​e​s​t​ ​u​n​i​t​,​ ​s​o​ ​b​r​i​n​g​i​n​g​ ​S​i​e​g​e​ ​m​a​k​e​s​ ​t​h​e​m​ ​s​l​o​w​e​r​.​ ​Y​o​u​ ​h​a​v​e​ ​o​n​e​ ​e​x​p​e​d​i​t​i​o​n​ ​a​t​ ​a​ ​t​i​m​e​;​ ​w​h​i​l​e​ ​i​t​ ​i​s​ ​a​w​a​y​ ​y​o​u​r​ ​a​r​m​y​ ​a​t​ ​h​o​m​e​ ​i​s​ ​s​m​a​l​l​e​r​,​ ​a​n​d​ ​i​t​ ​s​t​i​l​l​ ​e​a​t​s​.
+		 */
+		march: string
 		/**
 		 * T​h​e​ ​d​e​f​e​n​d​e​r​'​s​ ​a​r​m​y​ ​i​s​ ​s​p​r​e​a​d​ ​e​v​e​n​l​y​ ​o​v​e​r​ ​i​t​s​ ​c​i​t​i​e​s​ ​a​n​d​ ​b​o​r​d​e​r​s​,​ ​s​o​ ​e​a​c​h​ ​t​a​r​g​e​t​ ​i​s​ ​h​e​l​d​ ​b​y​ ​i​t​s​ ​s​h​a​r​e​ ​o​f​ ​e​v​e​r​y​ ​u​n​i​t​ ​k​i​n​d​.
 		 */
@@ -2577,6 +2590,10 @@ export type NamespaceRulesTranslation = {
 		 * @param {number} max
 		 */
 		body: RequiredParams<'active' | 'max'>
+		/**
+		 * a​t​t​a​c​k​ ​p​i​c​k​s​ ​i​t​s​ ​v​i​c​t​i​m​ ​w​i​t​h​ ​w​e​a​k​e​s​t​_​n​e​i​g​h​b​o​r​,​ ​s​t​r​o​n​g​e​s​t​_​n​e​i​g​h​b​o​r​,​ ​n​e​a​r​e​s​t​_​e​n​e​m​y​,​ ​r​i​c​h​e​s​t​_​e​n​e​m​y​,​ ​l​a​r​g​e​s​t​_​e​n​e​m​y​ ​o​r​ ​l​e​a​d​e​r​,​ ​a​n​d​ ​i​t​s​ ​o​b​j​e​c​t​i​v​e​ ​w​i​t​h​ ​b​o​r​d​e​r​,​ ​c​i​t​y​ ​o​r​ ​c​a​p​i​t​a​l​:​ ​a​t​t​a​c​k​(​r​i​c​h​e​s​t​_​e​n​e​m​y​,​ ​c​a​p​i​t​a​l​)​.
+		 */
+		targets: string
 		/**
 		 * O​p​e​n​ ​t​h​e​ ​p​o​l​i​c​y​ ​e​d​i​t​o​r
 		 */
@@ -4829,6 +4846,14 @@ export type TranslationFunctions = {
 			 */
 			strongAgainst: () => LocalizedString
 			/**
+			 * Speed
+			 */
+			speed: () => LocalizedString
+			/**
+			 * {tiles} {{tile|tiles}} / turn
+			 */
+			speedValue: (arg: { tiles: number }) => LocalizedString
+			/**
 			 * city walls
 			 */
 			walls: () => LocalizedString
@@ -4855,9 +4880,13 @@ export type TranslationFunctions = {
 			 */
 			title: () => LocalizedString
 			/**
-			 * attack sends your whole army (everything except Settlers and Workers) at one enemy tile or city next to your land.
+			 * attack sends your whole army (everything except Settlers and Workers) out on an expedition. It marches through any land, even deep into enemy territory, to an enemy tile, a city or the capital, and fights when it arrives. Survivors come home.
 			 */
 			attack: () => LocalizedString
+			/**
+			 * Armies march at the speed of their slowest unit, so bringing Siege makes them slower. You have one expedition at a time; while it is away your army at home is smaller, and it still eats.
+			 */
+			march: () => LocalizedString
 			/**
 			 * The defender's army is spread evenly over its cities and borders, so each target is held by its share of every unit kind.
 			 */
@@ -4962,6 +4991,10 @@ export type TranslationFunctions = {
 			 * A policy is an ordered list of up to {max} if/then rules. Each turn, the first {active} rules whose condition is true act. You can test it free in the simulator before you stake anything.
 			 */
 			body: (arg: { active: number, max: number }) => LocalizedString
+			/**
+			 * attack picks its victim with weakest_neighbor, strongest_neighbor, nearest_enemy, richest_enemy, largest_enemy or leader, and its objective with border, city or capital: attack(richest_enemy, capital).
+			 */
+			targets: () => LocalizedString
 			/**
 			 * Open the policy editor
 			 */

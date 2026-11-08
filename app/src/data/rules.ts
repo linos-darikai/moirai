@@ -1,5 +1,5 @@
 // The game's rule numbers, shown on the Rules page. Sources: docs/decisions/0006 (cities, war),
-// 0007 (coins, Workers, build time) and 0008 (starting stock). These must match
+// 0007 (coins, Workers, build time), 0008 (starting stock) and 0010 (marching armies). These must match
 // crates/civ-core/src/rules.rs. Percentages are whole percents here for display; civ-core stores
 // bps. Prices are in coins.
 
@@ -19,6 +19,8 @@ export type UnitRule = {
   buildTurns: number;
   /** Food eaten per turn. */
   upkeep: number;
+  /** Tiles per turn on an expedition (docs/decisions/0010). */
+  speed: number;
   /** Which units it gets the matchup bonus against ("all" for the elite, "walls" for siege). */
   strongAgainst: readonly (UnitKind | "walls" | "all")[];
 };
@@ -64,12 +66,12 @@ export const GAME_RULES = {
   policy: { maxRules: 16, maxActiveRules: 3 },
   score: { tileWeight: 3, wealthDivisor: 10 },
   units: {
-    infantry: { attack: 3, defence: 2, cost: { food: 10, ore: 0, gold: 0 }, coins: 5, buildTurns: 1, upkeep: 1, strongAgainst: ["siege"] },
-    guard: { attack: 2, defence: 5, cost: { food: 0, ore: 15, gold: 0 }, coins: 10, buildTurns: 2, upkeep: 1, strongAgainst: ["infantry"] },
-    siege: { attack: 6, defence: 1, cost: { food: 0, ore: 10, gold: 10 }, coins: 15, buildTurns: 3, upkeep: 1, strongAgainst: ["guard", "walls"] },
-    elite: { attack: 8, defence: 8, cost: { food: 0, ore: 0, gold: 40 }, coins: 40, buildTurns: 4, upkeep: 2, strongAgainst: ["all"] },
-    settler: { attack: 0, defence: 1, cost: { food: 30, ore: 10, gold: 0 }, coins: 20, buildTurns: 3, upkeep: 1, strongAgainst: [] },
-    worker: { attack: 0, defence: 1, cost: { food: 15, ore: 0, gold: 0 }, coins: 5, buildTurns: 2, upkeep: 1, strongAgainst: [] },
+    infantry: { attack: 3, defence: 2, cost: { food: 10, ore: 0, gold: 0 }, coins: 5, buildTurns: 1, upkeep: 1, speed: 2, strongAgainst: ["siege"] },
+    guard: { attack: 2, defence: 5, cost: { food: 0, ore: 15, gold: 0 }, coins: 10, buildTurns: 2, upkeep: 1, speed: 1, strongAgainst: ["infantry"] },
+    siege: { attack: 6, defence: 1, cost: { food: 0, ore: 10, gold: 10 }, coins: 15, buildTurns: 3, upkeep: 1, speed: 1, strongAgainst: ["guard", "walls"] },
+    elite: { attack: 8, defence: 8, cost: { food: 0, ore: 0, gold: 40 }, coins: 40, buildTurns: 4, upkeep: 2, speed: 2, strongAgainst: ["all"] },
+    settler: { attack: 0, defence: 1, cost: { food: 30, ore: 10, gold: 0 }, coins: 20, buildTurns: 3, upkeep: 1, speed: 1, strongAgainst: [] },
+    worker: { attack: 0, defence: 1, cost: { food: 15, ore: 0, gold: 0 }, coins: 5, buildTurns: 2, upkeep: 1, speed: 1, strongAgainst: [] },
   } satisfies Record<RulesUnitKind, UnitRule>,
 } as const;
 

@@ -16,8 +16,8 @@ const MATCH_SEED = new TextEncoder().encode("match");
 const VAULT_SEED = new TextEncoder().encode("vault");
 const PROFILE_SEED = new TextEncoder().encode("profile");
 
-/** Byte offset of `status` in the account data: 8 discriminator + 3,606 bytes of fields before it. */
-const STATUS_OFFSET = 8 + 3_606;
+/** Byte offset of `status` in the account data: 8 discriminator + 3,686 bytes of fields before it. */
+const STATUS_OFFSET = 8 + 3_686;
 /** Where the game (MatchState) starts in the account data; its first u16 is the turn. */
 const MATCH_STATE_OFFSET = 8 + 336;
 
