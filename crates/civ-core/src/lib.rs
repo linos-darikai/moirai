@@ -19,11 +19,14 @@
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
 //! - `market`: the shared market; prices from supply, sell and buy for coins
+//! - `match_state`: the whole match in one plain-bytes struct (seed, turn, market, civs, map)
 //! - `match_start`: turn 0 of a match, the map and every civ with its capital
 //! - `borders`: the tiles within a city's reach; claiming the free ones
 //! - `growth`: turn step 3, cities grow and borders extend (and lock where they meet)
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
+//! - `orders`: the `Action` enum, each civ's orders for a turn, applying one action
 //! - `production`: turn step 1, resources from owned deposits and cities
+//! - `turn`: `run_turn`, the seven steps of one turn
 //! - `upkeep`: turn step 6, units eat food; starving civs disband units
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
@@ -41,10 +44,13 @@ pub mod map;
 pub mod map_generation;
 pub mod market;
 pub mod match_start;
+pub mod match_state;
+pub mod orders;
 pub mod production;
 pub mod randomness;
 pub mod resources;
 pub mod rules;
+pub mod turn;
 pub mod units;
 pub mod upkeep;
 

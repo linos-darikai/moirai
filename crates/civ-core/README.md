@@ -20,12 +20,15 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `growth` | `grow_cities(&mut map, &mut civs, turn)`: turn step 3. Each city gains 1 + owned deposits in its border per turn; at 20 × size² it grows and claims the free tiles of its bigger border. If that would gain nothing, the border locks for good. Who grows first rotates each turn |
 | `actions` | `found_city(&mut map, &mut civ, site, turn)` (a Settler on a city site in or next to the civ's land) and `claim_tile(&mut map, &mut civ, tile)` (buy one free tile next to your land for 10 Food + 10 Gold). Checks first; nothing changes if one fails. Holds `ActionError`, the refusal reasons every action returns |
 | `aggregates` | `aggregate_map(&map)`: each civ's tiles, cities and owned deposits, counted in one pass per turn |
+| `orders` | `Action` (StartBuild, RushBuild, FoundCity, ClaimTile, AssignWorkers, Sell, Buy, Attack), `CivOrders` (up to 3 per turn), `ActionPhase` and `apply_action` |
 | `production` | `produce_resources(&aggregates, &mut civs)`: turn step 2. Deposits need Workers: each Worker works one owned deposit for 2 a turn (focus resource first, then spread evenly; `worked_deposits`). Each city adds 2 Food, 1 Ore, 1 Gold and 1 coin per size (docs/decisions/0007) |
+| `turn` | `run_turn(&mut state, &orders) -> TurnReport`: the seven steps of a turn (aggregates, produce, grow + finish builds, decide, resolve by phase in rotating civ order, upkeep, eliminate). Tests in `turn_tests.rs` include a 60-turn match played twice with identical fingerprints |
 | `upkeep` | `pay_upkeep(&mut civs)`: turn step 6. Each unit eats its food upkeep (Elite 2, others 1). A civ that can't pay disbands units in `DISBAND_ORDER` (Elite, Settler, Siege, Guard, Infantry) until it can; food never goes below 0 |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, `unit_stats(kind)` and the disband order, market, battle, scoring. Integer maths; percentages in basis points |
 | `map` | `TileCoordinate` (always on the map), `Tile` (3 plain bytes, read via `owner()`, `deposit()`, `is_city()`), `Map` (768 bytes, zero-copy ready) and `Map::fingerprint()` |
 | `map_generation` | `generate_map_into(seed, civ_count, &mut map)` / `generate_map(...)`: the top-left quarter comes from the seed and is mirrored into the other three, so every civ gets identical surroundings. 3 mirrored city sites per quarter (≥3 tiles apart; capitals are sites too). Cities at (3,3), (12,3), (3,12), (12,12); two-civ games use opposite corners. 30% of tiles get a deposit. |
 | `market` | The shared `Market` (12 plain bytes of supply). `price = base × 200 ÷ supply`, kept within 25%–400%. `sell` pays 95%, `buy` costs 105% (rounded up), both priced at the supply after the trade so a round trip always loses. Prices in coins × 10_000. Tests in `market_tests.rs` |
+| `match_state` | `MatchState` (1,264 plain bytes: seed, turn, market, 4 civs, map), so the program can keep a whole match in one zero-copy account. `MatchState::new(seed, civ_count)` / `start_into`, `is_finished()`, `fingerprint()` |
 | `match_start` | `start_match(seed, &mut map, &mut civs)`: turn 0. Generates the map and gives each civ its size 1 capital on its spawn tile with a radius 2 border, so map and civs always agree |
 
 On-chain rules this crate follows (details in docs/decisions/0004): plain-bytes `Pod` state so the
@@ -47,5 +50,5 @@ cargo run -p civ-cli -- 42 4     # print the map for seed byte 42 with 4 civs
 
 ## Where to start reading
 
-`src/lib.rs`, then `map.rs` and `map_generation.rs`. The determinism rules every change must
+`src/lib.rs`, then `turn.rs` (one whole turn, step by step), then the module each step calls. The determinism rules every change must
 follow are in CLAUDE.md section 6.
