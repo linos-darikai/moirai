@@ -11,3 +11,7 @@ pub const ANCHOR_DISCRIMINATOR_SIZE: usize = 8;
 /// `#[constant]` also exports the value into the IDL, so the app can read the same seed.
 #[constant]
 pub const COUNTER_SEED: &[u8] = b"counter";
+
+/// Seed for the Phase 0 VRF spike RandomSeed PDA: `["random_seed", authority]`.
+#[constant]
+pub const RANDOM_SEED_SEED: &[u8] = b"random_seed";

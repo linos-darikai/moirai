@@ -9,4 +9,8 @@ use anchor_lang::prelude::*;
 pub enum ErrorCode {
     #[msg("The counter cannot go any higher")]
     CounterOverflow,
+    #[msg("Randomness has already been requested or delivered for this seed")]
+    SeedAlreadyRequested,
+    #[msg("This seed is not waiting for randomness (it was never requested, or already filled)")]
+    SeedNotRequested,
 }

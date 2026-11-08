@@ -177,7 +177,7 @@ Deploying is covered in the Devnet section below.
 
 | | |
 | --- | --- |
-| Program ID | `GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc` (deployed 2026-11-08: hello-world Counter) |
+| Program ID | `GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc` (hello-world Counter + Phase 0 MagicBlock spikes, upgraded 2026-11-08) |
 | Cluster | devnet only (never mainnet) |
 | RPC we use | `https://rpc.magicblock.app/devnet` |
 | Explorer | [program on Solana Explorer](https://explorer.solana.com/address/GPdm56hssFExZrtGspZprjbfecXbRKYtAJGQ4X1ysNkc?cluster=devnet) |
@@ -226,3 +226,24 @@ solana program close --buffers --url https://rpc.magicblock.app/devnet
 ```
 
 Then run the deploy again.
+
+## Phase 0 spikes: MagicBlock Ephemeral Rollup + VRF
+
+Both passed on devnet (2026-11-08) with Anchor 1.0.2 and `ephemeral-rollups-sdk` 0.16.2.
+
+```sh
+pnpm spike:magicblock     # runs tests/devnet/magicblock-spike.ts against devnet with your CLI wallet
+```
+
+| Step | Measured |
+| --- | --- |
+| Delegate an account to the rollup (base layer) | ~1.3 s, router sees it +0.6 s |
+| Transaction inside the rollup (`increment`) | ~0.37 s, fee 0 |
+| Commit + undelegate, visible again on Solana | ~0.4 s + 2.4 s |
+| VRF request (base layer) → oracle callback | ~1.2 s + 1.3 s |
+
+So 60 turns in the rollup take roughly 25 seconds and cost nothing in fees; one VRF seed per match
+arrives in about a second. The script spends a tiny amount of devnet SOL (~0.006 on the first run).
+
+Endpoints: base `https://rpc.magicblock.app/devnet`, router `https://devnet-router.magicblock.app/`,
+rollup `https://devnet-eu.magicblock.app/` (override with `ER_RPC=...`).

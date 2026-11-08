@@ -24,6 +24,9 @@ custom-panic = []
 # "=" pins exactly 1.0.2. A plain "1.0.2" means "1.0.2 or newer 1.x", which resolved to 1.2.2.
 # Must match the Anchor CLI and @anchor-lang/core. See docs/decisions/0001-toolchain.md.
 anchor-lang = "=1.0.2"
+# MagicBlock Ephemeral Rollups + VRF. 0.16.2 is the version every MagicBlock Anchor 1.0.2 example
+# pins; "anchor" = Anchor 1.x support, "vrf" = verifiable randomness. See 0001-toolchain.md.
+ephemeral-rollups-sdk = { version = "=0.16.2", features = ["anchor", "vrf"] }
 
 
 [lints.rust]
