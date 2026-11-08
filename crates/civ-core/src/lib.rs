@@ -13,6 +13,7 @@
 //! - `randomness`: deterministic random numbers from the match seed
 //! - `resources`: Food / Ore / Gold and a civ's stock
 //! - `units`: the four unit kinds and unit counts
+//! - `builds`: one build per city, paid up front; rushing with coins; turn step 3 finishes builds
 //! - `city`: one city of a civ (size, growth, capital flag)
 //! - `civ`: one player's civilisation, with up to 8 cities
 //! - `map`: the 16 x 16 grid, tiles and coordinates
@@ -30,6 +31,7 @@ pub mod aggregates;
 pub mod attack;
 pub mod battle;
 pub mod borders;
+pub mod builds;
 pub mod city;
 pub mod civ;
 pub mod conquest;

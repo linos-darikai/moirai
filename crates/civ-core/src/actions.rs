@@ -3,14 +3,14 @@
 //! (docs/decisions/0006, section 6). Each function checks everything first and changes nothing
 //! when a check fails, so a refused action costs nothing.
 //!
-//! Here: `build_unit` and `found_city`. `attack` is in attack.rs. Trades and `claim_tile` come in
-//! later steps.
+//! Here: `found_city`, and the `ActionError` every action returns. Building units is in builds.rs,
+//! `attack` in attack.rs. Trades and `claim_tile` come in later steps.
 
 use crate::borders::claim_unowned_tiles_within;
 use crate::city::{City, STARTING_CITY_SIZE};
 use crate::civ::Civ;
 use crate::map::{Map, TileCoordinate};
-use crate::rules::{border_radius, unit_stats, ELITES_PER_CITY_SIZE};
+use crate::rules::border_radius;
 use crate::units::UnitKind;
 
 /// Why an action was refused. Like a TypeScript union of error strings, but checked by the
@@ -19,8 +19,12 @@ use crate::units::UnitKind;
 pub enum ActionError {
     /// The civ has lost all its cities and can't act.
     CivIsOut,
-    /// The civ doesn't hold enough resources for the cost.
+    /// The civ doesn't hold enough resources or coins for the cost.
     CannotAfford,
+    /// Every city is already building something (one build per city).
+    NoIdleCity,
+    /// `rush_build` was asked to rush a city that isn't building anything.
+    NothingToRush,
     /// The civ already fields one Elite per city size.
     EliteLimitReached,
     /// `found_city` needs a Settler and the civ has none.
@@ -39,35 +43,6 @@ pub enum ActionError {
     NotAnEnemyTile,
     /// `attack` needs at least one fighting unit (Settlers and Workers don't fight).
     NoArmy,
-}
-
-/// Builds one unit of `kind`, paying its cost from the civ's stock.
-///
-/// Checks: civ is alive, the Elite limit (one per city size), the civ can afford the cost.
-/// Effects: takes the cost from the stock, adds one unit.
-pub fn build_unit(civ: &mut Civ, kind: UnitKind) -> Result<(), ActionError> {
-    // Step 1: checks
-    if !civ.is_alive() {
-        return Err(ActionError::CivIsOut);
-    }
-    if kind == UnitKind::Elite && has_reached_elite_limit(civ) {
-        return Err(ActionError::EliteLimitReached);
-    }
-    let cost = unit_stats(kind).cost;
-    if !civ.resources.can_afford(&cost) {
-        return Err(ActionError::CannotAfford);
-    }
-
-    // Step 2: pay and build
-    civ.resources.subtract(&cost);
-    civ.units.add(kind, 1);
-    Ok(())
-}
-
-/// True if the civ already fields as many Elites as its city sizes allow.
-fn has_reached_elite_limit(civ: &Civ) -> bool {
-    let elite_limit = civ.total_city_size().saturating_mul(ELITES_PER_CITY_SIZE);
-    u32::from(civ.units.count(UnitKind::Elite)) >= elite_limit
 }
 
 /// Uses one Settler to found a size 1 city on `site`, which then claims its border.
@@ -175,41 +150,6 @@ mod tests {
         let mut civ = rich_civ();
         civ.units.add(UnitKind::Settler, 1);
         civ
-    }
-
-    #[test]
-    fn building_a_unit_pays_its_cost() {
-        let mut civ = rich_civ();
-
-        let result = build_unit(&mut civ, UnitKind::Siege);
-
-        assert_eq!(result, Ok(()));
-        assert_eq!(civ.units.count(UnitKind::Siege), 1);
-        assert_eq!(civ.resources.ore, 1_000 - 10);
-        assert_eq!(civ.resources.gold, 1_000 - 10);
-    }
-
-    #[test]
-    fn a_civ_that_cannot_afford_a_unit_keeps_its_stock() {
-        let mut civ = Civ::new(CivId(0), coordinate(3, 3));
-        civ.resources.gold = 39;
-
-        let result = build_unit(&mut civ, UnitKind::Elite);
-
-        assert_eq!(result, Err(ActionError::CannotAfford));
-        assert_eq!(civ.resources.gold, 39);
-        assert_eq!(civ.units.count(UnitKind::Elite), 0);
-    }
-
-    #[test]
-    fn a_size_one_civ_can_field_only_one_elite() {
-        let mut civ = rich_civ();
-
-        let first = build_unit(&mut civ, UnitKind::Elite);
-        let second = build_unit(&mut civ, UnitKind::Elite);
-
-        assert_eq!(first, Ok(()));
-        assert_eq!(second, Err(ActionError::EliteLimitReached));
     }
 
     #[test]

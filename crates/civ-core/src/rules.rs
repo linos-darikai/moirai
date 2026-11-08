@@ -139,6 +139,9 @@ pub fn unit_stats(kind: UnitKind) -> UnitStats {
     }
 }
 
+/// Rushing a build costs this many times the unit's coin cost, per turn left (docs/decisions/0007).
+pub const RUSH_COINS_PER_TURN_MULTIPLIER: u32 = 2;
+
 /// A civ may field one Elite per city size it owns in total (Elites being built count too).
 pub const ELITES_PER_CITY_SIZE: u32 = 1;
 
