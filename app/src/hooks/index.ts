@@ -10,6 +10,8 @@ export { useCreateLobby, useLiveMatches, useLobbies, useLobby, useLobbyAction, u
 export type { LobbyActionRequest } from "./useLobbies";
 export { useBoardAtTurn, useStartingMap } from "./useMap";
 export { useNowSeconds } from "./useNowSeconds";
+export { useSimulation } from "./useSimulation";
+export type { SimulationRequest } from "./useSimulation";
 export type { BoardAtTurn } from "./useMap";
 export { useMatch, useMatchResults, useReplayMoments } from "./useMatches";
 export { useLeaderboard, useProfile, useTopPlayers } from "./usePlayers";

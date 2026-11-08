@@ -2215,6 +2215,15 @@ export type NamespacePoliciesTranslation = {
 		 */
 		ruleNeverFired: RequiredParams<'action' | 'rule'>
 		/**
+		 * P​l​a​y​e​d​ ​b​y​ ​c​i​v​-​c​o​r​e​ ​i​n​ ​y​o​u​r​ ​b​r​o​w​s​e​r​:​ ​t​h​e​ ​s​a​m​e​ ​r​u​l​e​s​,​ ​a​n​d​ ​t​h​e​ ​s​a​m​e​ ​r​e​s​u​l​t​,​ ​a​s​ ​t​h​e​ ​p​r​o​g​r​a​m​ ​o​n​ ​c​h​a​i​n​ ​(​f​i​n​g​e​r​p​r​i​n​t​ ​{​f​i​n​g​e​r​p​r​i​n​t​}​)​.
+		 * @param {string} fingerprint
+		 */
+		realNote: RequiredParams<'fingerprint'>
+		/**
+		 * P​l​a​y​i​n​g​ ​t​h​e​ ​m​a​t​c​h​…
+		 */
+		running: string
+		/**
 		 * B​a​c​k​ ​t​o​ ​t​h​e​ ​e​d​i​t​o​r
 		 */
 		backToEditor: string
@@ -4631,6 +4640,14 @@ export type TranslationFunctions = {
 			 * Rule {rule} {action} never fired
 			 */
 			ruleNeverFired: (arg: { action: string, rule: number }) => LocalizedString
+			/**
+			 * Played by civ-core in your browser: the same rules, and the same result, as the program on chain (fingerprint {fingerprint}).
+			 */
+			realNote: (arg: { fingerprint: string }) => LocalizedString
+			/**
+			 * Playing the match…
+			 */
+			running: () => LocalizedString
 			/**
 			 * Back to the editor
 			 */

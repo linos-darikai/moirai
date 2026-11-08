@@ -25,3 +25,28 @@ export type BoardState = {
   tiles: BoardTile[];
   tilesByCiv: Record<CivIndex, number>;
 };
+
+/** One civ's numbers at one moment of a simulated match. */
+export type SimulatedCiv = {
+  isAlive: boolean;
+  tiles: number;
+  cities: number;
+  /** Fighting units. */
+  army: number;
+  food: number;
+  ore: number;
+  gold: number;
+  coins: number;
+  /** Coins plus resources at that moment's market prices. */
+  wealth: number;
+};
+
+/** A whole match simulated in the browser by civ-core (the same rules as the chain). */
+export type SimulationResult = {
+  /** `turns[0]` is the start; `turns[t]` is after t turns. */
+  turns: { tiles: MapTile[]; civs: SimulatedCiv[] }[];
+  /** How many turns each of civ 0's rules acted, rule 1 first. */
+  yourRuleCounts: number[];
+  /** The final state's fingerprint (the same number the chain would reach). */
+  fingerprint: string;
+};

@@ -9,7 +9,7 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { beforeAll, describe, expect, it } from "vitest";
-import { compilePolicy, initSync, mapFingerprint, matchFingerprint } from "civ-wasm";
+import { compilePolicy, initSync, mapFingerprint, matchFingerprint, simulateMatch } from "civ-wasm";
 
 const NATIVE_FINGERPRINT_FOR_SEED_42 = "14264378160424497879";
 const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = "8239992931703824454";
@@ -42,6 +42,17 @@ describe("civ-core WASM determinism", () => {
     const fingerprint = matchFingerprint(seed, sampleBots());
 
     expect(fingerprint).toBe(NATIVE_MATCH_FINGERPRINT_FOR_SEED_42);
+  });
+
+  it("simulates the sample match turn by turn and ends in the native state", () => {
+    const seed = new Uint8Array(32).fill(42);
+
+    const simulation = simulateMatch(seed, sampleBots());
+
+    expect(simulation.snapshotCount()).toBe(61);
+    expect(simulation.mapTiles(60)).toHaveLength(768);
+    expect(simulation.fingerprint()).toBe(NATIVE_MATCH_FINGERPRINT_FOR_SEED_42);
+    simulation.free();
   });
 
   it("compiles a policy and reports problems with their line", () => {

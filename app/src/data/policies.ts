@@ -43,9 +43,9 @@ export const SAMPLE_DRAFTS: readonly PolicyDraft[] = [
   { id: "night-shepherd", name: "night-shepherd", yaml: TEMPLATE_YAML.turtle.replace("name: turtle", "name: night-shepherd"), matches: 3, wins: 1 },
 ];
 
-/** Simulator opponents: the sample bots and their play style. */
+/** Simulator opponents: the sample bots, their play style and which template they play. */
 export const SAMPLE_OPPONENTS = [
-  { id: "red-raider", civIndex: 1, style: "aggressive" },
-  { id: "silk-trader", civIndex: 2, style: "economic" },
-  { id: "wide-expander", civIndex: 3, style: "expansion" },
+  { id: "red-raider", civIndex: 1, style: "aggressive", template: "raider" },
+  { id: "silk-trader", civIndex: 2, style: "economic", template: "trader" },
+  { id: "wide-expander", civIndex: 3, style: "expansion", template: "expander" },
 ] as const;

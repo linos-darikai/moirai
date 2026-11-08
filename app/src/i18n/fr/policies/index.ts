@@ -97,6 +97,8 @@ const fr_policies = {
     rulesDid: "Ce qu'ont fait vos règles",
     ruleFired: "La règle {rule} {action} s'est déclenchée {count} {{count:fois|fois}}",
     ruleNeverFired: "La règle {rule} {action} ne s'est jamais déclenchée",
+    realNote: "Jouée par civ-core dans votre navigateur : les mêmes règles, et le même résultat, que le programme on-chain (empreinte {fingerprint}).",
+    running: "Partie en cours…",
     backToEditor: "Retour à l'éditeur",
   },
 } satisfies NamespacePoliciesTranslation;

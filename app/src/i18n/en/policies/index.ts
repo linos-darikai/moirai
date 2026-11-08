@@ -97,6 +97,8 @@ const en_policies = {
     rulesDid: "What your rules did",
     ruleFired: "Rule {rule:number} {action:string} fired {count:number} {{count:time|times}}",
     ruleNeverFired: "Rule {rule:number} {action:string} never fired",
+    realNote: "Played by civ-core in your browser: the same rules, and the same result, as the program on chain (fingerprint {fingerprint:string}).",
+    running: "Playing the match…",
     backToEditor: "Back to the editor",
   },
 } satisfies BaseTranslation;
