@@ -3,9 +3,10 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
-use crate::constants::VAULT_SEED;
+use crate::constants::{ANCHOR_DISCRIMINATOR_SIZE, PROFILE_SEED, VAULT_SEED};
+use crate::elo::STARTING_ELO;
 use crate::errors::ErrorCode;
-use crate::state::{Match, MatchStatus};
+use crate::state::{Match, MatchStatus, Profile};
 
 #[derive(Accounts)]
 pub struct JoinMatch<'info> {
@@ -21,13 +22,25 @@ pub struct JoinMatch<'info> {
     #[account(mut, seeds = [VAULT_SEED, match_account.key().as_ref()], bump)]
     pub vault: SystemAccount<'info>,
 
+    /// The player's Profile at `["profile", player]`. `init_if_needed` creates it (paid by the
+    /// player) the first time this wallet joins any match, and just loads it after that.
+    #[account(
+        init_if_needed,
+        payer = player,
+        space = ANCHOR_DISCRIMINATOR_SIZE + Profile::INIT_SPACE,
+        seeds = [PROFILE_SEED, player.key().as_ref()],
+        bump,
+    )]
+    pub profile: Account<'info, Profile>,
+
     pub system_program: Program<'info, System>,
 }
 
 /// Join an open match: pay the entry fee into the vault and take the next seat.
 ///
 /// Checks: match is Open, join deadline not passed, match not full, player not already joined.
-/// Effects: transfers the entry fee to the vault, records the player, increments player count.
+/// Effects: creates the player's Profile if this is their first match, transfers the entry fee to
+/// the vault, records the player, increments player count.
 pub fn handle_join_match(context: Context<JoinMatch>) -> Result<()> {
     let player_key = context.accounts.player.key();
 
@@ -47,7 +60,16 @@ pub fn handle_join_match(context: Context<JoinMatch>) -> Result<()> {
         lobby.entry_fee_lamports
     };
 
-    // Step 2: move the entry fee into the vault.
+    // Step 2: a brand-new Profile starts at the starting rating. (`wallet` is still empty only on
+    // the account `init_if_needed` just created.)
+    let profile = &mut context.accounts.profile;
+    if profile.wallet == Pubkey::default() {
+        profile.wallet = player_key;
+        profile.elo = STARTING_ELO;
+        profile.bump = context.bumps.profile;
+    }
+
+    // Step 3: move the entry fee into the vault.
     if entry_fee > 0 {
         let payment = Transfer {
             from: context.accounts.player.to_account_info(),
@@ -59,7 +81,7 @@ pub fn handle_join_match(context: Context<JoinMatch>) -> Result<()> {
         )?;
     }
 
-    // Step 3: take the next seat.
+    // Step 4: take the next seat.
     let mut lobby = context.accounts.match_account.load_mut()?;
     let seat = usize::from(lobby.player_count);
     let slot = lobby.players.get_mut(seat).ok_or(ErrorCode::MatchFull)?;

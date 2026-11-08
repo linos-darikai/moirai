@@ -69,4 +69,8 @@ pub enum ErrorCode {
     MatchOver,
     #[msg("The crank reward is too large to compute")]
     RewardOverflow,
+    #[msg("This match isn't finished: its last turn hasn't been played")]
+    MatchNotFinished,
+    #[msg("Pass each player's wallet and Profile, in seat order, as remaining accounts")]
+    WrongSettleAccounts,
 }

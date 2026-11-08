@@ -12,7 +12,8 @@
 //! `fulfill_match_seed` (the oracle's callback; builds turn 0) and `start_match_local_test`
 //! (local validator only).
 //!
-//! Phase 2 game: `advance_turn` plays one turn (anyone may call it; pays a crank reward).
+//! Phase 2 game: `advance_turn` plays one turn (anyone may call it; pays a crank reward);
+//! `settle_match` scores a finished match, pays the pot, updates Profiles and the Top 10.
 
 // clippy flags code that `#[program]` generates once `#[ephemeral]` is added (not our code; it is
 // emitted at crate level, so a module-level allow doesn't reach it). Only this one lint is off.
@@ -21,9 +22,11 @@
 pub mod commitment;
 pub mod constants;
 pub mod crank;
+pub mod elo;
 pub mod errors;
 pub mod game_start;
 pub mod instructions;
+pub mod payout;
 pub mod state;
 
 use anchor_lang::prelude::*;
@@ -145,5 +148,11 @@ pub mod civ {
     /// Play the next turn of a running match; the caller gets the crank reward.
     pub fn advance_turn(context: Context<AdvanceTurn>) -> Result<()> {
         handle_advance_turn(context)
+    }
+
+    /// Settle a finished match: pay the pot, update Profiles and the Top 10, close the match. Pass
+    /// each player's wallet and Profile, in seat order, as remaining accounts.
+    pub fn settle_match<'info>(context: Context<'info, SettleMatch<'info>>) -> Result<()> {
+        handle_settle_match(context)
     }
 }

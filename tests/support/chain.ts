@@ -5,7 +5,7 @@
 import * as anchor from "@anchor-lang/core";
 import { Program } from "@anchor-lang/core";
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import idl from "../../target/idl/civ.json";
 import type { Civ } from "../../target/types/civ";
 
@@ -101,10 +101,12 @@ export type Deadlines = {
 };
 
 /** Opens a lobby. Joining stays open `joinSeconds`, committing 600 s more, revealing 600 s more. */
+/** `payout`: 0 winner takes all, 1 top three. `winMetric`: 0 Territory, 1 Wealth, 2 Conquest, 3 Score. */
 export async function createLobby(
   maxPlayers: number,
   joinSeconds = 600,
-  winMetric = 0
+  winMetric = 0,
+  payout = 0
 ) {
   const matchId = new anchor.BN(nextMatchId++);
   const now = await chainNow();
@@ -118,7 +120,7 @@ export async function createLobby(
       entryFeeLamports: new anchor.BN(ENTRY_FEE),
       maxPlayers,
       winMetric,
-      payout: 0,
+      payout,
       joinDeadline: new anchor.BN(deadlines.joinDeadline),
       commitDeadline: new anchor.BN(deadlines.commitDeadline),
       revealDeadline: new anchor.BN(deadlines.revealDeadline),
@@ -176,4 +178,69 @@ export function fingerprint(bytes: Uint8Array): bigint {
     hash = (hash * prime) & mask;
   }
   return hash;
+}
+
+/** The four sample bots, in the seat order of the native gate test. */
+export const SAMPLE_BOTS = ["turtle", "raider", "trader", "expander"];
+/** The seed byte the sample match starts from. */
+export const SAMPLE_SEED = Array.from({ length: 32 }, () => 42);
+
+/** A started 4-player match whose players joined, committed and revealed the sample bots in seat
+ * order. Needs a local-testing build (it starts with `start_match_local_test`). */
+export async function startedSampleMatch(payout = 0, winMetric = 0) {
+  const players: KeypairType[] = [];
+  for (const _ of SAMPLE_BOTS) players.push(await fundedPlayer());
+  const lobby = await createLobby(SAMPLE_BOTS.length, 600, winMetric, payout);
+  const policies = SAMPLE_BOTS.map(compiledBot);
+  const salts = SAMPLE_BOTS.map(() => randomBytes(32));
+
+  for (const player of players) await join(lobby.match, player);
+  for (const [seat, player] of players.entries()) {
+    await program.methods
+      .commitPolicy(commitmentOf(policies[seat], salts[seat]))
+      .accounts({ player: player.publicKey, matchAccount: lobby.match })
+      .signers([player])
+      .rpc();
+  }
+  for (const [seat, player] of players.entries()) {
+    await program.methods
+      .revealPolicy(policies[seat], Array.from(salts[seat]))
+      .accounts({ player: player.publicKey, matchAccount: lobby.match })
+      .signers([player])
+      .rpc();
+  }
+  await program.methods
+    .startMatchLocalTest(SAMPLE_SEED)
+    .accounts({ matchAccount: lobby.match })
+    .rpc();
+  return { ...lobby, players };
+}
+
+/** The CU limit clients ask for with advance_turn: about 4.5 × the heaviest turn measured. */
+export const ADVANCE_TURN_COMPUTE_UNITS = 400_000;
+
+/** Sends advance_turn and returns the compute units it used. */
+export async function advance(match: PublicKeyType): Promise<number> {
+  const signature = await program.methods
+    .advanceTurn()
+    .accounts({ matchAccount: match })
+    .preInstructions([
+      anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: ADVANCE_TURN_COMPUTE_UNITS,
+      }),
+    ])
+    .rpc();
+  const transaction = await connection.getTransaction(signature, {
+    commitment: "confirmed",
+    maxSupportedTransactionVersion: 0,
+  });
+  return transaction?.meta?.computeUnitsConsumed ?? -1;
+}
+
+/** The Profile address of a wallet. */
+export function profileAddress(wallet: PublicKeyType): PublicKeyType {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("profile"), wallet.toBuffer()],
+    program.programId
+  )[0];
 }

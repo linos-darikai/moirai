@@ -40,3 +40,11 @@ const _: () = assert!(POLICY_SLOT_BYTES == MAX_POLICY_BYTES);
 /// If the VRF oracle hasn't delivered the map seed this many seconds after it was asked (it
 /// normally takes about 1.3 s, docs/decisions/0003), anyone may ask again with `retry_match_seed`.
 pub const SEED_REQUEST_TIMEOUT_SECONDS: i64 = 120;
+
+/// Seed for a wallet's Profile PDA: `["profile", wallet]`.
+#[constant]
+pub const PROFILE_SEED: &[u8] = b"profile";
+
+/// Seed for the single TopTen PDA: `["top10"]`.
+#[constant]
+pub const TOP_TEN_SEED: &[u8] = b"top10";

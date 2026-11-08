@@ -6,87 +6,31 @@
 
 import * as anchor from "@anchor-lang/core";
 import { expect } from "chai";
-import { randomBytes } from "node:crypto";
 import {
+  ADVANCE_TURN_COMPUTE_UNITS,
   ENTRY_FEE,
-  KeypairType,
   PublicKeyType,
-  commitmentOf,
-  compiledBot,
+  advance,
   connection,
   createLobby,
   failure,
   fingerprint,
-  fundedPlayer,
-  join,
   program,
+  startedSampleMatch,
 } from "./support/chain";
 
-const { ComputeBudgetProgram } = anchor.web3;
-
-/** The CU limit clients ask for: about 4.5 × the heaviest turn measured (docs/decisions/0009). */
-const ADVANCE_TURN_COMPUTE_UNITS = 400_000;
 /** Final fingerprint of the sample match for seed 42 (crates/civ-core/tests/sample_bots_match.rs). */
 const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 13_451_523_736_825_787_217n;
-const SAMPLE_BOTS = ["turtle", "raider", "trader", "expander"];
 const TOTAL_TURNS = 60;
 /** 4 × 0.1 SOL pot × 1.5% ÷ 60 turns (programs/civ/src/crank.rs). */
 const CRANK_REWARD = (4 * ENTRY_FEE * 150) / 10_000 / TOTAL_TURNS;
-
-/** A started 4-player match whose players revealed the sample bots, in join order. */
-async function startedSampleMatch(): Promise<PublicKeyType> {
-  const players: KeypairType[] = [];
-  for (const _ of SAMPLE_BOTS) players.push(await fundedPlayer());
-  const lobby = await createLobby(4);
-  const policies = SAMPLE_BOTS.map(compiledBot);
-  const salts = SAMPLE_BOTS.map(() => randomBytes(32));
-
-  for (const player of players) await join(lobby.match, player);
-  for (const [seat, player] of players.entries()) {
-    await program.methods
-      .commitPolicy(commitmentOf(policies[seat], salts[seat]))
-      .accounts({ player: player.publicKey, matchAccount: lobby.match })
-      .signers([player])
-      .rpc();
-  }
-  for (const [seat, player] of players.entries()) {
-    await program.methods
-      .revealPolicy(policies[seat], Array.from(salts[seat]))
-      .accounts({ player: player.publicKey, matchAccount: lobby.match })
-      .signers([player])
-      .rpc();
-  }
-  await program.methods
-    .startMatchLocalTest(Array.from({ length: 32 }, () => 42))
-    .accounts({ matchAccount: lobby.match })
-    .rpc();
-  return lobby.match;
-}
-
-/** Sends advance_turn and returns the compute units it used. */
-async function advance(match: PublicKeyType): Promise<number> {
-  const signature = await program.methods
-    .advanceTurn()
-    .accounts({ matchAccount: match })
-    .preInstructions([
-      ComputeBudgetProgram.setComputeUnitLimit({
-        units: ADVANCE_TURN_COMPUTE_UNITS,
-      }),
-    ])
-    .rpc();
-  const transaction = await connection.getTransaction(signature, {
-    commitment: "confirmed",
-    maxSupportedTransactionVersion: 0,
-  });
-  return transaction?.meta?.computeUnitsConsumed ?? -1;
-}
 
 describe("advance turn", () => {
   let match: PublicKeyType;
   const unitsPerTurn: number[] = [];
 
   before(async () => {
-    match = await startedSampleMatch();
+    match = (await startedSampleMatch()).match;
   });
 
   it("plays 60 turns, each well within the compute budget, paying the crank every turn", async () => {

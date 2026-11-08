@@ -192,6 +192,11 @@ impl Match {
         (0..seats).all(|seat| self.has_committed(seat))
     }
 
+    /// The game as a read-only `MatchState`. `None` if the bytes aren't 4-byte aligned.
+    pub fn game(&self) -> Option<&MatchState> {
+        bytemuck::try_from_bytes::<MatchState>(&self.match_state).ok()
+    }
+
     /// The game as a `MatchState`, in place. `None` if the bytes aren't 4-byte aligned (Solana
     /// aligns account data to 8, so this is checked rather than assumed).
     pub fn game_mut(&mut self) -> Option<&mut MatchState> {
