@@ -22,6 +22,8 @@ const fr_rules = {
   cities: {
     title: "Villes et frontières",
     capital: "Vous démarrez avec une ville, votre capitale, de taille 1. Vous pouvez posséder jusqu'à {max} villes.",
+    start:
+      "Chaque civilisation démarre avec la même réserve : {food} Nourriture, {ore} Minerai, {gold} Or, {coins} pièces et {workers} Ouvriers.",
     radius:
       "Une ville possède toutes les cases libres à sa portée : taille + 1 cases (en pas droits, sans diagonales). Grandir ne prend jamais une terre qui appartient déjà à une autre civilisation.",
     growth:
@@ -37,34 +39,42 @@ const fr_rules = {
   },
   economy: {
     title: "Économie",
-    deposits: "Chaque gisement que vous possédez produit {amount} de sa ressource par tour.",
+    deposits:
+      "Un gisement que vous possédez produit {amount} de sa ressource par tour, mais seulement tant qu'un Ouvrier l'exploite. Chaque Ouvrier exploite un gisement. Les Ouvriers vont d'abord vers la ressource choisie par assign_workers, puis se répartissent également.",
+    coins:
+      "Les pièces paient les unités et les achats au marché. Chaque ville rapporte {coins} pièce par taille à chaque tour, et vendre au marché en rapporte davantage.",
     cityIncome: "Chaque ville produit {food} Nourriture, {ore} Minerai et {gold} Or par taille et par tour.",
     upkeep:
       "Les unités mangent de la Nourriture à chaque tour. Si vous ne pouvez pas les nourrir, vos unités les plus chères sont dissoutes jusqu'à ce que votre Nourriture repasse au-dessus de zéro.",
     claim: "claim_tile achète une case libre voisine de votre terre pour {food} Nourriture et {gold} Or.",
     market:
-      "Un seul marché est partagé par tous. Le prix d'une ressource monte quand elle se raréfie et baisse quand elle abonde, entre {min} % et {max} % de son prix de base. Chaque échange perd {spread} % dans l'écart : acheter et revendre en boucle ne rapporte jamais.",
-    basePrices: "Prix de base, en Or : Nourriture {food}, Minerai {ore}, Or {gold}.",
+      "Un seul marché est partagé par tous : on y vend des ressources contre des pièces et on les achète avec des pièces. Le prix d'une ressource monte quand elle se raréfie et baisse quand elle abonde, entre {min} % et {max} % de son prix de base. Un échange se paie au prix qu'il laisse derrière lui et perd {spread} % dans l'écart : acheter et revendre en boucle ne rapporte jamais.",
+    basePrices: "Prix de base, en pièces : Nourriture {food}, Minerai {ore}, Or {gold}.",
   },
   units: {
     title: "Unités",
     intro:
       "Les unités sont comptées par civilisation (elles n'occupent pas de case dans cette version). Chacune est forte contre une autre, comme pierre-feuille-ciseaux : un duel favorable compte ×{bonus}.",
     settler: "Colon",
+    worker: "Ouvrier",
     unit: "Unité",
     attack: "Attaque",
     defence: "Défense",
     cost: "Coût",
+    coins: "Pièces",
+    buildTurns: "Tours de construction",
     upkeep: "Nourriture par tour",
     strongAgainst: "Forte contre",
     walls: "les remparts",
     all: "tout (×{bonus})",
     none: "—",
-    eliteCap: "Vous pouvez aligner une Élite par taille de ville que vous possédez.",
+    eliteCap: "Vous pouvez aligner une Élite par taille de ville que vous possédez, en comptant celles en construction.",
+    building:
+      "Chaque ville construit une unité à la fois. Vous payez au lancement, et l'unité rejoint votre armée quand ses tours de construction sont écoulés. rush termine une construction tout de suite pour {multiplier} × ses pièces par tour restant : plus c'est rapide, plus c'est cher.",
   },
   warfare: {
     title: "La guerre",
-    attack: "attack envoie toute votre armée (tout sauf les colons) contre une case ou une ville ennemie voisine de votre terre.",
+    attack: "attack envoie toute votre armée (tout sauf les Colons et les Ouvriers) contre une case ou une ville ennemie voisine de votre terre.",
     defenders: "L'armée du défenseur est répartie également entre ses villes et ses frontières : chaque cible est tenue par sa part de chaque type d'unité.",
     strength:
       "L'attaque est l'attaque de vos unités, bonus de duel compris. La défense est celle des défenseurs plus les remparts : {walls} par taille de ville, +{capital} % pour une capitale. Le siège compte ×{siege} contre les remparts. Chaque camp tire jusqu'à ±{roll} %.",
@@ -78,10 +88,10 @@ const fr_rules = {
     title: "Un tour, étape par étape",
     steps: {
       count: "On compte ce que chacun possède.",
-      produce: "Les gisements et les villes produisent des ressources.",
-      grow: "Les villes grandissent et leurs frontières avancent.",
+      produce: "Les gisements exploités et les villes produisent des ressources et des pièces.",
+      grow: "Les villes grandissent, leurs frontières avancent et les unités terminées rejoignent les armées.",
       decide: "Chaque stratégie décide à partir du même instantané du monde. Seules les {count} premières règles vraies agissent.",
-      resolve: "Toutes les actions ont lieu ensemble : construire, fonder des villes, acheter des cases, échanger, puis attaquer. L'ordre de passage tourne à chaque tour.",
+      resolve: "Toutes les actions ont lieu ensemble : construire et accélérer, fonder des villes, acheter des cases, affecter les ouvriers, échanger, puis attaquer. L'ordre de passage tourne à chaque tour.",
       upkeep: "Les unités mangent. Celles qui ne sont pas nourries sont dissoutes.",
       eliminate: "Les civilisations sans ville sont retirées.",
     },
@@ -91,7 +101,7 @@ const fr_rules = {
     metric: "Condition de victoire",
     winner: "Gagnant",
     territory: "Le plus de cases après le dernier tour.",
-    wealth: "La plus grande valeur de toutes les ressources aux prix finaux du marché.",
+    wealth: "Le plus de pièces plus la valeur de toutes les ressources aux prix finaux du marché.",
     conquest: "La dernière civilisation debout ; s'il en reste plusieurs, celle qui a le plus de cases.",
     score: "Cases × {tiles} + richesse ÷ {wealth} + force de l'armée.",
   },

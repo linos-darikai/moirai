@@ -1,17 +1,22 @@
-// The game's rule numbers, shown on the Rules page. Source: docs/decisions/0006-game-rules-v2.md.
-// These must match crates/civ-core/src/rules.rs (a test will compare them once civ-core exposes
-// its rules through WASM). Percentages are whole percents here for display; civ-core stores bps.
+// The game's rule numbers, shown on the Rules page. Sources: docs/decisions/0006 (cities, war),
+// 0007 (coins, Workers, build time) and 0008 (starting stock). These must match
+// crates/civ-core/src/rules.rs. Percentages are whole percents here for display; civ-core stores
+// bps. Prices are in coins.
 
 import type { ResourceAmounts, UnitKind } from "../types/game";
 
-/** Units on the Rules page: the four fighting units plus the settler. */
-export type RulesUnitKind = UnitKind | "settler";
-export const RULES_UNIT_KINDS: readonly RulesUnitKind[] = ["infantry", "guard", "siege", "elite", "settler"];
+/** Units on the Rules page: the four fighting units plus the two that don't fight. */
+export type RulesUnitKind = UnitKind | "settler" | "worker";
+export const RULES_UNIT_KINDS: readonly RulesUnitKind[] = ["infantry", "guard", "siege", "elite", "settler", "worker"];
 
 export type UnitRule = {
   attack: number;
   defence: number;
   cost: ResourceAmounts;
+  /** Coins on top of `cost`. */
+  coins: number;
+  /** Turns a city spends building one. */
+  buildTurns: number;
   /** Food eaten per turn. */
   upkeep: number;
   /** Which units it gets the matchup bonus against ("all" for the elite, "walls" for siege). */
@@ -24,7 +29,12 @@ export const GAME_RULES = {
   maxCivs: 4,
   totalTurns: 60,
   depositChancePercent: 30,
-  depositYield: 1,
+  /** What every civ starts with. */
+  startingStock: { food: 30, ore: 10, gold: 10 } satisfies ResourceAmounts,
+  startingCoins: 20,
+  startingWorkers: 2,
+  /** A deposit produces this much per turn while a Worker works it (0 when unworked). */
+  workedDepositYield: 2,
   citySitesPerQuarter: 3,
   minSiteDistance: 3,
   maxCities: 8,
@@ -32,6 +42,9 @@ export const GAME_RULES = {
   /** Growth points needed to grow from size s: growthBase × s². */
   growthBase: 20,
   cityIncomePerSize: { food: 2, ore: 1, gold: 1 } satisfies ResourceAmounts,
+  coinIncomePerSize: 1,
+  /** Rushing a build costs this × the unit's coins × turns left. */
+  rushMultiplier: 2,
   claimTileCost: { food: 10, ore: 0, gold: 10 } satisfies ResourceAmounts,
   market: {
     targetSupply: 200,
@@ -51,11 +64,12 @@ export const GAME_RULES = {
   policy: { maxRules: 16, maxActiveRules: 3 },
   score: { tileWeight: 3, wealthDivisor: 10 },
   units: {
-    infantry: { attack: 3, defence: 2, cost: { food: 10, ore: 0, gold: 0 }, upkeep: 1, strongAgainst: ["siege"] },
-    guard: { attack: 2, defence: 5, cost: { food: 0, ore: 15, gold: 0 }, upkeep: 1, strongAgainst: ["infantry"] },
-    siege: { attack: 6, defence: 1, cost: { food: 0, ore: 10, gold: 10 }, upkeep: 1, strongAgainst: ["guard", "walls"] },
-    elite: { attack: 8, defence: 8, cost: { food: 0, ore: 0, gold: 40 }, upkeep: 2, strongAgainst: ["all"] },
-    settler: { attack: 0, defence: 1, cost: { food: 30, ore: 10, gold: 0 }, upkeep: 1, strongAgainst: [] },
+    infantry: { attack: 3, defence: 2, cost: { food: 10, ore: 0, gold: 0 }, coins: 5, buildTurns: 1, upkeep: 1, strongAgainst: ["siege"] },
+    guard: { attack: 2, defence: 5, cost: { food: 0, ore: 15, gold: 0 }, coins: 10, buildTurns: 2, upkeep: 1, strongAgainst: ["infantry"] },
+    siege: { attack: 6, defence: 1, cost: { food: 0, ore: 10, gold: 10 }, coins: 15, buildTurns: 3, upkeep: 1, strongAgainst: ["guard", "walls"] },
+    elite: { attack: 8, defence: 8, cost: { food: 0, ore: 0, gold: 40 }, coins: 40, buildTurns: 4, upkeep: 2, strongAgainst: ["all"] },
+    settler: { attack: 0, defence: 1, cost: { food: 30, ore: 10, gold: 0 }, coins: 20, buildTurns: 3, upkeep: 1, strongAgainst: [] },
+    worker: { attack: 0, defence: 1, cost: { food: 15, ore: 0, gold: 0 }, coins: 5, buildTurns: 2, upkeep: 1, strongAgainst: [] },
   } satisfies Record<RulesUnitKind, UnitRule>,
 } as const;
 

@@ -2070,6 +2070,15 @@ export type NamespaceRulesTranslation = {
 		 */
 		capital: RequiredParams<'max'>
 		/**
+		 * E​v​e​r​y​ ​c​i​v​ ​s​t​a​r​t​s​ ​w​i​t​h​ ​t​h​e​ ​s​a​m​e​ ​s​t​o​c​k​:​ ​{​f​o​o​d​}​ ​F​o​o​d​,​ ​{​o​r​e​}​ ​O​r​e​,​ ​{​g​o​l​d​}​ ​G​o​l​d​,​ ​{​c​o​i​n​s​}​ ​c​o​i​n​s​ ​a​n​d​ ​{​w​o​r​k​e​r​s​}​ ​W​o​r​k​e​r​s​.
+		 * @param {number} coins
+		 * @param {number} food
+		 * @param {number} gold
+		 * @param {number} ore
+		 * @param {number} workers
+		 */
+		start: RequiredParams<'coins' | 'food' | 'gold' | 'ore' | 'workers'>
+		/**
 		 * A​ ​c​i​t​y​ ​o​w​n​s​ ​e​v​e​r​y​ ​f​r​e​e​ ​t​i​l​e​ ​w​i​t​h​i​n​ ​i​t​s​ ​r​e​a​c​h​:​ ​s​i​z​e​ ​+​ ​1​ ​t​i​l​e​s​ ​a​w​a​y​ ​(​c​o​u​n​t​e​d​ ​i​n​ ​s​t​r​a​i​g​h​t​ ​s​t​e​p​s​,​ ​n​o​ ​d​i​a​g​o​n​a​l​s​)​.​ ​G​r​o​w​i​n​g​ ​n​e​v​e​r​ ​t​a​k​e​s​ ​l​a​n​d​ ​a​n​o​t​h​e​r​ ​c​i​v​ ​a​l​r​e​a​d​y​ ​o​w​n​s​.
 		 */
 		radius: string
@@ -2113,10 +2122,15 @@ export type NamespaceRulesTranslation = {
 		 */
 		title: string
 		/**
-		 * E​v​e​r​y​ ​d​e​p​o​s​i​t​ ​y​o​u​ ​o​w​n​ ​p​r​o​d​u​c​e​s​ ​{​a​m​o​u​n​t​}​ ​o​f​ ​i​t​s​ ​r​e​s​o​u​r​c​e​ ​p​e​r​ ​t​u​r​n​.
+		 * A​ ​d​e​p​o​s​i​t​ ​y​o​u​ ​o​w​n​ ​p​r​o​d​u​c​e​s​ ​{​a​m​o​u​n​t​}​ ​o​f​ ​i​t​s​ ​r​e​s​o​u​r​c​e​ ​p​e​r​ ​t​u​r​n​,​ ​b​u​t​ ​o​n​l​y​ ​w​h​i​l​e​ ​a​ ​W​o​r​k​e​r​ ​w​o​r​k​s​ ​i​t​.​ ​E​a​c​h​ ​W​o​r​k​e​r​ ​w​o​r​k​s​ ​o​n​e​ ​d​e​p​o​s​i​t​.​ ​W​o​r​k​e​r​s​ ​g​o​ ​t​o​ ​y​o​u​r​ ​a​s​s​i​g​n​_​w​o​r​k​e​r​s​ ​r​e​s​o​u​r​c​e​ ​f​i​r​s​t​,​ ​t​h​e​n​ ​s​p​r​e​a​d​ ​e​v​e​n​l​y​.
 		 * @param {number} amount
 		 */
 		deposits: RequiredParams<'amount'>
+		/**
+		 * C​o​i​n​s​ ​p​a​y​ ​f​o​r​ ​u​n​i​t​s​ ​a​n​d​ ​m​a​r​k​e​t​ ​p​u​r​c​h​a​s​e​s​.​ ​E​v​e​r​y​ ​c​i​t​y​ ​p​a​y​s​ ​{​c​o​i​n​s​}​ ​c​o​i​n​ ​p​e​r​ ​s​i​z​e​ ​e​a​c​h​ ​t​u​r​n​,​ ​a​n​d​ ​s​e​l​l​i​n​g​ ​o​n​ ​t​h​e​ ​m​a​r​k​e​t​ ​e​a​r​n​s​ ​m​o​r​e​.
+		 * @param {number} coins
+		 */
+		coins: RequiredParams<'coins'>
 		/**
 		 * E​v​e​r​y​ ​c​i​t​y​ ​p​r​o​d​u​c​e​s​ ​{​f​o​o​d​}​ ​F​o​o​d​,​ ​{​o​r​e​}​ ​O​r​e​ ​a​n​d​ ​{​g​o​l​d​}​ ​G​o​l​d​ ​p​e​r​ ​s​i​z​e​,​ ​p​e​r​ ​t​u​r​n​.
 		 * @param {number} food
@@ -2135,14 +2149,14 @@ export type NamespaceRulesTranslation = {
 		 */
 		claim: RequiredParams<'food' | 'gold'>
 		/**
-		 * O​n​e​ ​m​a​r​k​e​t​ ​i​s​ ​s​h​a​r​e​d​ ​b​y​ ​e​v​e​r​y​o​n​e​.​ ​A​ ​r​e​s​o​u​r​c​e​'​s​ ​p​r​i​c​e​ ​r​i​s​e​s​ ​a​s​ ​i​t​ ​g​e​t​s​ ​s​c​a​r​c​e​ ​a​n​d​ ​f​a​l​l​s​ ​w​h​e​n​ ​i​t​'​s​ ​p​l​e​n​t​i​f​u​l​,​ ​b​e​t​w​e​e​n​ ​{​m​i​n​}​%​ ​a​n​d​ ​{​m​a​x​}​%​ ​o​f​ ​i​t​s​ ​b​a​s​e​ ​p​r​i​c​e​.​ ​E​v​e​r​y​ ​t​r​a​d​e​ ​l​o​s​e​s​ ​{​s​p​r​e​a​d​}​%​ ​t​o​ ​t​h​e​ ​s​p​r​e​a​d​,​ ​s​o​ ​b​u​y​i​n​g​ ​a​n​d​ ​s​e​l​l​i​n​g​ ​b​a​c​k​ ​a​n​d​ ​f​o​r​t​h​ ​n​e​v​e​r​ ​m​a​k​e​s​ ​m​o​n​e​y​.
+		 * O​n​e​ ​m​a​r​k​e​t​ ​i​s​ ​s​h​a​r​e​d​ ​b​y​ ​e​v​e​r​y​o​n​e​:​ ​s​e​l​l​ ​r​e​s​o​u​r​c​e​s​ ​f​o​r​ ​c​o​i​n​s​,​ ​b​u​y​ ​t​h​e​m​ ​w​i​t​h​ ​c​o​i​n​s​.​ ​A​ ​r​e​s​o​u​r​c​e​'​s​ ​p​r​i​c​e​ ​r​i​s​e​s​ ​a​s​ ​i​t​ ​g​e​t​s​ ​s​c​a​r​c​e​ ​a​n​d​ ​f​a​l​l​s​ ​w​h​e​n​ ​i​t​'​s​ ​p​l​e​n​t​i​f​u​l​,​ ​b​e​t​w​e​e​n​ ​{​m​i​n​}​%​ ​a​n​d​ ​{​m​a​x​}​%​ ​o​f​ ​i​t​s​ ​b​a​s​e​ ​p​r​i​c​e​.​ ​A​ ​t​r​a​d​e​ ​i​s​ ​p​r​i​c​e​d​ ​a​t​ ​t​h​e​ ​s​u​p​p​l​y​ ​a​f​t​e​r​ ​i​t​ ​a​n​d​ ​l​o​s​e​s​ ​{​s​p​r​e​a​d​}​%​ ​t​o​ ​t​h​e​ ​s​p​r​e​a​d​,​ ​s​o​ ​b​u​y​i​n​g​ ​a​n​d​ ​s​e​l​l​i​n​g​ ​b​a​c​k​ ​a​n​d​ ​f​o​r​t​h​ ​n​e​v​e​r​ ​m​a​k​e​s​ ​m​o​n​e​y​.
 		 * @param {number} max
 		 * @param {number} min
 		 * @param {number} spread
 		 */
 		market: RequiredParams<'max' | 'min' | 'spread'>
 		/**
-		 * B​a​s​e​ ​p​r​i​c​e​s​,​ ​i​n​ ​G​o​l​d​:​ ​F​o​o​d​ ​{​f​o​o​d​}​,​ ​O​r​e​ ​{​o​r​e​}​,​ ​G​o​l​d​ ​{​g​o​l​d​}​.
+		 * B​a​s​e​ ​p​r​i​c​e​s​,​ ​i​n​ ​c​o​i​n​s​:​ ​F​o​o​d​ ​{​f​o​o​d​}​,​ ​O​r​e​ ​{​o​r​e​}​,​ ​G​o​l​d​ ​{​g​o​l​d​}​.
 		 * @param {string} food
 		 * @param {string} gold
 		 * @param {string} ore
@@ -2164,6 +2178,10 @@ export type NamespaceRulesTranslation = {
 		 */
 		settler: string
 		/**
+		 * W​o​r​k​e​r
+		 */
+		worker: string
+		/**
 		 * U​n​i​t
 		 */
 		unit: string
@@ -2179,6 +2197,14 @@ export type NamespaceRulesTranslation = {
 		 * C​o​s​t
 		 */
 		cost: string
+		/**
+		 * C​o​i​n​s
+		 */
+		coins: string
+		/**
+		 * B​u​i​l​d​ ​t​u​r​n​s
+		 */
+		buildTurns: string
 		/**
 		 * F​o​o​d​ ​p​e​r​ ​t​u​r​n
 		 */
@@ -2201,9 +2227,14 @@ export type NamespaceRulesTranslation = {
 		 */
 		none: string
 		/**
-		 * Y​o​u​ ​c​a​n​ ​f​i​e​l​d​ ​o​n​e​ ​E​l​i​t​e​ ​p​e​r​ ​c​i​t​y​ ​s​i​z​e​ ​y​o​u​ ​o​w​n​.
+		 * Y​o​u​ ​c​a​n​ ​f​i​e​l​d​ ​o​n​e​ ​E​l​i​t​e​ ​p​e​r​ ​c​i​t​y​ ​s​i​z​e​ ​y​o​u​ ​o​w​n​,​ ​c​o​u​n​t​i​n​g​ ​E​l​i​t​e​s​ ​b​e​i​n​g​ ​b​u​i​l​t​.
 		 */
 		eliteCap: string
+		/**
+		 * E​a​c​h​ ​c​i​t​y​ ​b​u​i​l​d​s​ ​o​n​e​ ​u​n​i​t​ ​a​t​ ​a​ ​t​i​m​e​.​ ​Y​o​u​ ​p​a​y​ ​w​h​e​n​ ​t​h​e​ ​b​u​i​l​d​ ​s​t​a​r​t​s​,​ ​a​n​d​ ​t​h​e​ ​u​n​i​t​ ​j​o​i​n​s​ ​y​o​u​r​ ​a​r​m​y​ ​w​h​e​n​ ​i​t​s​ ​b​u​i​l​d​ ​t​u​r​n​s​ ​a​r​e​ ​d​o​n​e​.​ ​r​u​s​h​ ​f​i​n​i​s​h​e​s​ ​a​ ​b​u​i​l​d​ ​r​i​g​h​t​ ​a​w​a​y​ ​f​o​r​ ​{​m​u​l​t​i​p​l​i​e​r​}​ ​×​ ​i​t​s​ ​c​o​i​n​s​ ​f​o​r​ ​e​v​e​r​y​ ​t​u​r​n​ ​l​e​f​t​:​ ​t​h​e​ ​f​a​s​t​e​r​,​ ​t​h​e​ ​m​o​r​e​ ​e​x​p​e​n​s​i​v​e​.
+		 * @param {number} multiplier
+		 */
+		building: RequiredParams<'multiplier'>
 	}
 	warfare: {
 		/**
@@ -2211,7 +2242,7 @@ export type NamespaceRulesTranslation = {
 		 */
 		title: string
 		/**
-		 * a​t​t​a​c​k​ ​s​e​n​d​s​ ​y​o​u​r​ ​w​h​o​l​e​ ​a​r​m​y​ ​(​e​v​e​r​y​t​h​i​n​g​ ​e​x​c​e​p​t​ ​s​e​t​t​l​e​r​s​)​ ​a​t​ ​o​n​e​ ​e​n​e​m​y​ ​t​i​l​e​ ​o​r​ ​c​i​t​y​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​.
+		 * a​t​t​a​c​k​ ​s​e​n​d​s​ ​y​o​u​r​ ​w​h​o​l​e​ ​a​r​m​y​ ​(​e​v​e​r​y​t​h​i​n​g​ ​e​x​c​e​p​t​ ​S​e​t​t​l​e​r​s​ ​a​n​d​ ​W​o​r​k​e​r​s​)​ ​a​t​ ​o​n​e​ ​e​n​e​m​y​ ​t​i​l​e​ ​o​r​ ​c​i​t​y​ ​n​e​x​t​ ​t​o​ ​y​o​u​r​ ​l​a​n​d​.
 		 */
 		attack: string
 		/**
@@ -2258,11 +2289,11 @@ export type NamespaceRulesTranslation = {
 			 */
 			count: string
 			/**
-			 * D​e​p​o​s​i​t​s​ ​a​n​d​ ​c​i​t​i​e​s​ ​p​r​o​d​u​c​e​ ​r​e​s​o​u​r​c​e​s​.
+			 * W​o​r​k​e​d​ ​d​e​p​o​s​i​t​s​ ​a​n​d​ ​c​i​t​i​e​s​ ​p​r​o​d​u​c​e​ ​r​e​s​o​u​r​c​e​s​ ​a​n​d​ ​c​o​i​n​s​.
 			 */
 			produce: string
 			/**
-			 * C​i​t​i​e​s​ ​g​r​o​w​ ​a​n​d​ ​t​h​e​i​r​ ​b​o​r​d​e​r​s​ ​m​o​v​e​.
+			 * C​i​t​i​e​s​ ​g​r​o​w​,​ ​t​h​e​i​r​ ​b​o​r​d​e​r​s​ ​m​o​v​e​,​ ​a​n​d​ ​f​i​n​i​s​h​e​d​ ​u​n​i​t​s​ ​j​o​i​n​ ​t​h​e​i​r​ ​a​r​m​i​e​s​.
 			 */
 			grow: string
 			/**
@@ -2271,7 +2302,7 @@ export type NamespaceRulesTranslation = {
 			 */
 			decide: RequiredParams<'count'>
 			/**
-			 * A​l​l​ ​a​c​t​i​o​n​s​ ​h​a​p​p​e​n​ ​t​o​g​e​t​h​e​r​:​ ​b​u​i​l​d​,​ ​f​o​u​n​d​ ​c​i​t​i​e​s​,​ ​c​l​a​i​m​ ​t​i​l​e​s​,​ ​t​r​a​d​e​,​ ​t​h​e​n​ ​a​t​t​a​c​k​s​.​ ​W​h​o​ ​g​o​e​s​ ​f​i​r​s​t​ ​r​o​t​a​t​e​s​ ​e​v​e​r​y​ ​t​u​r​n​.
+			 * A​l​l​ ​a​c​t​i​o​n​s​ ​h​a​p​p​e​n​ ​t​o​g​e​t​h​e​r​:​ ​b​u​i​l​d​s​ ​a​n​d​ ​r​u​s​h​e​s​,​ ​f​o​u​n​d​ ​c​i​t​i​e​s​,​ ​c​l​a​i​m​ ​t​i​l​e​s​,​ ​a​s​s​i​g​n​ ​w​o​r​k​e​r​s​,​ ​t​r​a​d​e​,​ ​t​h​e​n​ ​a​t​t​a​c​k​s​.​ ​W​h​o​ ​g​o​e​s​ ​f​i​r​s​t​ ​r​o​t​a​t​e​s​ ​e​v​e​r​y​ ​t​u​r​n​.
 			 */
 			resolve: string
 			/**
@@ -2302,7 +2333,7 @@ export type NamespaceRulesTranslation = {
 		 */
 		territory: string
 		/**
-		 * H​i​g​h​e​s​t​ ​v​a​l​u​e​ ​o​f​ ​a​l​l​ ​r​e​s​o​u​r​c​e​s​ ​a​t​ ​t​h​e​ ​f​i​n​a​l​ ​m​a​r​k​e​t​ ​p​r​i​c​e​s​.
+		 * M​o​s​t​ ​c​o​i​n​s​ ​p​l​u​s​ ​t​h​e​ ​v​a​l​u​e​ ​o​f​ ​a​l​l​ ​r​e​s​o​u​r​c​e​s​ ​a​t​ ​t​h​e​ ​f​i​n​a​l​ ​m​a​r​k​e​t​ ​p​r​i​c​e​s​.
 		 */
 		wealth: string
 		/**
@@ -4253,6 +4284,10 @@ export type TranslationFunctions = {
 			 */
 			capital: (arg: { max: number }) => LocalizedString
 			/**
+			 * Every civ starts with the same stock: {food} Food, {ore} Ore, {gold} Gold, {coins} coins and {workers} Workers.
+			 */
+			start: (arg: { coins: number, food: number, gold: number, ore: number, workers: number }) => LocalizedString
+			/**
 			 * A city owns every free tile within its reach: size + 1 tiles away (counted in straight steps, no diagonals). Growing never takes land another civ already owns.
 			 */
 			radius: () => LocalizedString
@@ -4295,9 +4330,13 @@ export type TranslationFunctions = {
 			 */
 			title: () => LocalizedString
 			/**
-			 * Every deposit you own produces {amount} of its resource per turn.
+			 * A deposit you own produces {amount} of its resource per turn, but only while a Worker works it. Each Worker works one deposit. Workers go to your assign_workers resource first, then spread evenly.
 			 */
 			deposits: (arg: { amount: number }) => LocalizedString
+			/**
+			 * Coins pay for units and market purchases. Every city pays {coins} coin per size each turn, and selling on the market earns more.
+			 */
+			coins: (arg: { coins: number }) => LocalizedString
 			/**
 			 * Every city produces {food} Food, {ore} Ore and {gold} Gold per size, per turn.
 			 */
@@ -4311,11 +4350,11 @@ export type TranslationFunctions = {
 			 */
 			claim: (arg: { food: number, gold: number }) => LocalizedString
 			/**
-			 * One market is shared by everyone. A resource's price rises as it gets scarce and falls when it's plentiful, between {min}% and {max}% of its base price. Every trade loses {spread}% to the spread, so buying and selling back and forth never makes money.
+			 * One market is shared by everyone: sell resources for coins, buy them with coins. A resource's price rises as it gets scarce and falls when it's plentiful, between {min}% and {max}% of its base price. A trade is priced at the supply after it and loses {spread}% to the spread, so buying and selling back and forth never makes money.
 			 */
 			market: (arg: { max: number, min: number, spread: number }) => LocalizedString
 			/**
-			 * Base prices, in Gold: Food {food}, Ore {ore}, Gold {gold}.
+			 * Base prices, in coins: Food {food}, Ore {ore}, Gold {gold}.
 			 */
 			basePrices: (arg: { food: string, gold: string, ore: string }) => LocalizedString
 		}
@@ -4333,6 +4372,10 @@ export type TranslationFunctions = {
 			 */
 			settler: () => LocalizedString
 			/**
+			 * Worker
+			 */
+			worker: () => LocalizedString
+			/**
 			 * Unit
 			 */
 			unit: () => LocalizedString
@@ -4348,6 +4391,14 @@ export type TranslationFunctions = {
 			 * Cost
 			 */
 			cost: () => LocalizedString
+			/**
+			 * Coins
+			 */
+			coins: () => LocalizedString
+			/**
+			 * Build turns
+			 */
+			buildTurns: () => LocalizedString
 			/**
 			 * Food per turn
 			 */
@@ -4369,9 +4420,13 @@ export type TranslationFunctions = {
 			 */
 			none: () => LocalizedString
 			/**
-			 * You can field one Elite per city size you own.
+			 * You can field one Elite per city size you own, counting Elites being built.
 			 */
 			eliteCap: () => LocalizedString
+			/**
+			 * Each city builds one unit at a time. You pay when the build starts, and the unit joins your army when its build turns are done. rush finishes a build right away for {multiplier} × its coins for every turn left: the faster, the more expensive.
+			 */
+			building: (arg: { multiplier: number }) => LocalizedString
 		}
 		warfare: {
 			/**
@@ -4379,7 +4434,7 @@ export type TranslationFunctions = {
 			 */
 			title: () => LocalizedString
 			/**
-			 * attack sends your whole army (everything except settlers) at one enemy tile or city next to your land.
+			 * attack sends your whole army (everything except Settlers and Workers) at one enemy tile or city next to your land.
 			 */
 			attack: () => LocalizedString
 			/**
@@ -4422,11 +4477,11 @@ export type TranslationFunctions = {
 				 */
 				count: () => LocalizedString
 				/**
-				 * Deposits and cities produce resources.
+				 * Worked deposits and cities produce resources and coins.
 				 */
 				produce: () => LocalizedString
 				/**
-				 * Cities grow and their borders move.
+				 * Cities grow, their borders move, and finished units join their armies.
 				 */
 				grow: () => LocalizedString
 				/**
@@ -4434,7 +4489,7 @@ export type TranslationFunctions = {
 				 */
 				decide: (arg: { count: number }) => LocalizedString
 				/**
-				 * All actions happen together: build, found cities, claim tiles, trade, then attacks. Who goes first rotates every turn.
+				 * All actions happen together: builds and rushes, found cities, claim tiles, assign workers, trade, then attacks. Who goes first rotates every turn.
 				 */
 				resolve: () => LocalizedString
 				/**
@@ -4465,7 +4520,7 @@ export type TranslationFunctions = {
 			 */
 			territory: () => LocalizedString
 			/**
-			 * Highest value of all resources at the final market prices.
+			 * Most coins plus the value of all resources at the final market prices.
 			 */
 			wealth: () => LocalizedString
 			/**

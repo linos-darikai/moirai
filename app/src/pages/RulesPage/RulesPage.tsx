@@ -1,6 +1,7 @@
 // Rules page ("/rules"): how the game works, for players. Every number comes from
 // src/data/rules.ts (which mirrors civ-core), and all text from the `rules` translations.
-// Source of the rules: docs/decisions/0006-game-rules-v2.md.
+// Sources of the rules: docs/decisions/0006 (cities, war), 0007 (coins, Workers, build time) and
+// 0008 (starting stock).
 
 import type { ReactElement } from "react";
 import { Link } from "react-router";
@@ -28,9 +29,16 @@ function costText(cost: ResourceAmounts, LL: TranslationFunctions): string {
     .join(" + ");
 }
 
-/** A unit's display name (settlers aren't a fighting unit kind, so they have their own key). */
+/** A unit's display name (settlers and workers don't fight, so they have their own keys). */
 function unitName(kind: RulesUnitKind, LL: TranslationFunctions): string {
-  return kind === "settler" ? LL.rules.units.settler() : LL.unit[kind]();
+  if (kind === "settler") return LL.rules.units.settler();
+  if (kind === "worker") return LL.rules.units.worker();
+  return LL.unit[kind]();
+}
+
+/** True for the four fighting kinds, which have a shape on the map. */
+function isFightingUnit(kind: RulesUnitKind): kind is Exclude<RulesUnitKind, "settler" | "worker"> {
+  return kind !== "settler" && kind !== "worker";
 }
 
 /** Route screen for "/rules". */
@@ -82,6 +90,13 @@ export function RulesPage(): ReactElement {
       <Section id="rules-cities">
         <Heading level={2}>{text.cities.title()}</Heading>
         <Text>{text.cities.capital({ max: rules.maxCities })}</Text>
+        <Text>
+          {text.cities.start({
+            ...rules.startingStock,
+            coins: rules.startingCoins,
+            workers: rules.startingWorkers,
+          })}
+        </Text>
         <Text>{text.cities.radius()}</Text>
         <Text>{text.cities.growth({ max: rules.maxCitySize })}</Text>
         <Text>{text.cities.lock()}</Text>
@@ -105,8 +120,9 @@ export function RulesPage(): ReactElement {
 
       <Section id="rules-economy">
         <Heading level={2}>{text.economy.title()}</Heading>
-        <Text>{text.economy.deposits({ amount: rules.depositYield })}</Text>
+        <Text>{text.economy.deposits({ amount: rules.workedDepositYield })}</Text>
         <Text>{text.economy.cityIncome({ ...rules.cityIncomePerSize })}</Text>
+        <Text>{text.economy.coins({ coins: rules.coinIncomePerSize })}</Text>
         <Text>{text.economy.upkeep()}</Text>
         <Text>{text.economy.claim({ food: rules.claimTileCost.food, gold: rules.claimTileCost.gold })}</Text>
         <Text>
@@ -129,7 +145,7 @@ export function RulesPage(): ReactElement {
         <Heading level={2}>{text.units.title()}</Heading>
         <Text>{text.units.intro({ bonus })}</Text>
         <DataTable<RulesUnitKind>
-          minWidth={640}
+          minWidth={760}
           rows={RULES_UNIT_KINDS}
           rowKey={(kind) => kind}
           columns={[
@@ -138,7 +154,7 @@ export function RulesPage(): ReactElement {
               header: text.units.unit(),
               render: (kind) => (
                 <UnitName>
-                  {kind !== "settler" && <UnitShape kind={kind} civ={0} size={14} />}
+                  {isFightingUnit(kind) && <UnitShape kind={kind} civ={0} size={14} />}
                   {unitName(kind, LL)}
                 </UnitName>
               ),
@@ -146,10 +162,13 @@ export function RulesPage(): ReactElement {
             { key: "attack", header: text.units.attack(), render: (kind) => rules.units[kind].attack },
             { key: "defence", header: text.units.defence(), render: (kind) => rules.units[kind].defence },
             { key: "cost", header: text.units.cost(), render: (kind) => costText(rules.units[kind].cost, LL) },
+            { key: "coins", header: text.units.coins(), render: (kind) => rules.units[kind].coins },
+            { key: "buildTurns", header: text.units.buildTurns(), render: (kind) => rules.units[kind].buildTurns },
             { key: "upkeep", header: text.units.upkeep(), render: (kind) => rules.units[kind].upkeep },
             { key: "strong", header: text.units.strongAgainst(), render: (kind) => strongAgainstText(rules.units[kind]) },
           ]}
         />
+        <Text>{text.units.building({ multiplier: rules.rushMultiplier })}</Text>
         <Text size="md" tone="muted">{text.units.eliteCap()}</Text>
       </Section>
 

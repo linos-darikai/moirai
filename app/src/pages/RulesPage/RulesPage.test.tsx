@@ -21,4 +21,14 @@ describe("RulesPage", () => {
     expect(settlerRow).toHaveTextContent("30 food + 10 ore");
     expect(screen.getByRole("row", { name: /^4 5 320$/ })).toBeInTheDocument();
   });
+
+  it("explains coins, Workers, build time and rushing", () => {
+    renderWithProviders(<RulesPage />);
+
+    // Worker: 15 food, 5 coins, 2 build turns, eats 1 food.
+    expect(screen.getByRole("row", { name: /Worker/ })).toHaveTextContent("15 food521");
+    expect(screen.getByRole("row", { name: /Elite/ })).toHaveTextContent("40 gold4042");
+    expect(screen.getByText(/rush finishes a build right away for 2 × its coins/)).toBeInTheDocument();
+    expect(screen.getByText(/20 coins and 2 Workers/)).toBeInTheDocument();
+  });
 });

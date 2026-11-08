@@ -22,6 +22,8 @@ const es_rules = {
   cities: {
     title: "Ciudades y fronteras",
     capital: "Empiezas con una ciudad, tu capital, de tamaño 1. Puedes tener hasta {max} ciudades.",
+    start:
+      "Todas las civilizaciones empiezan con lo mismo: {food} de Comida, {ore} de Mineral, {gold} de Oro, {coins} monedas y {workers} Trabajadores.",
     radius:
       "Una ciudad posee todas las casillas libres a su alcance: tamaño + 1 casillas (en pasos rectos, sin diagonales). Crecer nunca quita tierra que ya es de otra civilización.",
     growth:
@@ -37,34 +39,42 @@ const es_rules = {
   },
   economy: {
     title: "Economía",
-    deposits: "Cada depósito tuyo produce {amount} de su recurso por turno.",
+    deposits:
+      "Un depósito tuyo produce {amount} de su recurso por turno, pero solo mientras un Trabajador lo trabaja. Cada Trabajador trabaja un depósito. Los Trabajadores van primero al recurso de assign_workers y luego se reparten por igual.",
+    coins:
+      "Las monedas pagan unidades y compras en el mercado. Cada ciudad paga {coins} moneda por tamaño cada turno, y vender en el mercado da más.",
     cityIncome: "Cada ciudad produce {food} de Comida, {ore} de Mineral y {gold} de Oro por tamaño y por turno.",
     upkeep:
       "Las unidades comen Comida cada turno. Si no puedes alimentarlas, se disuelven tus unidades más caras hasta que tu Comida vuelva a estar por encima de cero.",
     claim: "claim_tile compra una casilla libre junto a tu tierra por {food} de Comida y {gold} de Oro.",
     market:
-      "Hay un único mercado para todos. El precio de un recurso sube cuando escasea y baja cuando abunda, entre el {min}% y el {max}% de su precio base. Cada operación pierde un {spread}% en el diferencial, así que comprar y vender una y otra vez nunca da beneficio.",
-    basePrices: "Precios base, en Oro: Comida {food}, Mineral {ore}, Oro {gold}.",
+      "Hay un único mercado para todos: vendes recursos por monedas y los compras con monedas. El precio de un recurso sube cuando escasea y baja cuando abunda, entre el {min}% y el {max}% de su precio base. Cada operación se paga al precio que deja tras ella y pierde un {spread}% en el diferencial, así que comprar y vender una y otra vez nunca da beneficio.",
+    basePrices: "Precios base, en monedas: Comida {food}, Mineral {ore}, Oro {gold}.",
   },
   units: {
     title: "Unidades",
     intro:
       "Las unidades se cuentan por civilización (en esta versión no ocupan casillas). Cada una es fuerte contra otra, como piedra, papel o tijera: un enfrentamiento favorable cuenta ×{bonus}.",
     settler: "Colono",
+    worker: "Trabajador",
     unit: "Unidad",
     attack: "Ataque",
     defence: "Defensa",
     cost: "Coste",
+    coins: "Monedas",
+    buildTurns: "Turnos de construcción",
     upkeep: "Comida por turno",
     strongAgainst: "Fuerte contra",
     walls: "murallas",
     all: "todo (×{bonus})",
     none: "—",
-    eliteCap: "Puedes tener una Élite por cada tamaño de ciudad que poseas.",
+    eliteCap: "Puedes tener una Élite por cada tamaño de ciudad que poseas, contando las que se están construyendo.",
+    building:
+      "Cada ciudad construye una unidad a la vez. Pagas al empezar y la unidad se une a tu ejército cuando terminan sus turnos de construcción. rush termina una construcción al instante por {multiplier} × sus monedas por cada turno que falte: cuanto más rápido, más caro.",
   },
   warfare: {
     title: "Guerra",
-    attack: "attack envía todo tu ejército (todo salvo los colonos) contra una casilla o ciudad enemiga junto a tu tierra.",
+    attack: "attack envía todo tu ejército (todo salvo Colonos y Trabajadores) contra una casilla o ciudad enemiga junto a tu tierra.",
     defenders: "El ejército defensor se reparte por igual entre sus ciudades y fronteras, así que cada objetivo lo defiende su parte de cada tipo de unidad.",
     strength:
       "El ataque es el ataque de tus unidades con sus bonificaciones. La defensa es la defensa de los defensores más las murallas: {walls} por tamaño de ciudad, +{capital}% en una capital. El asedio cuenta ×{siege} contra murallas. Cada bando tira hasta ±{roll}%.",
@@ -78,10 +88,10 @@ const es_rules = {
     title: "Un turno, paso a paso",
     steps: {
       count: "Se cuenta lo que tiene cada uno.",
-      produce: "Los depósitos y las ciudades producen recursos.",
-      grow: "Las ciudades crecen y sus fronteras se mueven.",
+      produce: "Los depósitos trabajados y las ciudades producen recursos y monedas.",
+      grow: "Las ciudades crecen, sus fronteras se mueven y las unidades terminadas se unen a los ejércitos.",
       decide: "Cada política decide a partir de la misma foto del mundo. Solo actúan las {count} primeras reglas que se cumplen.",
-      resolve: "Todas las acciones ocurren a la vez: construir, fundar ciudades, reclamar casillas, comerciar y después atacar. Quién va primero rota cada turno.",
+      resolve: "Todas las acciones ocurren a la vez: construir y acelerar, fundar ciudades, reclamar casillas, asignar trabajadores, comerciar y después atacar. Quién va primero rota cada turno.",
       upkeep: "Las unidades comen. Las que no comen se disuelven.",
       eliminate: "Se eliminan las civilizaciones sin ciudades.",
     },
@@ -91,7 +101,7 @@ const es_rules = {
     metric: "Condición de victoria",
     winner: "Gana",
     territory: "Quien tenga más casillas tras el último turno.",
-    wealth: "El mayor valor de todos los recursos a los precios finales del mercado.",
+    wealth: "Más monedas más el valor de todos los recursos a los precios finales del mercado.",
     conquest: "La última civilización en pie; si quedan varias, la que tenga más casillas.",
     score: "Casillas × {tiles} + riqueza ÷ {wealth} + fuerza del ejército.",
   },
