@@ -3,6 +3,8 @@
 //! `app/src/lib/engine/`.
 
 use civ_core::map_generation::generate_map;
+use civ_core::match_state::MatchState;
+use civ_core::policy::interpreter::play_until_finished;
 use civ_core::randomness::{MatchSeed, MATCH_SEED_LENGTH};
 use wasm_bindgen::prelude::*;
 
@@ -42,4 +44,44 @@ pub fn map_fingerprint(seed_bytes: &[u8], civ_count: u8) -> Result<String, JsErr
         .map_err(|_| JsError::new("civ count must be between 1 and 4"))?;
 
     Ok(map.fingerprint().to_string())
+}
+
+/// Compiles a YAML policy and returns its bytes (what a player commits to and reveals). Throws a
+/// JavaScript error listing every problem, one `line N: ...` per line, if the YAML is wrong.
+#[wasm_bindgen(js_name = compilePolicy)]
+pub fn compile_policy(yaml: &str) -> Result<Vec<u8>, JsError> {
+    civ_core::policy::compiler::compile_policy(yaml)
+        .map(|compiled| compiled.bytes)
+        .map_err(|errors| JsError::new(&problem_lines(&errors)))
+}
+
+/// Plays a whole match between YAML bots (in join order) from a 32-byte seed and returns the
+/// final state's fingerprint as a decimal string. Used to check the WASM build plays exactly like
+/// native Rust (see crates/civ-core/tests/sample_bots_match.rs).
+#[wasm_bindgen(js_name = matchFingerprint)]
+pub fn match_fingerprint(seed_bytes: &[u8], bots_yaml: Vec<String>) -> Result<String, JsError> {
+    let seed_array: [u8; MATCH_SEED_LENGTH] = seed_bytes
+        .try_into()
+        .map_err(|_| JsError::new("the seed must be exactly 32 bytes"))?;
+
+    let mut compiled: Vec<Vec<u8>> = Vec::new();
+    for yaml in &bots_yaml {
+        let policy = civ_core::policy::compiler::compile_policy(yaml)
+            .map_err(|errors| JsError::new(&problem_lines(&errors)))?;
+        compiled.push(policy.bytes);
+    }
+    let policies: Vec<&[u8]> = compiled.iter().map(Vec::as_slice).collect();
+
+    let civ_count =
+        u8::try_from(policies.len()).map_err(|_| JsError::new("at most 4 bots can play"))?;
+    let mut state = MatchState::new(&MatchSeed(seed_array), civ_count)
+        .map_err(|_| JsError::new("between 1 and 4 bots can play"))?;
+    play_until_finished(&mut state, &policies);
+    Ok(state.fingerprint().to_string())
+}
+
+/// Every compile problem as `line N: ...`, one per line.
+fn problem_lines(errors: &[civ_core::policy::compiler::CompileError]) -> String {
+    let lines: Vec<String> = errors.iter().map(ToString::to_string).collect();
+    lines.join("\n")
 }
