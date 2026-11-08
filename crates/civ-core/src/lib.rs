@@ -7,6 +7,7 @@
 //!
 //! Modules (one topic each):
 //! - `actions`: what a civ can do on its turn (build_unit, found_city), checks first
+//! - `attack`: the attack action (checks, defenders, battle, result)
 //! - `battle`: battle maths (strengths, rolls, losses)
 //! - `conquest`: after a won battle: capture or raze, plunder, new capital, elimination
 //! - `randomness`: deterministic random numbers from the match seed
@@ -26,6 +27,7 @@
 
 pub mod actions;
 pub mod aggregates;
+pub mod attack;
 pub mod battle;
 pub mod borders;
 pub mod city;

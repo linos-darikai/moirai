@@ -3,7 +3,8 @@
 //! (docs/decisions/0006, section 6). Each function checks everything first and changes nothing
 //! when a check fails, so a refused action costs nothing.
 //!
-//! So far: `build_unit` and `found_city`. Attacks, trades and `claim_tile` come in later steps.
+//! Here: `build_unit` and `found_city`. `attack` is in attack.rs. Trades and `claim_tile` come in
+//! later steps.
 
 use crate::borders::claim_unowned_tiles_within;
 use crate::city::{City, STARTING_CITY_SIZE};
@@ -34,6 +35,10 @@ pub enum ActionError {
     NotNextToTerritory,
     /// The civ already has MAX_CITIES_PER_CIV cities.
     NoFreeCitySlot,
+    /// `attack` needs a tile owned by another civ that is still in the game.
+    NotAnEnemyTile,
+    /// `attack` needs at least one fighting unit (Settlers don't fight).
+    NoArmy,
 }
 
 /// Builds one unit of `kind`, paying its cost from the civ's stock.
