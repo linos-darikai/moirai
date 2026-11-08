@@ -114,7 +114,9 @@ fn play_match(arguments: &[String]) -> Result<(), String> {
     let mut state = MatchState::new(&seed, civ_count)
         .map_err(|error| format!("could not start the match: {error:?}"))?;
     println!("seed {}: {}", hex(&seed.0), names.join(" vs "));
+    let mut war = WarSummary::default();
     while let Ok(report) = play_turn(&mut state, &policies) {
+        war.record(&report);
         if !is_quiet {
             println!("\nturn {}", report.turn);
             print!("{}", render_map(&state.map));
@@ -124,7 +126,41 @@ fn play_match(arguments: &[String]) -> Result<(), String> {
 
     // Step 4: the result.
     print_result(&state, &names);
+    let knocked_out = state
+        .active_civs()
+        .iter()
+        .filter(|civ| !civ.is_alive())
+        .count();
+    println!(
+        "war: {} battles, {} won by the attacker, {} cities captured, {} razed, {} civs knocked out",
+        war.battles, war.attacker_wins, war.captured, war.razed, knocked_out
+    );
     Ok(())
+}
+
+/// Counts of the fighting in a match, for the summary line.
+#[derive(Default)]
+struct WarSummary {
+    battles: u32,
+    attacker_wins: u32,
+    captured: u32,
+    razed: u32,
+}
+
+impl WarSummary {
+    fn record(&mut self, report: &civ_core::turn::TurnReport) {
+        for battle in report.battles.iter().flatten() {
+            self.battles += 1;
+            if battle.outcome.did_attacker_win {
+                self.attacker_wins += 1;
+            }
+            match battle.city_fall {
+                Some(civ_core::conquest::CityFall::Captured) => self.captured += 1,
+                Some(civ_core::conquest::CityFall::Razed) => self.razed += 1,
+                None => {}
+            }
+        }
+    }
 }
 
 /// The YAML of each bot file given, or the four sample bots if none were.
