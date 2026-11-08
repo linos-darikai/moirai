@@ -6,6 +6,8 @@
 //! - MagicBlock rollup spike: `delegate_counter` (base layer), `undelegate_counter` (rollup)
 //! - MagicBlock VRF spike: `create_random_seed`, `request_random_seed`, `fulfill_random_seed`
 //!
+//! Phase 2 match lobby (docs/decisions/0009): `create_match`, `join_match`, `cancel_match`.
+//!
 //! Phase 2 measuring spike (docs/decisions/0009): `bench_create`, `bench_set_policy`,
 //! `bench_turn` run civ-core's turn on chain so tests can measure compute units and stack use.
 
@@ -72,6 +74,26 @@ pub mod civ {
         randomness: [u8; 32],
     ) -> Result<()> {
         handle_fulfill_random_seed(context, randomness)
+    }
+
+    /// Open a lobby: create the Match and its Vault.
+    pub fn create_match(
+        context: Context<CreateMatch>,
+        match_id: u64,
+        settings: MatchSettings,
+    ) -> Result<()> {
+        handle_create_match(context, match_id, settings)
+    }
+
+    /// Join an open lobby, paying the entry fee into its vault.
+    pub fn join_match(context: Context<JoinMatch>) -> Result<()> {
+        handle_join_match(context)
+    }
+
+    /// Cancel a lobby that didn't fill by its join deadline and refund every player. Pass the
+    /// players as remaining accounts, in join order.
+    pub fn cancel_match<'info>(context: Context<'info, CancelMatch<'info>>) -> Result<()> {
+        handle_cancel_match(context)
     }
 
     /// Create the caller's TurnBench and start a match in it (measuring spike).

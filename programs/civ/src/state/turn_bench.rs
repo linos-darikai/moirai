@@ -7,19 +7,12 @@
 use anchor_lang::prelude::*;
 use civ_core::civ::MAX_CIVS;
 use civ_core::match_state::MatchState;
-use civ_core::policy::format::MAX_POLICY_BYTES;
 
-/// Bytes of one `MatchState`. A literal (not `size_of`) because the IDL needs a plain number; the
-/// check below fails the build if civ-core's layout ever changes size.
-pub const MATCH_STATE_BYTES: usize = 1_264;
-/// Bytes kept for each compiled policy (the largest a policy can be).
-pub const POLICY_SLOT_BYTES: usize = 499;
+use crate::constants::{MATCH_STATE_BYTES, POLICY_SLOT_BYTES};
+
 /// Policies one bench holds.
 pub const BENCH_CIVS: usize = 4;
 
-// Compile-time checks: these literals must match civ-core, or the build fails here.
-const _: () = assert!(MATCH_STATE_BYTES == core::mem::size_of::<MatchState>());
-const _: () = assert!(POLICY_SLOT_BYTES == MAX_POLICY_BYTES);
 const _: () = assert!(BENCH_CIVS == MAX_CIVS);
 
 /// One match plus its policies, as plain bytes.

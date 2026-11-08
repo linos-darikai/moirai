@@ -25,10 +25,14 @@ const TOTAL_TURNS = 60;
 
 /** Compiles a sample bot with civ-cli (`civ compile`), which prints the bytes as hex. */
 function compiledBot(name: string): Buffer {
-  const hex = execFileSync("cargo", ["run", "-q", "-p", "civ-cli", "--", "compile", `policies/${name}.yaml`], {
-    cwd: `${__dirname}/..`,
-    encoding: "utf8",
-  });
+  const hex = execFileSync(
+    "cargo",
+    ["run", "-q", "-p", "civ-cli", "--", "compile", `policies/${name}.yaml`],
+    {
+      cwd: `${__dirname}/..`,
+      encoding: "utf8",
+    }
+  );
   return Buffer.from(hex.trim(), "hex");
 }
 
@@ -56,7 +60,9 @@ describe("on-chain turn (measuring spike)", () => {
   const computeUnitsPerTurn: number[] = [];
 
   /** Sends one instruction with the largest compute budget and returns the units it used. */
-  async function unitsUsed(builder: { rpc: () => Promise<string> }): Promise<number> {
+  async function unitsUsed(builder: {
+    rpc: () => Promise<string>;
+  }): Promise<number> {
     const signature = await builder.rpc();
     const transaction = await provider.connection.getTransaction(signature, {
       commitment: "confirmed",
@@ -65,7 +71,9 @@ describe("on-chain turn (measuring spike)", () => {
     return transaction?.meta?.computeUnitsConsumed ?? -1;
   }
 
-  const bigBudget = ComputeBudgetProgram.setComputeUnitLimit({ units: MAX_COMPUTE_UNITS });
+  const bigBudget = ComputeBudgetProgram.setComputeUnitLimit({
+    units: MAX_COMPUTE_UNITS,
+  });
 
   it("starts a 4-civ match in one account", async () => {
     const seed = Array.from({ length: 32 }, () => 42);
@@ -80,7 +88,9 @@ describe("on-chain turn (measuring spike)", () => {
 
   it("stores the four sample bots", async () => {
     for (const [index, name] of SAMPLE_BOTS.entries()) {
-      const units = await unitsUsed(program.methods.benchSetPolicy(index, compiledBot(name)));
+      const units = await unitsUsed(
+        program.methods.benchSetPolicy(index, compiledBot(name))
+      );
 
       console.log(`      bench_set_policy ${name}: ${units} CU`);
     }
@@ -89,23 +99,35 @@ describe("on-chain turn (measuring spike)", () => {
   it("plays 60 turns, each within one transaction's compute budget", async () => {
     for (let turn = 0; turn < TOTAL_TURNS; turn++) {
       const units = await unitsUsed(
-        program.methods.benchTurn().accounts({ bench: benchAddress }).preInstructions([bigBudget])
+        program.methods
+          .benchTurn()
+          .accounts({ bench: benchAddress })
+          .preInstructions([bigBudget])
       );
       computeUnitsPerTurn.push(units);
     }
 
     const most = Math.max(...computeUnitsPerTurn);
-    const average = Math.round(computeUnitsPerTurn.reduce((sum, units) => sum + units, 0) / TOTAL_TURNS);
-    console.log(`      turns: first ${computeUnitsPerTurn[0]} CU, average ${average} CU, most ${most} CU`);
+    const average = Math.round(
+      computeUnitsPerTurn.reduce((sum, units) => sum + units, 0) / TOTAL_TURNS
+    );
+    console.log(
+      `      turns: first ${computeUnitsPerTurn[0]} CU, average ${average} CU, most ${most} CU`
+    );
     console.log(`      every turn: ${computeUnitsPerTurn.join(", ")}`);
     expect(most).to.be.lessThan(MAX_COMPUTE_UNITS);
   });
 
   it("ends in exactly the state native Rust reaches", async () => {
     const account = await provider.connection.getAccountInfo(benchAddress);
-    const matchBytes = account!.data.subarray(MATCH_STATE_OFFSET, MATCH_STATE_OFFSET + MATCH_STATE_BYTES);
+    const matchBytes = account!.data.subarray(
+      MATCH_STATE_OFFSET,
+      MATCH_STATE_OFFSET + MATCH_STATE_BYTES
+    );
 
-    expect(fingerprint(matchBytes)).to.equal(NATIVE_MATCH_FINGERPRINT_FOR_SEED_42);
+    expect(fingerprint(matchBytes)).to.equal(
+      NATIVE_MATCH_FINGERPRINT_FOR_SEED_42
+    );
   });
 
   it("refuses a turn after the last one", async () => {

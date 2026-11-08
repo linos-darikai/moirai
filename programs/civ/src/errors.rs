@@ -23,4 +23,24 @@ pub enum ErrorCode {
     BenchMatchOver,
     #[msg("The match data in this account is not laid out as expected")]
     BenchMisalignedState,
+    #[msg("A match needs between 2 and 4 players")]
+    InvalidPlayerCount,
+    #[msg("Unknown win metric: use 0 Territory, 1 Wealth, 2 Conquest or 3 Score")]
+    UnknownWinMetric,
+    #[msg("Unknown payout: use 0 winner takes all or 1 top three")]
+    UnknownPayout,
+    #[msg("Deadlines must be in the future and in order: join, then commit, then reveal")]
+    BadDeadlines,
+    #[msg("This match is not accepting new players")]
+    MatchNotOpen,
+    #[msg("The join deadline has passed")]
+    JoinDeadlinePassed,
+    #[msg("This match is full")]
+    MatchFull,
+    #[msg("You have already joined this match")]
+    AlreadyJoined,
+    #[msg("Players can still join this match; it can only be cancelled after the join deadline")]
+    JoinStillOpen,
+    #[msg("The refund accounts must be exactly the joined players, in join order")]
+    WrongRefundAccounts,
 }
