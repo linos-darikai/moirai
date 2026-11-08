@@ -159,7 +159,7 @@ pnpm install                          # JS dependencies for app, tests and scrip
 
 cargo build --workspace               # build all Rust crates
 cargo test --workspace                # test all Rust crates
-cargo run -p civ-cli                  # run the local match runner
+cargo run -p civ-cli -- play          # play the 4 sample bots for 60 turns
 pnpm build:wasm                       # build civ-wasm into crates/civ-wasm/pkg
 
 anchor build                          # build the program (+ IDL and TS types in target/)
