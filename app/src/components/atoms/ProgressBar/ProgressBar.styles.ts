@@ -1,13 +1,7 @@
 import styled from "styled-components";
-import type { DefaultTheme } from "styled-components";
-import type { SwatchColor } from "../Swatch";
+import { resolveColor } from "../../../theme/resolveColor";
+import type { ColorToken as SwatchColor } from "../../../types/colors";
 
-function fillColor(theme: DefaultTheme, color: SwatchColor): string {
-  if ("civ" in color) return theme.civColors[color.civ];
-  if ("avatar" in color) return theme.avatarColors[color.avatar % theme.avatarColors.length] ?? theme.colors.accent;
-  if ("resource" in color) return theme.resourceColors[color.resource];
-  return color.token === "success" ? theme.colors.success : theme.colors.accent;
-}
 
 export const Track = styled.div<{ $height: "thin" | "regular" }>`
   width: 100%;
@@ -20,5 +14,5 @@ export const Track = styled.div<{ $height: "thin" | "regular" }>`
 export const Fill = styled.div<{ $percent: number; $color: SwatchColor }>`
   width: ${({ $percent }) => $percent}%;
   height: 100%;
-  background: ${({ theme, $color }) => fillColor(theme, $color)};
+  background: ${({ theme, $color }) => resolveColor(theme, $color)};
 `;

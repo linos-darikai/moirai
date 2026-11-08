@@ -2,6 +2,8 @@
 export { useCounter, useCounterAction } from "./useCounter";
 export type { CounterAction, CounterState } from "./useCounter";
 export { useEngineDescription } from "./useEngine";
+export { useFormatters } from "./useFormatters";
+export type { Formatters } from "./useFormatters";
 export { useLanguage } from "./useLanguage";
 export type { LanguageControl } from "./useLanguage";
 export { useLiveMatches, useLobbies, useLobby } from "./useLobbies";

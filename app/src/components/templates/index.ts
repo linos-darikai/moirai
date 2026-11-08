@@ -1,2 +1,4 @@
-// Barrel for components/templates. Re-export each item from its own folder here (see CLAUDE.md section 8).
-export {};
+// Barrel for templates: page layouts with slots. Layout only, no data.
+export * from "./AppShell";
+export * from "./Columns";
+export * from "./PageContainer";

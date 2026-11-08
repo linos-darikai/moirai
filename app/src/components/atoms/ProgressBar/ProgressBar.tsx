@@ -1,7 +1,7 @@
 // ProgressBar atom: a thin bar showing how far along something is (match turns, win rate).
 
 import type { ReactElement } from "react";
-import type { SwatchColor } from "../Swatch";
+import type { ColorToken as SwatchColor } from "../../../types/colors";
 import { Fill, Track } from "./ProgressBar.styles";
 
 type ProgressBarProps = {
