@@ -15,3 +15,8 @@ compiler = []
 # Marks plain-bytes types (Pod) so the program can use civ-core's Map directly as zero-copy account
 # data. Same crate and version Anchor uses for #[account(zero_copy)]; pure Rust, no Solana code.
 bytemuck = { version = "1.25", default-features = false, features = ["derive", "min_const_generics"] }
+
+# `target_os = "solana"` is what Solana's SBF compiler sets; declaring it stops the warning about an
+# unknown cfg on the line that leaves the simulator out of on-chain builds (src/lib.rs).
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
