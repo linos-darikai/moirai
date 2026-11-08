@@ -9,6 +9,11 @@
 
 pub mod format;
 
+#[cfg(feature = "compiler")]
+pub mod compile_errors;
+#[cfg(feature = "compiler")]
+pub mod compiler;
+
 use crate::conquest::CityFallChoice;
 use crate::resources::Resource;
 use crate::units::UnitKind;
