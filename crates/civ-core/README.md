@@ -10,7 +10,9 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `randomness` | Deterministic random numbers: a pure hash of (match seed, purpose, a, b). No hidden state. |
 | `resources` | `Resource` (Food, Ore, Gold) and `ResourceStock` (saturating adds) |
 | `units` | `UnitKind` (Infantry, Guard, Siege, Elite) and `UnitCounts` |
-| `civ` | `CivId` and `Civ` (city, resources, units, alive) |
+| `civ` | `CivId` and `Civ` (24 plain bytes: city, resources, units, alive; read via `city()`, `is_alive()`) |
+| `aggregates` | `aggregate_map(&map)`: each civ's tiles, cities and owned deposits, counted in one pass per turn |
+| `production` | `produce_resources(&aggregates, &mut civs)`: turn step 1. Each owned deposit yields 1 unit; each owned city adds `CITY_BASE_INCOME` (food 2, ore 1, gold 1 until balancing) |
 | `map` | `TileCoordinate` (always on the map), `Tile` (3 plain bytes, read via `owner()`, `deposit()`, `is_city()`), `Map` (768 bytes, zero-copy ready) and `Map::fingerprint()` |
 | `map_generation` | `generate_map_into(seed, civ_count, &mut map)` / `generate_map(...)`: the top-left quarter comes from the seed and is mirrored into the other three, so every civ gets identical surroundings. Cities at (3,3), (12,3), (3,12), (12,12); two-civ games use opposite corners. 30% of tiles get a deposit. |
 
