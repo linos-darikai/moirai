@@ -128,18 +128,22 @@ mod tests {
     }
 
     #[test]
-    fn on_a_fresh_map_every_civ_earns_exactly_the_same_city_income() {
-        // Fairness: a generated map gives each civ only its city, so turn 1 income is identical.
-        let seed = MatchSeed([42; MATCH_SEED_LENGTH]);
-        let mut map = Map::empty();
-        let mut civs = [0, 1, 2, 3].map(|id| Civ::new(CivId(id), coordinate(0, 0)));
-        start_match(&seed, &mut map, &mut civs).expect("valid count");
-        let aggregates = aggregate_map(&map);
+    fn on_a_fresh_map_every_civ_earns_exactly_the_same_income() {
+        // Fairness: the map is mirrored and every capital claims the same border, so turn 1
+        // income is identical for every civ (and at least the city's base income).
+        for seed_byte in 0..20 {
+            let seed = MatchSeed([seed_byte; MATCH_SEED_LENGTH]);
+            let mut map = Map::empty();
+            let mut civs = [0, 1, 2, 3].map(|id| Civ::new(CivId(id), coordinate(0, 0)));
+            start_match(&seed, &mut map, &mut civs).expect("valid count");
+            let aggregates = aggregate_map(&map);
 
-        produce_resources(&aggregates, &mut civs);
+            produce_resources(&aggregates, &mut civs);
 
-        for civ in &civs {
-            assert_eq!(civ.resources, CITY_INCOME_PER_SIZE);
+            for civ in &civs {
+                assert_eq!(civ.resources, civs[0].resources);
+                assert!(civ.resources.food >= CITY_INCOME_PER_SIZE.food);
+            }
         }
     }
 }

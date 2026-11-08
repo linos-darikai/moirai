@@ -1,13 +1,17 @@
 //! Match start: builds turn 0 of a match, the map and every civ, from the match seed.
 //!
 //! The map marks each capital's tile as a city, and each civ records the same tile as its capital.
-//! Doing both in one function keeps the two from ever disagreeing. Called once when a match
+//! Each capital then claims its size 1 border (radius 2). Doing all of it in one function keeps the
+//! map and the civs from ever disagreeing. Called once when a match
 //! starts: on chain by the start instruction, and by the simulator and civ-cli.
 
+use crate::borders::claim_unowned_tiles_within;
+use crate::city::STARTING_CITY_SIZE;
 use crate::civ::{Civ, CivId};
 use crate::map::Map;
 use crate::map_generation::{generate_map_into, spawn_point, MapGenerationError};
 use crate::randomness::MatchSeed;
+use crate::rules::border_radius;
 
 /// Fills `map` and `civs` with the starting state of a match for `civs.len()` civs (1 to 4).
 ///
@@ -27,10 +31,13 @@ pub fn start_match(
     // "?" means: if this returned an error, stop here and pass the error up.
     generate_map_into(seed, civ_count, map)?;
 
-    // Step 2: each civ, with its capital on the same spawn tile.
+    // Step 2: each civ, with its capital on the same spawn tile and its first border claimed.
+    // Spawns are far apart, so these borders never overlap.
     for (join_order, civ) in (0..civ_count).zip(civs.iter_mut()) {
         let id = CivId(join_order);
-        *civ = Civ::new(id, spawn_point(id));
+        let capital = spawn_point(id);
+        *civ = Civ::new(id, capital);
+        claim_unowned_tiles_within(map, id, capital, border_radius(STARTING_CITY_SIZE));
     }
 
     Ok(())
@@ -66,6 +73,24 @@ mod tests {
             let tile = map.tile(capital.expect("each civ has a capital on the map"));
             assert!(tile.is_city());
             assert_eq!(tile.owner(), Some(civ.id()));
+        }
+    }
+
+    #[test]
+    fn every_capital_starts_with_the_same_thirteen_tile_border() {
+        // Radius 2 around a capital that is 3 tiles from the edges: 2 x 2 x 3 + 1 = 13 tiles.
+        let mut map = Map::empty();
+        let mut civs = blank_civs();
+
+        start_match(&seed_filled_with(42), &mut map, &mut civs).expect("valid count");
+
+        for civ in &civs {
+            let owned = map
+                .tiles()
+                .iter()
+                .filter(|tile| tile.owner() == Some(civ.id()))
+                .count();
+            assert_eq!(owned, 13);
         }
     }
 

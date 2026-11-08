@@ -7,6 +7,7 @@
 use bytemuck::{Pod, Zeroable};
 
 use crate::map::TileCoordinate;
+use crate::rules::MAX_CITY_SIZE;
 
 /// Bit in `City::flags`: this slot holds a real city (an all-zero slot is an empty one).
 const IN_USE_FLAG: u8 = 0b0000_0001;
@@ -110,6 +111,27 @@ impl City {
     pub fn founded_turn(&self) -> u16 {
         self.founded_turn
     }
+
+    /// True if the city can still grow: in use, not at MAX_CITY_SIZE, border not locked.
+    pub fn can_grow(&self) -> bool {
+        self.is_in_use() && self.size < MAX_CITY_SIZE && !self.has_stopped_growing()
+    }
+
+    /// Adds this turn's growth points. Saturates instead of overflowing.
+    pub fn add_growth_points(&mut self, points: u16) {
+        self.growth_points = self.growth_points.saturating_add(points);
+    }
+
+    /// Grows the city one size (up to MAX_CITY_SIZE) and starts its growth over from zero.
+    pub fn grow(&mut self) {
+        self.size = self.size.saturating_add(1).min(MAX_CITY_SIZE);
+        self.growth_points = 0;
+    }
+
+    /// Locks the city at its current size for the rest of the match.
+    pub fn stop_growing(&mut self) {
+        self.flags |= GROWTH_STOPPED_FLAG;
+    }
 }
 
 #[cfg(test)]
@@ -146,6 +168,34 @@ mod tests {
         let slot: City = Zeroable::zeroed();
 
         assert_eq!(slot, City::EMPTY);
+    }
+
+    #[test]
+    fn growing_raises_the_size_and_resets_growth_points() {
+        let mut city = City::founded(TileCoordinate::new(3, 3).expect("on the map"), 0, true);
+        city.add_growth_points(25);
+
+        city.grow();
+
+        assert_eq!(city.size(), 2);
+        assert_eq!(city.growth_points(), 0);
+    }
+
+    #[test]
+    fn a_city_at_max_size_or_with_a_locked_border_cannot_grow() {
+        let tile = TileCoordinate::new(3, 3).expect("on the map");
+        let mut biggest = City::founded(tile, 0, false);
+        let mut locked = City::founded(tile, 0, false);
+
+        for _ in 0..10 {
+            biggest.grow();
+        }
+        locked.stop_growing();
+
+        assert_eq!(biggest.size(), MAX_CITY_SIZE);
+        assert!(!biggest.can_grow());
+        assert!(!locked.can_grow());
+        assert!(City::founded(tile, 0, false).can_grow());
     }
 
     #[test]

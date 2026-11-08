@@ -26,6 +26,8 @@ pub const CITY_SITES_PER_QUADRANT: usize = 3;
 pub const MIN_CITY_SITE_DISTANCE: u8 = 3;
 /// Growth points to grow from size `s` are `GROWTH_BASE × s²`.
 pub const GROWTH_BASE: u32 = 20;
+/// Growth points every city gains each turn, before adding 1 per owned deposit in its border.
+pub const BASE_GROWTH_PER_TURN: u16 = 1;
 
 /// Growth points a city of `size` needs to reach the next size: 20, 80, 180, 320.
 pub fn growth_threshold(size: u8) -> u32 {

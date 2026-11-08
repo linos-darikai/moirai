@@ -82,6 +82,11 @@ impl Civ {
         &self.cities
     }
 
+    /// All city slots, borrowed so the caller can change them (growth, capture).
+    pub fn cities_mut(&mut self) -> &mut [City; MAX_CITIES_PER_CIV] {
+        &mut self.cities
+    }
+
     /// How many cities the civ has.
     pub fn city_count(&self) -> usize {
         let mut count = 0;

@@ -14,13 +14,17 @@
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
 //! - `match_start`: turn 0 of a match, the map and every civ with its capital
+//! - `borders`: the tiles within a city's reach; claiming the free ones
+//! - `growth`: turn step 3, cities grow and borders extend (and lock where they meet)
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 //! - `production`: turn step 1, resources from owned deposits and cities
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
 pub mod aggregates;
+pub mod borders;
 pub mod city;
 pub mod civ;
+pub mod growth;
 pub mod map;
 pub mod map_generation;
 pub mod match_start;
