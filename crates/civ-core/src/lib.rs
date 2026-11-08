@@ -18,6 +18,7 @@
 //! - `civ`: one player's civilisation, with up to 8 cities
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
+//! - `market`: the shared market; prices from supply, sell and buy for coins
 //! - `match_start`: turn 0 of a match, the map and every civ with its capital
 //! - `borders`: the tiles within a city's reach; claiming the free ones
 //! - `growth`: turn step 3, cities grow and borders extend (and lock where they meet)
@@ -38,6 +39,7 @@ pub mod conquest;
 pub mod growth;
 pub mod map;
 pub mod map_generation;
+pub mod market;
 pub mod match_start;
 pub mod production;
 pub mod randomness;

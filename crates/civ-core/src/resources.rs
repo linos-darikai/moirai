@@ -75,6 +75,13 @@ impl ResourceStock {
         gold: 0,
     };
 
+    /// A stock holding `amount` of one resource and nothing else.
+    pub fn only(resource: Resource, amount: u32) -> ResourceStock {
+        let mut stock = ResourceStock::EMPTY;
+        stock.add(resource, amount);
+        stock
+    }
+
     /// How much of `resource` this stock holds.
     pub fn amount(&self, resource: Resource) -> u32 {
         match resource {

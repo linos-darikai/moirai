@@ -25,6 +25,10 @@ pub enum ActionError {
     NoIdleCity,
     /// `rush_build` was asked to rush a city that isn't building anything.
     NothingToRush,
+    /// A market trade of 0 units.
+    NothingToTrade,
+    /// `buy` asked for more than the market holds.
+    NotEnoughSupply,
     /// The civ already fields one Elite per city size.
     EliteLimitReached,
     /// `found_city` needs a Settler and the civ has none.
