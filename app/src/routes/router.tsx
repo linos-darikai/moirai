@@ -12,6 +12,7 @@ import {
   ProfilePage,
   ResultsPage,
   RouteErrorPage,
+  RulesPage,
 } from "../pages";
 import { AppLayout } from "./AppLayout";
 import { paths } from "./paths";
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
           },
           { path: paths.results, element: <ResultsPage /> },
           { path: paths.leaderboard, element: <LeaderboardPage /> },
+          { path: paths.rules, element: <RulesPage /> },
           { path: paths.profile, element: <ProfilePage /> },
           { path: paths.connectionCheck, element: <ConnectionCheckPage /> },
           { path: "*", element: <RouteErrorPage /> },

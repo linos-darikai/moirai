@@ -9,7 +9,7 @@ describe("TopNav", () => {
 
     const nav = screen.getByRole("navigation", { name: "Main" });
 
-    expect(nav).toHaveTextContent("LobbiesPoliciesSimulatorMatchesLeaderboard");
+    expect(nav).toHaveTextContent("LobbiesPoliciesSimulatorMatchesLeaderboardRules");
     expect(screen.getByRole("link", { name: "Leaderboard" })).toHaveAttribute("aria-current", "page");
   });
 

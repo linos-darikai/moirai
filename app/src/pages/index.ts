@@ -9,3 +9,4 @@ export { MatchPage } from "./MatchPage";
 export { ProfilePage } from "./ProfilePage";
 export { ResultsPage } from "./ResultsPage";
 export { RouteErrorPage } from "./RouteErrorPage";
+export { RulesPage } from "./RulesPage";

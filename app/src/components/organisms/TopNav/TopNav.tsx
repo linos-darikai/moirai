@@ -52,6 +52,7 @@ export function TopNav(): ReactElement {
         <NavItem to={paths.simulator}>{LL.nav.simulator()}</NavItem>
         <NavItem to={matchPath(SAMPLE_LIVE_MATCH_ID)}>{LL.nav.matches()}</NavItem>
         <NavItem to={paths.leaderboard}>{LL.nav.leaderboard()}</NavItem>
+        <NavItem to={paths.rules}>{LL.nav.rules()}</NavItem>
       </NavLinks>
       <Actions>
         <NetworkBadge>{LL.network.devnet()}</NetworkBadge>

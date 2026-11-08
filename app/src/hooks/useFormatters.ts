@@ -11,6 +11,8 @@ export type Formatters = {
   sol: (value: number) => string;
   /** 0.58 → "58%". */
   percent: (value: number) => string;
+  /** 1.25 → "1.25" (en), "1,25" (es, fr); always at least 2 decimals unless `digits` says otherwise. */
+  decimal: (value: number, digits?: number) => string;
   /** A month from an ISO date: "2026-10-01" → "October 2026". */
   month: (isoDate: string) => string;
 };
@@ -26,6 +28,8 @@ export function useFormatters(): Formatters {
       integer: (value) => integerFormat.format(value),
       sol: (value) => LL.sol({ amount: value }),
       percent: (value) => percentFormat.format(value),
+      decimal: (value, digits = 2) =>
+        new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value),
       month: (isoDate) => monthFormat.format(new Date(`${isoDate}T00:00:00Z`)),
     };
   }, [locale, LL]);

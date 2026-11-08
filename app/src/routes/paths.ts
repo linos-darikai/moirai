@@ -11,6 +11,7 @@ export const paths = {
   replay: "/match/:matchId/replay",
   results: "/match/:matchId/results",
   leaderboard: "/leaderboard",
+  rules: "/rules",
   profile: "/profile/:wallet",
   /** Phase 0 only: wallet + deployed program + WASM connection check. */
   connectionCheck: "/dev/connection",
