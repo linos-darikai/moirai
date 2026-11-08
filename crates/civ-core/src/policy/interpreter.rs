@@ -52,6 +52,15 @@ pub fn play_until_finished(state: &mut MatchState, policies: &[&[u8]]) -> u16 {
     turns_played
 }
 
+/// One civ's orders for a turn, plus which rules produced them (for the simulator's "what your
+/// rules did").
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct Decision {
+    pub orders: CivOrders,
+    /// `rules[slot]` is the index (from 0) of the rule that produced `orders.actions[slot]`.
+    pub rules: [Option<u8>; MAX_ACTIVE_RULES_PER_TURN],
+}
+
 /// One civ's orders: its first MAX_ACTIVE_RULES_PER_TURN rules whose conditions hold and whose
 /// action finds a target this turn.
 pub fn decide(
@@ -60,15 +69,28 @@ pub fn decide(
     civ_index: usize,
     policy: &[u8],
 ) -> CivOrders {
-    let mut orders = CivOrders::NONE;
+    decide_with_rules(state, aggregates, civ_index, policy).orders
+}
+
+/// Like `decide`, and also says which rule produced each action.
+pub fn decide_with_rules(
+    state: &MatchState,
+    aggregates: &MapAggregates,
+    civ_index: usize,
+    policy: &[u8],
+) -> Decision {
+    let mut decision = Decision {
+        orders: CivOrders::NONE,
+        rules: [None; MAX_ACTIVE_RULES_PER_TURN],
+    };
     let Some(civ) = state.active_civs().get(civ_index) else {
-        return orders;
+        return decision;
     };
     let Ok(rule_count) = validate_policy(policy) else {
-        return orders;
+        return decision;
     };
     if !civ.is_alive() {
-        return orders;
+        return decision;
     }
 
     let mut filled = 0;
@@ -83,11 +105,13 @@ pub fn decide(
             continue;
         }
         if let Some(action) = resolve_action(state, civ_index, &rule.action) {
-            orders.actions[filled] = Some(action);
+            decision.orders.actions[filled] = Some(action);
+            // At most 16 rules, so the index always fits in a byte.
+            decision.rules[filled] = u8::try_from(index).ok();
             filled += 1;
         }
     }
-    orders
+    decision
 }
 
 /// True if every condition of the rule holds (an `always` rule has none).

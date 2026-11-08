@@ -106,3 +106,95 @@ fn problem_lines(errors: &[civ_core::policy::compiler::CompileError]) -> String 
     let lines: Vec<String> = errors.iter().map(ToString::to_string).collect();
     lines.join("\n")
 }
+
+/// Numbers per civ in `Simulation::civStats`, in this order: alive (0/1), tiles, cities, army,
+/// food, ore, gold, coins, wealth.
+pub const CIV_STAT_COUNT: usize = 9;
+
+/// A simulated match (civ-core `simulate_match`), kept in WASM memory; JavaScript reads one turn
+/// at a time. `#[wasm_bindgen]` on a struct makes it a JavaScript class.
+#[wasm_bindgen]
+pub struct Simulation {
+    inner: civ_core::simulation::Simulation,
+    civ_count: usize,
+}
+
+#[wasm_bindgen]
+impl Simulation {
+    /// How many snapshots there are: the start plus one per turn played.
+    #[wasm_bindgen(js_name = snapshotCount)]
+    pub fn snapshot_count(&self) -> usize {
+        self.inner.snapshots.len()
+    }
+
+    /// The map's 768 tile bytes after `index` turns (empty if out of range).
+    #[wasm_bindgen(js_name = mapTiles)]
+    pub fn map_tiles(&self, index: usize) -> Vec<u8> {
+        self.inner
+            .snapshots
+            .get(index)
+            .map(|snapshot| snapshot.map.as_bytes().to_vec())
+            .unwrap_or_default()
+    }
+
+    /// Every civ's numbers after `index` turns: CIV_STAT_COUNT per civ, civ 0 first. Numbers are
+    /// f64 because JavaScript has no u64.
+    #[wasm_bindgen(js_name = civStats)]
+    pub fn civ_stats(&self, index: usize) -> Vec<f64> {
+        let Some(snapshot) = self.inner.snapshots.get(index) else {
+            return Vec::new();
+        };
+        let mut stats = Vec::with_capacity(self.civ_count * CIV_STAT_COUNT);
+        for civ in snapshot.civs.iter().take(self.civ_count) {
+            stats.extend_from_slice(&[
+                f64::from(u8::from(civ.is_alive)),
+                f64::from(civ.tiles),
+                f64::from(civ.cities),
+                f64::from(civ.army),
+                f64::from(civ.resources.food),
+                f64::from(civ.resources.ore),
+                f64::from(civ.resources.gold),
+                f64::from(civ.coins),
+                civ.wealth as f64, // only for display; exact up to 2^53
+            ]);
+        }
+        stats
+    }
+
+    /// How many turns each of civ `civ`'s rules acted, rule 1 first.
+    #[wasm_bindgen(js_name = ruleCounts)]
+    pub fn rule_counts(&self, civ: usize) -> Vec<u32> {
+        self.inner
+            .rule_counts
+            .get(civ)
+            .map(|counts| counts.to_vec())
+            .unwrap_or_default()
+    }
+
+    /// The final state's fingerprint, as a decimal string.
+    pub fn fingerprint(&self) -> String {
+        self.inner.final_state.fingerprint().to_string()
+    }
+}
+
+/// Simulates a whole match between YAML bots (civ 0 first) from a 32-byte seed, recording every
+/// turn for the simulator page.
+#[wasm_bindgen(js_name = simulateMatch)]
+pub fn simulate_match(seed_bytes: &[u8], bots_yaml: Vec<String>) -> Result<Simulation, JsError> {
+    let seed_array: [u8; MATCH_SEED_LENGTH] = seed_bytes
+        .try_into()
+        .map_err(|_| JsError::new("the seed must be exactly 32 bytes"))?;
+    let mut compiled: Vec<Vec<u8>> = Vec::new();
+    for yaml in &bots_yaml {
+        let policy = civ_core::policy::compiler::compile_policy(yaml)
+            .map_err(|errors| JsError::new(&problem_lines(&errors)))?;
+        compiled.push(policy.bytes);
+    }
+    let policies: Vec<&[u8]> = compiled.iter().map(Vec::as_slice).collect();
+    let inner = civ_core::simulation::simulate_match(&MatchSeed(seed_array), &policies)
+        .map_err(|_| JsError::new("between 1 and 4 bots can play"))?;
+    Ok(Simulation {
+        inner,
+        civ_count: policies.len(),
+    })
+}

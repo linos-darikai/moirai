@@ -102,3 +102,17 @@ fn the_bots_really_play_attacks_happen_and_cities_are_founded() {
         "nobody grew beyond the starting borders"
     );
 }
+
+#[test]
+fn the_simulator_plays_exactly_like_the_real_turns() {
+    use civ_core::simulation::simulate_match;
+    let bots = compiled_bots();
+    let policies: Vec<&[u8]> = bots.iter().map(Vec::as_slice).collect();
+
+    let simulation =
+        simulate_match(&MatchSeed([42; MATCH_SEED_LENGTH]), &policies).expect("4 civs");
+
+    assert_eq!(simulation.snapshots.len(), usize::from(TOTAL_TURNS) + 1);
+    assert_eq!(simulation.final_state, play_sample_match(42));
+    assert!(simulation.rule_counts[0].iter().sum::<u32>() > 0);
+}
