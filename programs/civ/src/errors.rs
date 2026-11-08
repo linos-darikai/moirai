@@ -43,4 +43,26 @@ pub enum ErrorCode {
     JoinStillOpen,
     #[msg("The refund accounts must be exactly the joined players, in join order")]
     WrongRefundAccounts,
+    #[msg("You haven't joined this match")]
+    NotAPlayer,
+    #[msg("The commit deadline has passed")]
+    CommitDeadlinePassed,
+    #[msg("You have already committed a policy for this match")]
+    AlreadyCommitted,
+    #[msg("A commitment can't be all zeros")]
+    EmptyCommitment,
+    #[msg("Policies can only be revealed once the lobby is full")]
+    LobbyNotFull,
+    #[msg("Players can still commit: reveal once everyone has committed or the commit deadline has passed")]
+    CommitsStillOpen,
+    #[msg("The reveal deadline has passed")]
+    RevealDeadlinePassed,
+    #[msg("You didn't commit a policy, so there is nothing to reveal")]
+    NotCommitted,
+    #[msg("You have already revealed your policy")]
+    AlreadyRevealed,
+    #[msg("This policy and salt don't match your commitment")]
+    WrongPolicyHash,
+    #[msg("Those bytes are not a valid compiled policy")]
+    InvalidPolicy,
 }

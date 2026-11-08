@@ -6,7 +6,8 @@
 //! - MagicBlock rollup spike: `delegate_counter` (base layer), `undelegate_counter` (rollup)
 //! - MagicBlock VRF spike: `create_random_seed`, `request_random_seed`, `fulfill_random_seed`
 //!
-//! Phase 2 match lobby (docs/decisions/0009): `create_match`, `join_match`, `cancel_match`.
+//! Phase 2 match lobby (docs/decisions/0009): `create_match`, `join_match`, `cancel_match`,
+//! `commit_policy`, `reveal_policy`.
 //!
 //! Phase 2 measuring spike (docs/decisions/0009): `bench_create`, `bench_set_policy`,
 //! `bench_turn` run civ-core's turn on chain so tests can measure compute units and stack use.
@@ -15,6 +16,7 @@
 // emitted at crate level, so a module-level allow doesn't reach it). Only this one lint is off.
 #![allow(clippy::diverging_sub_expression)]
 
+pub mod commitment;
 pub mod constants;
 pub mod errors;
 pub mod instructions;
@@ -94,6 +96,20 @@ pub mod civ {
     /// players as remaining accounts, in join order.
     pub fn cancel_match<'info>(context: Context<'info, CancelMatch<'info>>) -> Result<()> {
         handle_cancel_match(context)
+    }
+
+    /// Lock in a policy by storing only its hash: sha256(compiled bytes || 32-byte salt).
+    pub fn commit_policy(context: Context<CommitPolicy>, commitment: [u8; 32]) -> Result<()> {
+        handle_commit_policy(context, commitment)
+    }
+
+    /// Reveal the committed policy: the program checks the hash and the bytes.
+    pub fn reveal_policy(
+        context: Context<RevealPolicy>,
+        policy: Vec<u8>,
+        salt: [u8; 32],
+    ) -> Result<()> {
+        handle_reveal_policy(context, policy, salt)
     }
 
     /// Create the caller's TurnBench and start a match in it (measuring spike).

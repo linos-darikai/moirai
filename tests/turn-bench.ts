@@ -6,9 +6,9 @@
 import * as anchor from "@anchor-lang/core";
 import { Program } from "@anchor-lang/core";
 import { expect } from "chai";
-import { execFileSync } from "node:child_process";
 import idl from "../target/idl/civ.json";
 import type { Civ } from "../target/types/civ";
+import { compiledBot } from "./support/chain";
 
 const { PublicKey, ComputeBudgetProgram } = anchor.web3;
 
@@ -22,19 +22,6 @@ const MATCH_STATE_BYTES = 1_264;
 const NATIVE_MATCH_FINGERPRINT_FOR_SEED_42 = 13_451_523_736_825_787_217n;
 const SAMPLE_BOTS = ["turtle", "raider", "trader", "expander"];
 const TOTAL_TURNS = 60;
-
-/** Compiles a sample bot with civ-cli (`civ compile`), which prints the bytes as hex. */
-function compiledBot(name: string): Buffer {
-  const hex = execFileSync(
-    "cargo",
-    ["run", "-q", "-p", "civ-cli", "--", "compile", `policies/${name}.yaml`],
-    {
-      cwd: `${__dirname}/..`,
-      encoding: "utf8",
-    }
-  );
-  return Buffer.from(hex.trim(), "hex");
-}
 
 /** FNV-1a over the bytes, the same hash as civ-core's MatchState::fingerprint. */
 function fingerprint(bytes: Uint8Array): bigint {

@@ -3,131 +3,23 @@
 // starts: double join, late join, a full lobby, and a full refund when a lobby doesn't fill.
 
 import * as anchor from "@anchor-lang/core";
-import { Program } from "@anchor-lang/core";
 import { expect } from "chai";
-import idl from "../target/idl/civ.json";
-import type { Civ } from "../target/types/civ";
+import {
+  ENTRY_FEE,
+  chainNow,
+  connection,
+  createLobby,
+  failure,
+  fundedPlayer,
+  join,
+  moveClockPast,
+  program,
+} from "./support/chain";
 
-const { PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram } = anchor.web3;
-type PublicKeyType = anchor.web3.PublicKey;
-type KeypairType = anchor.web3.Keypair;
-
-const MATCH_SEED = Buffer.from("match");
-const VAULT_SEED = Buffer.from("vault");
-const ENTRY_FEE = 0.1 * LAMPORTS_PER_SOL;
+const { SystemProgram } = anchor.web3;
+let nextMatchId = Date.now() + 1_000_000;
 
 describe("match lobby", () => {
-  const provider = anchor.AnchorProvider.env();
-  anchor.setProvider(provider);
-  const program = new Program<Civ>(idl as Civ, provider);
-  const connection = provider.connection;
-  const creator = provider.wallet.publicKey;
-  let nextMatchId = Date.now();
-
-  /** The chain's current unix time, read from the Clock sysvar: the same value the program sees.
-   * (surfpool's clock runs faster than real time, so this computer's clock can't be used.) */
-  async function chainNow(): Promise<number> {
-    const clock = await connection.getAccountInfo(
-      anchor.web3.SYSVAR_CLOCK_PUBKEY,
-      "processed"
-    );
-    // Clock layout: slot u64, epoch_start_timestamp i64, epoch u64, leader_schedule_epoch u64,
-    // unix_timestamp i64 (at byte 32).
-    return Number(clock!.data.readBigInt64LE(32));
-  }
-
-  /** Asks surfpool to jump the chain's clock (its `surfnet_timeTravel` cheatcode). */
-  async function timeTravel(absoluteTimestamp: number): Promise<void> {
-    await fetch(connection.rpcEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "surfnet_timeTravel",
-        params: [{ absoluteTimestamp }],
-      }),
-    });
-  }
-
-  /** Moves the chain's clock past `unixTime` without waiting: surfpool's clock doesn't advance
-   * on its own while nothing happens. Fails after a few tries instead of looping forever. */
-  async function moveClockPast(unixTime: number): Promise<void> {
-    const target = unixTime + 10;
-    // surfpool takes the timestamp in milliseconds; seconds is tried too in case that changes.
-    for (const absoluteTimestamp of [target * 1000, target]) {
-      await timeTravel(absoluteTimestamp);
-      if ((await chainNow()) > unixTime) return;
-    }
-    throw new Error(
-      `surfnet_timeTravel did not move the clock past ${unixTime} (now ${await chainNow()})`
-    );
-  }
-
-  async function fundedPlayer(): Promise<KeypairType> {
-    const player = Keypair.generate();
-    const signature = await connection.requestAirdrop(
-      player.publicKey,
-      2 * LAMPORTS_PER_SOL
-    );
-    await connection.confirmTransaction(signature, "confirmed");
-    return player;
-  }
-
-  function addresses(matchId: anchor.BN): {
-    match: PublicKeyType;
-    vault: PublicKeyType;
-  } {
-    const [match] = PublicKey.findProgramAddressSync(
-      [MATCH_SEED, creator.toBuffer(), matchId.toArrayLike(Buffer, "le", 8)],
-      program.programId
-    );
-    const [vault] = PublicKey.findProgramAddressSync(
-      [VAULT_SEED, match.toBuffer()],
-      program.programId
-    );
-    return { match, vault };
-  }
-
-  /** Opens a lobby; `joinSeconds` sets how long joining stays open. */
-  async function createLobby(maxPlayers: number, joinSeconds = 600) {
-    const matchId = new anchor.BN(nextMatchId++);
-    const now = await chainNow();
-    await program.methods
-      .createMatch(matchId, {
-        entryFeeLamports: new anchor.BN(ENTRY_FEE),
-        maxPlayers,
-        winMetric: 0,
-        payout: 0,
-        joinDeadline: new anchor.BN(now + joinSeconds),
-        commitDeadline: new anchor.BN(now + joinSeconds + 600),
-        revealDeadline: new anchor.BN(now + joinSeconds + 1200),
-      })
-      .rpc();
-    return { matchId, joinDeadline: now + joinSeconds, ...addresses(matchId) };
-  }
-
-  async function join(
-    match: PublicKeyType,
-    player: KeypairType
-  ): Promise<void> {
-    await program.methods
-      .joinMatch()
-      .accounts({ player: player.publicKey, matchAccount: match })
-      .signers([player])
-      .rpc();
-  }
-
-  /** The error text of a call that should fail ("" if it succeeded). */
-  async function failure(call: () => Promise<unknown>): Promise<string> {
-    try {
-      await call();
-      return "";
-    } catch (error) {
-      return String(error);
-    }
-  }
-
   it("opens a lobby with its settings and a vault that holds its rent", async () => {
     const lobby = await createLobby(4);
 

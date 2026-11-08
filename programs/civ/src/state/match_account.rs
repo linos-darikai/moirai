@@ -155,9 +155,43 @@ impl Match {
         self.joined_players().contains(wallet)
     }
 
+    /// The seat (0..4) of `wallet`, or `None` if it hasn't joined.
+    pub fn seat_of(&self, wallet: &Pubkey) -> Option<usize> {
+        // `.position(...)` is like `findIndex` in TypeScript, but returns None instead of -1.
+        self.joined_players()
+            .iter()
+            .position(|player| player == wallet)
+    }
+
+    /// True if the player in `seat` has committed.
+    pub fn has_committed(&self, seat: usize) -> bool {
+        is_flag_set(self.committed_flags, seat)
+    }
+
+    /// True if the player in `seat` has revealed.
+    pub fn has_revealed(&self, seat: usize) -> bool {
+        is_flag_set(self.revealed_flags, seat)
+    }
+
+    /// True once every joined player has committed.
+    pub fn has_everyone_committed(&self) -> bool {
+        let seats = usize::from(self.player_count).min(MAX_PLAYERS);
+        (0..seats).all(|seat| self.has_committed(seat))
+    }
+
     /// The game as a `MatchState`, in place. `None` if the bytes aren't 4-byte aligned (Solana
     /// aligns account data to 8, so this is checked rather than assumed).
     pub fn game_mut(&mut self) -> Option<&mut MatchState> {
         bytemuck::try_from_bytes_mut::<MatchState>(&mut self.match_state).ok()
     }
+}
+
+/// True if bit `seat` of `flags` is set (bit 0 = seat 0).
+fn is_flag_set(flags: u8, seat: usize) -> bool {
+    let Ok(shift) = u32::try_from(seat) else {
+        return false;
+    };
+    flags
+        .checked_shr(shift)
+        .is_some_and(|shifted| shifted & 1 == 1)
 }

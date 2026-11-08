@@ -533,6 +533,7 @@ dependencies = [
  "bytemuck",
  "civ-core",
  "ephemeral-rollups-sdk",
+ "solana-sha256-hasher 3.1.0",
 ]
 
 [[package]]
