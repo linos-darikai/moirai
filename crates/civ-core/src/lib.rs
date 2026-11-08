@@ -13,11 +13,13 @@
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
+//! - `production`: turn step 1, resources from owned deposits and cities
 
 pub mod aggregates;
 pub mod civ;
 pub mod map;
 pub mod map_generation;
+pub mod production;
 pub mod randomness;
 pub mod resources;
 pub mod units;
