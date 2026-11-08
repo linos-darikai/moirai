@@ -10,12 +10,14 @@ browser (through `civ-wasm`) and `civ-cli` all use this crate, so they always ag
 | `randomness` | Deterministic random numbers: a pure hash of (match seed, purpose, a, b). No hidden state. |
 | `resources` | `Resource` (Food, Ore, Gold) and `ResourceStock` (saturating adds) |
 | `units` | `UnitKind` (Infantry, Guard, Siege, Elite) and `UnitCounts` |
-| `civ` | `CivId` and `Civ` (24 plain bytes: city, resources, units, alive; read via `city()`, `is_alive()`) |
+| `city` | `City` (8 plain bytes: tile, size, growth points, founded turn, capital / growth-stopped flags) |
+| `civ` | `CivId` and `Civ` (88 plain bytes: resources, units, alive, 8 city slots; read via `capital()`, `cities()`, `city_count()`, `is_alive()`) |
 | `aggregates` | `aggregate_map(&map)`: each civ's tiles, cities and owned deposits, counted in one pass per turn |
 | `production` | `produce_resources(&aggregates, &mut civs)`: turn step 1. Each owned deposit yields 1 unit; each owned city adds `CITY_INCOME_PER_SIZE` (food 2, ore 1, gold 1) |
 | `rules` | Every rule number in one place (docs/decisions/0006): cities, growth, economy, market, battle, scoring. Integer maths; percentages in basis points |
 | `map` | `TileCoordinate` (always on the map), `Tile` (3 plain bytes, read via `owner()`, `deposit()`, `is_city()`), `Map` (768 bytes, zero-copy ready) and `Map::fingerprint()` |
 | `map_generation` | `generate_map_into(seed, civ_count, &mut map)` / `generate_map(...)`: the top-left quarter comes from the seed and is mirrored into the other three, so every civ gets identical surroundings. 3 mirrored city sites per quarter (≥3 tiles apart; capitals are sites too). Cities at (3,3), (12,3), (3,12), (12,12); two-civ games use opposite corners. 30% of tiles get a deposit. |
+| `match_start` | `start_match(seed, &mut map, &mut civs)`: turn 0. Generates the map and gives each civ its size 1 capital on its spawn tile, so map and civs always agree |
 
 On-chain rules this crate follows (details in docs/decisions/0004): plain-bytes `Pod` state so the
 program can use it as zero-copy account data, no panics (bounds-checked coordinates, `match`

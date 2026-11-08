@@ -9,17 +9,21 @@
 //! - `randomness`: deterministic random numbers from the match seed
 //! - `resources`: Food / Ore / Gold and a civ's stock
 //! - `units`: the four unit kinds and unit counts
-//! - `civ`: one player's civilisation
+//! - `city`: one city of a civ (size, growth, capital flag)
+//! - `civ`: one player's civilisation, with up to 8 cities
 //! - `map`: the 16 x 16 grid, tiles and coordinates
 //! - `map_generation`: builds a fair starting map from the seed
+//! - `match_start`: turn 0 of a match, the map and every civ with its capital
 //! - `aggregates`: what each civ owns, counted in one pass over the map per turn
 //! - `production`: turn step 1, resources from owned deposits and cities
 //! - `rules`: every rule number of the game (docs/decisions/0006)
 
 pub mod aggregates;
+pub mod city;
 pub mod civ;
 pub mod map;
 pub mod map_generation;
+pub mod match_start;
 pub mod production;
 pub mod randomness;
 pub mod resources;

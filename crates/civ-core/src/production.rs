@@ -46,7 +46,7 @@ mod tests {
     use crate::aggregates::aggregate_map;
     use crate::civ::CivId;
     use crate::map::{Map, TileCoordinate};
-    use crate::map_generation::{generate_map, spawn_point};
+    use crate::match_start::start_match;
     use crate::randomness::{MatchSeed, MATCH_SEED_LENGTH};
 
     fn coordinate(x: u8, y: u8) -> TileCoordinate {
@@ -131,9 +131,10 @@ mod tests {
     fn on_a_fresh_map_every_civ_earns_exactly_the_same_city_income() {
         // Fairness: a generated map gives each civ only its city, so turn 1 income is identical.
         let seed = MatchSeed([42; MATCH_SEED_LENGTH]);
-        let map = generate_map(&seed, 4).expect("valid count");
+        let mut map = Map::empty();
+        let mut civs = [0, 1, 2, 3].map(|id| Civ::new(CivId(id), coordinate(0, 0)));
+        start_match(&seed, &mut map, &mut civs).expect("valid count");
         let aggregates = aggregate_map(&map);
-        let mut civs = [0, 1, 2, 3].map(|id| Civ::new(CivId(id), spawn_point(CivId(id))));
 
         produce_resources(&aggregates, &mut civs);
 
